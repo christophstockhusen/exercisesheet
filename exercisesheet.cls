@@ -77,6 +77,8 @@
 \advance\textheight by -1cm
 \voffset=-1in
 
+\parindent=0pt
+\parskip=\smallskipamount
 
 \newdimen\sheet@textwidth
 \sheet@textwidth=\textwidth
