@@ -306,8 +306,8 @@
   \sheet@setwide
   % typeset 
   \@startsection{exercise}{2}{\z@}%
-                {-3ex \@plus -1ex \@minus -.2ex}%
-                {1ex \@plus .2ex}%
+                {-3ex \@plus -.2ex \@minus -.2ex}%
+                {1.5ex \@plus .2ex}%
                 {\normalfont\sheetexercisefont}%
                 [\insertexercisetitle]{\sheet@exercise@titletemplate}%
   \sheet@ifempty{\sheet@exercise@label}{}{%
@@ -342,8 +342,8 @@
   \sheet@setwide
   % typeset 
   \@startsection{subexercise}{3}{\z@}%
-                {-2ex \@plus -1ex \@minus -.2ex}%
-                {.3ex \@plus .2ex}%
+                {-1.5ex \@plus -.1ex \@minus -.1ex}%
+                {.75ex \@plus .1ex \@minus .1ex}%
                 {\normalfont\sheetsubexercisefont}%
                 [\insertsubexercisetitle]{\sheet@subexercise@titletemplate}%
   \sheet@ifempty{\sheet@subexercise@label}{}{%
@@ -379,7 +379,7 @@
 \newcommand\solution{\@ifnextchar[\sheet@start@solution{\sheet@start@solution[]}}
 
 \def\sheet@solution@refseccntformat#1{%
-  \solutionname~\forname~%
+  \solutionname~\forname~\exercisename~%
     \expandafter\ref\expandafter{\sheet@solution@exerciselabel}%
 }
 
@@ -397,11 +397,11 @@
   }{%
     \let\@seccntformat=\sheet@solution@refseccntformat
   }%
-  \@startsection{solution}{1}{\z@}%
-                {-3.5ex \@plus -1ex \@minus -.2ex}%
-                {2.3ex \@plus .2ex}%
-                {\normalfont\small\sffamily\bfseries}%
-                {}
+  \@startsection{solution}{2}{\z@}%
+                {-3ex \@plus -.2ex \@minus -.2ex}%
+                {1.5ex \@plus .2ex}%
+                {\normalfont\sheetexercisefont}%
+                {\@seccntformat{}}
   \let\@seccntformat=\sheet@orig@seccntformat
 }
 
@@ -439,6 +439,8 @@
 \def\thesheet{\@arabic\c@sheet}
 \def\theexercise{\thesheet.\@arabic\c@exercise}
 \def\thesubexercise{\theexercise.\@arabic\c@subexercise}
+% \def\thesolution{\@arabic\c@exercise}
+\let\thesolution=\theexercise
 
 \let\sheet@orig@thepage=\thepage
 \def\thepage{\thesheet~--~\sheet@orig@thepage}
@@ -486,3 +488,4 @@
 \let\l@sheet=\l@chapter
 \let\l@exercise=\l@section
 \let\l@subexercise=\l@subsection
+\let\l@solution=\l@section

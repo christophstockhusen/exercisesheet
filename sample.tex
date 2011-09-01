@@ -11,9 +11,9 @@
 \usepackage{tgtermes}
 \usepackage{mathptmx}
 
-\usepackage[%
-  pdfborder={0 0 0},
-    ]{hyperref}
+% \usepackage[%
+%   pdfborder={0 0 0},
+%     ]{hyperref}
 
 \usepackage[english]{babel}
 \usepackage{blindtext}
@@ -44,9 +44,10 @@ for details on the usage of this package. \hfill \emph{Thank you.}
 \exercise[
     title=This is an Exercise,
     credits=4,
+    label={first_exercise}
   ]
 
-\blindtext \par \blindtext \par \blindtext \par \blindtext
+\blindtext 
 
 \subexercise[
     title=This is a Subexercise,
@@ -62,6 +63,11 @@ for details on the usage of this package. \hfill \emph{Thank you.}
 
 \blindtext
 
+\solution[
+    exerciselabel={first_exercise}
+  ]
+  
+\blindtext
 
 \sheet[
     title=test
