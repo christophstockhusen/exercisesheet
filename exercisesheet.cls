@@ -219,7 +219,7 @@
   \setcounter{page}{1}%
   \ifnum \c@secnumdepth >\m@ne
     \refstepcounter{sheet}%
-    \addcontentsline{toc}{sheet}{\thesheet\texorpdfstring{\quad}{ }\insertsheettitle}%
+    \addcontentsline{toc}{sheet}{\protect\numberline{\sheetname~\thesheet}\insertsheettitle}%
   \else
     \addcontentsline{toc}{sheet}{\insertsheettitle}%
   \fi
@@ -405,6 +405,75 @@
   \let\@seccntformat=\sheet@orig@seccntformat
 }
 
+%
+% Table of Contents
+%
+%   The following redefinitions of LaTeX-macros contain only small
+%   changes. However, as their original definitions are very complex
+%   (and long) we always have to redefine the whole macro. If there
+%   are only minor changes, they are labeled.
+%
+
+% \@makeschapterhead is only used for typesetting the title of the
+% table of contents. Therefore it is redefined to match the style of
+% the sheet titles. Maybe this could be redefined to reduce the code
+% duplication.
+
+\def\@makeschapterhead#1{%
+  {%
+    \parindent\z@
+    \raggedright
+    \normalfont
+    \sheettitlefont
+    \interlinepenalty\@M
+    #1 \par \nobreak
+    \vskip 40\p@
+  }%
+}
+
+% \@pnumwidth is the width of the page number.
+
+\def\@pnumwidth{3em}
+
+% The tocdepth counter limits the depth of sheet/exercise/subexercise
+% listed in the table of contents. 
+
+\setcounter{tocdepth}{1}
+
+% \l@chapter typesets the chapter entry in the table of contents. Only
+% the width of the left margin for multi-line entries is adapted,
+
+\def\l@chapter#1#2{%
+  \ifnum \c@tocdepth >\m@ne
+    \addpenalty{-\@highpenalty}%
+    \vskip 1.0em \@plus\p@
+    \setlength\@tempdima{8.5em}% <=========================
+    \begingroup
+      \parindent \z@ \rightskip \@pnumwidth
+      \parfillskip -\@pnumwidth
+      \leavevmode \bfseries
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+      #1\nobreak\hfil \nobreak\hb@xt@\@pnumwidth{\hss #2}\par
+      \penalty\@highpenalty
+    \endgroup
+  \fi}
+
+% \l@section and \l@subsection typeset the exercise/subexercise
+% entries in the table of contents. The left margins are adapted.
+
+\def\l@section{\@dottedtocline{1}{0em}{8.5em}}
+\def\l@subsection{\@dottedtocline{2}{0em}{8.5em}}
+
+% \numberline typesets the "Exercise 1.1" in the table of contents.
+
+\def\numberline#1{\hb@xt@\@tempdima{\hfill #1\hskip 1em}}
+
+% \@sect typesets the exercise/subexercise titles in the main text and
+% creates the entries for the table of contents. Here, the numbering
+% in the table of contents entry is augmented with the type of the
+% corresponding section ("Exercise", "Subexercise").
+
 \def\@sect#1#2#3#4#5#6[#7]#8{%
   \ifnum #2>\c@secnumdepth
     \let\@svsec\@empty
@@ -422,7 +491,7 @@
     \csname #1mark\endcsname{#7}%
     \addcontentsline{toc}{#1}{%
       \ifnum #2>\c@secnumdepth \else
-        \protect\numberline{\csname #1name\endcsname~\csname the#1\endcsname}% this is the line
+        \protect\numberline{\csname #1name\endcsname~\csname the#1\endcsname}% <===
       \fi
       #7}%
   \else
@@ -438,27 +507,6 @@
   \fi
   \@xsect{#5}}
 
-\def\l@section{\@dottedtocline{1}{1.5em}{6.5em}}
-
-%
-% table of contents
-%
-
-\def\@makeschapterhead#1{%
-  {%
-    \parindent\z@
-    \raggedright
-    \normalfont
-    \sheettitlefont
-    \interlinepenalty\@M
-    #1 \par \nobreak
-    \vskip 40\p@
-  }%
-}
-
-\def\@pnumwidth{2em}
-
-\setcounter{tocdepth}{1}
 
 %
 % counters
