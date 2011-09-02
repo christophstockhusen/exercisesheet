@@ -401,7 +401,7 @@
                 {-3ex \@plus -.2ex \@minus -.2ex}%
                 {1.5ex \@plus .2ex}%
                 {\normalfont\sheetexercisefont}%
-                {\@seccntformat{}}
+                []{}%{\@seccntformat{}}
   \let\@seccntformat=\sheet@orig@seccntformat
 }
 
@@ -447,7 +447,7 @@
   \ifnum \c@tocdepth >\m@ne
     \addpenalty{-\@highpenalty}%
     \vskip 1.0em \@plus\p@
-    \setlength\@tempdima{8.5em}% <=========================
+    \setlength\@tempdima{9em}% <=========================
     \begingroup
       \parindent \z@ \rightskip \@pnumwidth
       \parfillskip -\@pnumwidth
@@ -462,8 +462,8 @@
 % \l@section and \l@subsection typeset the exercise/subexercise
 % entries in the table of contents. The left margins are adapted.
 
-\def\l@section{\@dottedtocline{1}{0em}{8.5em}}
-\def\l@subsection{\@dottedtocline{2}{0em}{8.5em}}
+\def\l@section{\@dottedtocline{1}{0em}{9em}}
+\def\l@subsection{\@dottedtocline{2}{0em}{9em}}
 
 % \numberline typesets the "Exercise 1.1" in the table of contents.
 
@@ -507,6 +507,24 @@
   \fi
   \@xsect{#5}}
 
+\def\@dottedtocline#1#2#3#4#5{%
+  \ifnum #1>\c@tocdepth \else
+    \vskip \z@ \@plus.2\p@
+    {\leftskip #2\relax \rightskip \@tocrmarg \parfillskip -\rightskip
+     \parindent #2\relax\@afterindenttrue
+     \interlinepenalty\@M
+     \leavevmode
+     \@tempdima #3\relax
+     \advance\leftskip \@tempdima \null\nobreak\hskip -\leftskip
+     {#4}\nobreak
+     %\leaders\hbox{$\m@th
+     %   \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
+     %   mu$}\hfill
+     \leaders\hbox to 1em{.\hss}\hfill % <===
+     \nobreak
+     \hb@xt@\@pnumwidth{\hfil\normalfont \normalcolor #5}%
+     \par}%
+  \fi}
 
 %
 % counters
@@ -522,7 +540,6 @@
 \def\thesheet{\@arabic\c@sheet}
 \def\theexercise{\thesheet.\@arabic\c@exercise}
 \def\thesubexercise{\theexercise.\@arabic\c@subexercise}
-% \def\thesolution{\@arabic\c@exercise}
 \let\thesolution=\theexercise
 
 \let\sheet@orig@thepage=\thepage
@@ -535,6 +552,7 @@
 \newcommand*\sheetmark[1]{}
 \newcommand*\exercisemark[1]{}
 \newcommand*\subexercisemark[1]{}
+\newcommand*\solutionmark[1]{}
 
 %
 % helper
