@@ -1,28 +1,56 @@
-% Copyright by Christoph Stockhusen
+% Copyright 2011 by Christoph Stockhusen
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2011/08/30]
+\ProvidesClass{exercisesheet}[2011/09/05]
 
 \RequirePackage{xkeyval}
 \RequirePackage{graphicx}
+\RequirePackage{environ}
 
 %
-% loading the underlying class
+% Loading the underlying class.
 %
 
 %
-% keys for the class
+% Keys for the class.
 %
 
-\def\sheet@narrowfactor{.7}
+% Keys for the narrow layout.
+
+\def\sheet@defaultnarrowfactor{.7}
+\let\sheet@narrowfactor=\sheet@defaultnarrowfactor
 \DeclareOptionX{narrowfactor}{\def\sheet@narrowfactor{#1}}
 \DeclareOptionX{nonarrow}{\def\sheet@narrowfactor{1}}
+\DeclareOptionX{narrow}{\let\sheet@narrowfactor=\sheet@defaultnarrowfactor}
 
-% pass undeclared options to the underlying class file
+% Keys for the student version.
+
+\newif\ifstudent 
+\DeclareOptionX{student}{\studenttrue}
+\DeclareOptionX{instructor}{\studentfalse}
+
+% Keys for solutions.
+
+\newif\ifsolution
+\DeclareOptionX{solution}{\solutiontrue}
+\DeclareOptionX{nosolution}{\solutionfalse}
+
+% Pass undeclared options to the underlying class file.
+
 \DeclareOptionX*{\PassOptionsToClass{\CurrentOption}{report}}
 
+% Set default values for the class options.
+
+\ExecuteOptionsX{narrow,student,solution}
 \ProcessOptionsX
 \LoadClass{report}
+
+% 
 
 \def\exercisesheet{\texttt{exercisesheet}}
 
@@ -47,7 +75,7 @@
 \newcommand*\insertstudent{\the\sheet@student}
 
 %
-% fonts
+% Setting up the default fonts.
 %
 
 \def\sheettitlefont{\sffamily\fontsize{36}{40}\selectfont}
@@ -56,11 +84,12 @@
 \def\sheetlecturefont{\sffamily\footnotesize}
 \def\sheetsemesterfont{\sffamily\footnotesize}
 \def\sheetlecturerfont{\sffamily\footnotesize}
+\def\sheetstudentfont{\sffamily}
 \def\sheetexercisefont{\small\sffamily}
 \def\sheetsubexercisefont{\footnotesize\sffamily}
 
 %
-% layout
+% Setting up the default layout.
 %
 
 \textwidth=\paperwidth
@@ -80,8 +109,13 @@
 \parindent=0pt
 \parskip=\smallskipamount
 
-\newdimen\sheet@textwidth
+%
+% Macros for switching between the narrow and the wide layouts.
+%
+
+\newdimen\sheet@textwidth 
 \sheet@textwidth=\textwidth
+
 \newdimen\sheet@narrowtextwidth
 \sheet@narrowtextwidth=\sheet@narrowfactor\sheet@textwidth
 
@@ -93,7 +127,7 @@
 }
 
 %
-% header and footer
+% Setting up the header and footer.
 %
 
 \def\ps@headings{%
@@ -105,7 +139,9 @@
 
 \pagestyle{headings}
 
-% keys for sheets
+%
+% Defining the keys for the sheets.
+%
 
 \define@key{sheet@sheet}{title}{\sheet@sheet@title={#1}}
 \define@key{sheet@sheet}{deadline}{\sheet@sheet@deadline={#1}}
@@ -121,7 +157,9 @@
 \def\sheet@sheet@label{}
 \newcount\sheet@sheet@credits
 
-% keys for exercises
+%
+% Defining the keys for the exercises.
+%
 
 \define@key{sheet@exercise}{title}{\sheet@exercise@title={#1}}
 \define@key{sheet@exercise}{label}{\def\sheet@exercise@label{#1}}
@@ -135,7 +173,9 @@
 \def\sheet@exercise@label{}
 \newcount\sheet@exercise@credits
 
-% keys for subexercises
+%
+% Defining the keys for the subexercises.
+%
 
 \define@key{sheet@subexercise}{title}{\sheet@subexercise@title={#1}}
 \define@key{sheet@subexercise}{label}{\def\sheet@subexercise@label{#1}}
@@ -149,14 +189,17 @@
 \def\sheet@subexercise@label{}
 \newcount\sheet@subexercise@credits
 
-% keys for solutions
+%
+% Defining the keys for the solutions.
+%
 
 \define@key{sheet@solution}{exerciselabel}{\def\sheet@solution@exerciselabel{#1}}
 
 \def\sheet@solution@exerciselabel{}
 
 %
-% names
+% Defining the names that are used within the titles of the sheets,
+% exercises and subexercises.
 %
 
 \newcommand\sheetname{Exercise Sheet}
@@ -164,44 +207,64 @@
 \newcommand\exercisename{Exercise}
 \newcommand\subexercisename{Subexercise}
 \newcommand\solutionname{Solution}
+\newcommand\solutionsname{Solutions}
 \newcommand\forname{for}
+\newcommand\byname{by}
 \newcommand\creditname{credit}
 \newcommand\creditsname{credits}
 
-% insert commands for sheets
+%
+% Insert commands for sheets, exercises, and subexercises.
+%
 
 \newcommand\insertsheettitle{\the\sheet@sheet@title}
 \newcommand\insertsheetdeadline{\the\sheet@sheet@deadline}
 \newcommand\insertsheetcredits{\the\sheet@sheet@credits}
 
-% insert commands for exercises
-
 \newcommand\insertexercisetitle{\the\sheet@exercise@title}
 \newcommand\insertexercisecredits{\the\sheet@exercise@credits}
-
-% insert commands for subexercises
 
 \newcommand\insertsubexercisetitle{\the\sheet@subexercise@title}
 \newcommand\insertsubexercisecredits{\the\sheet@subexercise@credits}
 
 %
-% \maketitle
+% The \maketitle command for typesetting the title page.
 %
 
 \def\maketitle{%
   \begin{titlepage}
-    \null\vskip 0pt plus 2fil
+    \null \vskip .25\textheight
     \begingroup 
-      \sheettitlefont \insertlecture \par \bigskip \bigskip \bigskip
-      \normalsize \insertlecturer \par \medskip
-      \insertsemester \par \bigskip \bigskip
+      \ifsolution
+        \begingroup
+          \sheetsubtitlefont
+          \solutionsname~\forname \par \medskip
+        \endgroup
+      \fi
+      \sheettitlefont
+      \insertlecture \par 
+      \ifsolution
+        \ifstudent
+          \begingroup
+            \sheetsubtitlefont
+            \medskip
+            \byname~\insertstudent \par
+          \endgroup
+        \fi
+      \fi
+      \vskip .1\textheight
+      \begingroup
+        \sheetdeadlinefont
+        \insertlecturer \par
+        \insertsemester \par
+      \endgroup
     \endgroup
-    \vskip 0pt plus 3fil
   \end{titlepage}%
 }
 
 %
-% \sheet
+% The \sheet command for typesetting the titling of a new exercise
+% sheet.
 %
 
 \let\insertsheetlogo=\relax
@@ -240,6 +303,9 @@
       % sheet number
       \normalfont
       \sheettitlefont
+      \ifsolution
+        \solutionsname~\forname~%
+      \fi
       \sheetname~\thesheet
     }%
     {%
@@ -263,7 +329,7 @@
     {%
       % lecture, semester
       \sheet@ifempty{\insertlecture\insertsemester}{}{%
-        \vskip 1em
+        \par \bigskip
       }%
       \sheet@ifempty{\insertlecture}{}{%
         \sheetlecturefont
@@ -278,10 +344,20 @@
     {%
       % lecturer
       \sheet@ifempty{\insertlecturer}{}{%
-        \vskip 1ex
+        \par \medskip
         \sheetlecturerfont
         \insertlecturer 
       }%
+    }%
+    {%
+      % student
+      \ifstudent
+        \sheet@ifempty{\insertstudent}{}{%
+          \par \bigskip
+          \sheetstudentfont
+          \solutionsname~\byname~\insertstudent
+        }%
+      \fi
     }%
   }%
   \sheet@ifempty{\sheet@sheet@label}{}{%
@@ -376,7 +452,7 @@
 % \solution
 %
 
-\newcommand\solution{\@ifnextchar[\sheet@start@solution{\sheet@start@solution[]}}
+% \newcommand\solution{\@ifnextchar[\sheet@start@solution{\sheet@start@solution[]}}
 
 \def\sheet@solution@refseccntformat#1{%
   \solutionname~\forname~\exercisename~%
@@ -404,6 +480,20 @@
                 []{}%{\@seccntformat{}}
   \let\@seccntformat=\sheet@orig@seccntformat
 }
+
+% 
+% Solution environment for typesetting solutions that are only typeset
+% when the "solution" option is set.
+%
+
+\def\sheet@startsolution{%
+  \@ifnextchar[\sheet@start@solution{\sheet@start@solution[]}%
+}
+
+\NewEnviron{solution}{%
+  \ifsolution
+    \expandafter\sheet@startsolution\BODY%
+  \fi}{}
 
 %
 % Table of Contents

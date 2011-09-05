@@ -1,15 +1,32 @@
 \documentclass[
   a4paper,
   fleqn,
-  nonarrow
+  student, % alternatively: instructor
+  solution, % alternatively: nosolution
+  narrow, % alternatively: nonarrow. 
+  narrowfactor=.7,% narrowfactor=x \in [0,1], default=.7
     ]{exercisesheet}
+
+% Setting up the fonts.
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
-\usepackage[scaled]{helvet}
-\usepackage{tgtermes}
-\usepackage{mathptmx}
+\usepackage{libertine}
+\usepackage[sc]{mathpazo}
+
+\def\sheettitlefont{\sffamily\fontsize{36}{40}\selectfont}
+\def\sheetsubtitlefont{\sffamily\Huge\color{maincolor}}
+\def\sheetdeadlinefont{\sffamily\LARGE}
+\def\sheetlecturefont{\sffamily\footnotesize}
+\def\sheetsemesterfont{\sffamily\footnotesize}
+\def\sheetlecturerfont{\sffamily\footnotesize}
+\def\sheetexercisefont{\small\sffamily}
+\def\sheetsubexercisefont{\footnotesize\sffamily}
+
+\usepackage[dvipsnames]{xcolor}
+\colorlet{maincolor}{BurntOrange!70!black}
+
 
 \usepackage[%
   pdfborder={0 0 0},
@@ -63,14 +80,19 @@ for details on the usage of this package. \hfill \emph{Thank you.}
 
 \blindtext
 
-\solution[
+\begin{solution}[
     exerciselabel={first_exercise}
   ]
+
+  \blindtext
+
+\end{solution}
   
-\blindtext
 
 \sheet[
-    title=test
+    title=Yet another Exercise Sheet,
+    number=12,
+    deadline={2.~September~2011}
   ]
 
 \end{document}
