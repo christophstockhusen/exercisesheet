@@ -274,11 +274,11 @@
 \@afterindentfalse
 
 \def\sheet@start@sheet[#1]{
+  % conclude the last sheet
+  \clearpage
   % parse keys
   \setkeys{sheet@sheet}{label={},credits=-1,#1}
-  % typeset
   % begin new page
-  \clearpage
   \setcounter{page}{1}%
   \ifnum \c@secnumdepth >\m@ne
     \refstepcounter{sheet}%
