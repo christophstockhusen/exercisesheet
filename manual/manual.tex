@@ -1,0 +1,59 @@
+\documentclass{report}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{libertine}
+\usepackage[sc]{mathpazo}
+\def\ttdefault{txtt}
+
+\usepackage[dvipsnames]{xcolor}
+\colorlet{maincolor}{BurntOrange!70!black}
+
+\usepackage[english]{babel}
+
+\usepackage[
+  a4paper,
+  hmargin={2cm,2cm},
+  vmargin={3cm,3.5cm}
+    ]{geometry}
+
+\def\exercisesheet{\texttt{exercisesheet}}
+
+\usepackage{titlesec}
+\titleformat{\chapter}[display]{\sffamily\huge}{Chapter~\thechapter}{1ex}{}
+\titleformat{\section}[display]{\sffamily\large}{Section~\thesection}{1ex}{}
+
+\usepackage[
+  pdfborder={0 0 0},
+    ]{hyperref}
+
+\begin{document}
+
+\begin{titlepage}
+  \null \vskip .2\textheight
+  \fontsize{36}{40}\selectfont
+  \sffamily Reference Manual for the \par
+  \exercisesheet{} Class \par \bigskip \bigskip
+  \Large \color{maincolor}%
+  Christoph Stockhusen \par \bigskip
+  \today \vskip .1\textheight
+\end{titlepage}
+
+\begin{abstract}
+  The \exercisesheet{} class provides a convenient way to produce
+  hiqh-quality exercise sheets for both students and instructors. This
+  is the official reference manual.
+\end{abstract}
+
+\tableofcontents
+
+\chapter{Introduction and Tutorials for Students and Instructors}
+
+\section{A Tutorial for the Student John~Doe}
+
+\section{A Tutorial for the Instructor Prof.~John~Doe}
+
+\chapter{All the Macros}
+
+\end{document}
