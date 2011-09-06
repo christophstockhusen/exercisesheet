@@ -28,7 +28,7 @@
     keywordstyle=\color{maincolor},
     language=[LaTeX]TeX,
     frame=lines,
-    backgroundcolor=\color{maincolor!20},
+    backgroundcolor=\color{maincolor!15},
     framerule=.8pt,
     % numbers=left,
     % numberstyle=\footnotesize,
@@ -42,12 +42,15 @@
       exerciselabel,
       exercisesheet,
       student,
+      instructor,
+      solution,
+      nosolution,
       maketitle,
       tableofcontents,
       lecture,
       lecturer,
       semester,
-      colorlet
+      colorlet,
     },
     otherkeywords={a4paper}
   }
@@ -94,7 +97,9 @@ exercisesheets and their solutions. Therefore, the following two
 sections contain tutorials for students as well as teachers for using
 the \exercisesheet{} class. Files with the complete code of the
 templates are available with this package; You can download them from
-\url{http://exercisesheet.googlecode.com}.
+\url{http://exercisesheet.googlecode.com}. As the teachers tutorial
+builds upon the students tutorial, I highly recommend to first read
+the students tutorial.
 
 \section{A Tutorial for the Student Lia}
 
@@ -178,7 +183,30 @@ Altogether, Lia has written the following template code.
 \lstinputlisting{template_student.tex}
 
 
-\section{A Tutorial for the Instructor Prof.~John~Doe}
+\section{A Tutorial for the Instructor Prof.~Foo~Bar}
+
+When Prof.~Foo~Bar sees Lia's solutions he is highly impressed. Not
+only are Lia's solutions almost perfectly correct, also it's
+appearance is very beautiful in comparison with his exercise sheets.
+Hence, he asks Lia whether he may use her template to type his
+exercise sheets. Lia, really happy for this to happen, tells
+Prof.~Foo~Bar about the \exercisesheet{} class and emails her template
+to him. Foo immediately opens the template file and starts customizing
+the template for his requirements.
+
+First, he changes the call of the document class as he is not a
+student anymore and mainly doesn't want his exercise sheets look like
+a sheet of solutions. Moreover, he adds the \lstinline{nosolution}
+option. This option makes the sample solutions that Foo types
+disappear. This way he can type down the solutions to his exercises
+and easily make them disappear if he wants to create the \textsc{pdf}
+version of the sheet for the website. Later on, he can use the
+\lstinline{solution} option if he wants to typeset the solutions and
+the previously invisible solutions reappear.
+
+\lstinputlisting[linerange={1-5}]{template_instructor.tex}
+
+\emph{To be continued\ldots}
 
 \chapter{Reference}
 
