@@ -1,0 +1,55 @@
+\documentclass[
+  a4paper,
+  instructor,
+  nosolution % "solution" if sample solutions shall appear
+    ]{exercisesheet}
+
+\lecture{Specimen of a Title of a Lecture}
+\lecturer{Prof.~Foo~Bar}
+\semester{Winter~Semester~2011/2012}
+
+\usepackage{xcolor}
+\colorlet{maincolor}{blue!50!black}
+
+\usepackage[T1]{fontenc}
+\usepackage[bitstream-charter]{mathdesign}
+\let\sfdefault=\rmdefault
+
+\renewcommand{\sheettitlefont}{\sffamily\bfseries\Huge}
+\renewcommand{\sheetsubtitlefont}{\sffamily\bfseries\Huge\color{maincolor}}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+  
+\sheet[
+    title={Specimen of a Title of an Exercise Sheet},
+    deadline={1.~November~2011}
+  ]
+
+\exercise[
+    title={Specimen of a Title of an Exercise},
+    credits=4
+  ]
+
+\subexercise[
+  title={Specimen of a Title of a Subexercise},
+  credits=1
+    ]
+
+This might be an easy exercise\ldots
+
+\subexercise[
+  title={Specimen of a Title of a Subexercise},
+  credits=3
+    ]
+
+\ldots but this one will be really complicated!
+
+\sheet[
+    title={Specimen of a Title of an Exercise Sheet}
+  ]
+
+\end{document}
