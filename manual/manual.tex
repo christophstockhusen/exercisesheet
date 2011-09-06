@@ -20,6 +20,7 @@
 
 \usepackage{enumitem}
 \setlist{nolistsep}
+\setitemize{label={--}}
 
 \usepackage{listings}
 \lstset{
@@ -29,8 +30,26 @@
     frame=lines,
     backgroundcolor=\color{maincolor!20},
     framerule=.8pt,
-    numbers=left,
-    numberstyle=\footnotesize
+    % numbers=left,
+    % numberstyle=\footnotesize,
+    morekeywords={
+      sheet,
+      exercise,
+      subexercise,
+      title,
+      number,
+      label,
+      exerciselabel,
+      exercisesheet,
+      student,
+      maketitle,
+      tableofcontents,
+      lecture,
+      lecturer,
+      semester,
+      colorlet
+    },
+    otherkeywords={a4paper}
   }
 
 \def\exercisesheet{\texttt{exercisesheet}}
@@ -38,6 +57,7 @@
 \usepackage{titlesec}
 \titleformat{\chapter}[display]{\sffamily\huge}{Chapter~\thechapter}{1ex}{}
 \titleformat{\section}[display]{\sffamily\large}{Section~\thesection}{1ex}{}
+\titleformat{\subsection}[display]{\sffamily}{Subsection~\thesubsection}{1ex}{}
 
 \usepackage[
   pdfborder={0 0 0},
@@ -68,33 +88,94 @@
 
 \chapter{Introduction and Tutorials for Students and Instructors}
 
-My aim of programming the \exercisesheet{} class is to provide both
-studends and teachers a \LaTeX{} class for easily typesetting
-exercisesheets and their solutions. The following sections contain two
-tutorials: The first tutorial aims at students, the second at
-teachers.
+My aim with programming the \exercisesheet{} class is to provide both
+students and teachers a \LaTeX{} class for easily typesetting
+exercisesheets and their solutions. Therefore, the following two
+sections contain tutorials for students as well as teachers for using
+the \exercisesheet{} class. Files with the complete code of the
+templates are available with this package; You can download them from
+\url{http://exercisesheet.googlecode.com}.
 
 \section{A Tutorial for the Student Lia}
 
-This semester, Lia, student of computer science, participates in the
-course \emph{Theoretical Computer Science}. Her tutor encourages her
-to typeset the exercise sheets with \LaTeX{} as this would be a good
-training for her bachelors thesis. Moreover, he recommends the
-\exercisesheet{} class as it provides a nice layout and many useful
-macros that might help Lia on her first steps with \LaTeX{}.
+This semester, Lia, student of Computer Science, plans to typeset the
+solutions of all the exercise sheets with \LaTeX{}. In the last
+semesters she wrote her solutions per hand which had several
+drawbacks:
+\begin{itemize}
+  \item Often her first solutions to exercises contained little errors
+    that she had to correct. Very small errors were easy to correct,
+    but many times she had to insert some sentences or formulas into
+    her solution with the result that Lia had to write several pages
+    of solutions again.
+  \item One week 
+  \item \ldots
+\end{itemize}
+Lia thinks that she can overcome these drawbacks by writing her
+solutions at her computer with \LaTeX. As this will be Lia's first
+experience with \LaTeX{} she asks her tutor Bo for help. He feels
+happy about Lia's plans because he thinks that this will be a good
+preparation for her bachelor's thesis. Bo recommends the
+\exercisesheet{} class that he often used for typesetting his
+solutions for exercise sheets.
 
-After Lia managed to install a commen \LaTeX{} distribution she
-immediately starts to create her first exercise sheet, as the deadline
-is already in two days. She creates a new file called
-\lstinline{TCS.tex} and types the following lines to load the document
-class.
+At home from university, Lia downloads and installs a common \LaTeX{}
+distribution and starts to create a simple template file that she
+plans to use for her next exercise sheets. She creates a file 
+\lstinline[language=bash]{template_student.tex} and opens it in her
+favorite text editor \emph{GVim}. She sets up her file with the
+following lines.
+\lstinputlisting[linerange={1-9}]{template_student.tex}
+Lia passes the \lstinline{a4paper} to the
+\lstinline|\documentclass{exercisesheet}| command because she wants
+the paper layout to be \textsc{din}~A~4. Moreover, she uses the
+\lstinline{student} option which makes the class print its titles in
+an appropriate manner for submitting the solutions to her instructor.
+Then Lia specifies the name of the lecture, the name of the lecturer,
+the semester, and her name. Within these commands the makes use of the
+tilde~\lstinline{~} in order to suppress undesirable line breaks, like
+Donald Knuth recommended in the \TeX{}book.
 
-\begin{lstlisting}
-\documentclass[
-  a4paper,
-  student,
-    ]{exercisesheet}
-\end{lstlisting}
+With this setup Lia is now ready to typeset her first exercise sheet.
+Hence, she types in the following.
+\lstinputlisting[linerange={21-22,27-29,64-65}]{template_student.tex}
+Lia uses the \lstinline|\sheet| command to start a new exercise sheet.
+The command requires no argument but accepts an optional list of
+key-value pairs that affect the appearance of the sheet. She decides
+to use the keys \lstinline{title} to set a temporary title.
+
+That was easy! At this point nothing can stop her typesetting her
+first solution. Lia continues typing. She uses the following lines to
+typeset a solution for an exercise that is split into two
+subexercises.
+
+\lstinputlisting[linerange={32-46}]{template_student.tex}
+
+Lia is really happy about the simplicity of the \exercisesheet{}
+class. She notices that the can typeset multiple exercise sheets
+within a single \LaTeX{} document by simply using the
+\lstinline{\sheet} macro repeatedly. Therefore, she asks herself
+whether the \exercisesheet{} class is capable of typesetting a
+title page and a table of contents. She tries whether the following
+standard \LaTeX{} macros will work.
+
+\lstinputlisting[linerange={23-23,25-25}]{template_student.tex}
+
+After two runs a table of contents appears in her document that lists
+the exercise sheets and the exercises to her complete satisfaction.
+But now, as she has compiled her document taken a look at the produced
+\textsc{pdf} file, she is not very happy with the default fonts of
+\LaTeX{}. She decides to use some other fonts and bring more color
+into her sheets. Therefore, she loads the \lstinline{xcolor} package,
+defines a nice orange as her base color, sets the serif font to
+Palatino and the sans-serif font to Biolinum. Furthermore, she
+redefines the fonts of the sheet title and the subtitle. This also
+affects the title page and now Lia is really happy with her result.
+\lstinputlisting[linerange={11-19}]{template_student.tex}
+
+Altogether, Lia has written the following template code.
+
+\lstinputlisting{template_student.tex}
 
 
 \section{A Tutorial for the Instructor Prof.~John~Doe}
