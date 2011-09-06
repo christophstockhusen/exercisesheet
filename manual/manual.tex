@@ -4,7 +4,7 @@
 \usepackage[utf8]{inputenc}
 
 \usepackage{libertine}
-\usepackage[sc]{mathpazo}
+% \usepackage[sc]{mathpazo}
 \def\ttdefault{txtt}
 
 \usepackage[dvipsnames]{xcolor}
@@ -17,6 +17,21 @@
   hmargin={2cm,2cm},
   vmargin={3cm,3.5cm}
     ]{geometry}
+
+\usepackage{enumitem}
+\setlist{nolistsep}
+
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily,
+    keywordstyle=\color{maincolor},
+    language=[LaTeX]TeX,
+    frame=lines,
+    backgroundcolor=\color{maincolor!20},
+    framerule=.8pt,
+    numbers=left,
+    numberstyle=\footnotesize
+  }
 
 \def\exercisesheet{\texttt{exercisesheet}}
 
@@ -43,17 +58,54 @@
 \begin{abstract}
   The \exercisesheet{} class provides a convenient way to produce
   hiqh-quality exercise sheets for both students and instructors. This
-  is the official reference manual.
+  is the official reference manual. It contains tutorials for students
+  and instructors that explain the first steps in using this class.
+  Moreover, a complete list of the commands defined by the
+  \exercisesheet{} class is contained.
 \end{abstract}
 
 \tableofcontents
 
 \chapter{Introduction and Tutorials for Students and Instructors}
 
-\section{A Tutorial for the Student John~Doe}
+My aim of programming the \exercisesheet{} class is to provide both
+studends and teachers a \LaTeX{} class for easily typesetting
+exercisesheets and their solutions. The following sections contain two
+tutorials: The first tutorial aims at students, the second at
+teachers.
+
+\section{A Tutorial for the Student Lia}
+
+This semester, Lia, student of computer science, participates in the
+course \emph{Theoretical Computer Science}. Her tutor encourages her
+to typeset the exercise sheets with \LaTeX{} as this would be a good
+training for her bachelors thesis. Moreover, he recommends the
+\exercisesheet{} class as it provides a nice layout and many useful
+macros that might help Lia on her first steps with \LaTeX{}.
+
+After Lia managed to install a commen \LaTeX{} distribution she
+immediately starts to create her first exercise sheet, as the deadline
+is already in two days. She creates a new file called
+\lstinline{TCS.tex} and types the following lines to load the document
+class.
+
+\begin{lstlisting}
+\documentclass[
+  a4paper,
+  student,
+    ]{exercisesheet}
+\end{lstlisting}
+
 
 \section{A Tutorial for the Instructor Prof.~John~Doe}
 
-\chapter{All the Macros}
+\chapter{Reference}
+
+This section provides a comprehensive list of macros and options that
+are provided by the \exercisesheet{} class.
+
+\section{Document Class Options}
+
+\section{Macros}
 
 \end{document}
