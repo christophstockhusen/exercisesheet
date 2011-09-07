@@ -3,9 +3,11 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
-\usepackage{libertine}
-% \usepackage[sc]{mathpazo}
-\def\ttdefault{txtt}
+\usepackage{DejaVuSerif}
+\usepackage{DejaVuSans}
+\usepackage{DejaVuSansMono}
+
+\usepackage{microtype}
 
 \usepackage[dvipsnames]{xcolor}
 \colorlet{maincolor}{BurntOrange!70!black}
@@ -14,7 +16,7 @@
 
 \usepackage[
   a4paper,
-  hmargin={2cm,2cm},
+  hmargin={2.5cm,2.5cm},
   vmargin={3cm,3.5cm}
     ]{geometry}
 
@@ -24,7 +26,7 @@
 
 \usepackage{listings}
 \lstset{
-    basicstyle=\ttfamily\small,
+    basicstyle=\ttfamily,
     keywordstyle=\color{maincolor},
     language=[LaTeX]TeX,
     frame=lines,
@@ -63,9 +65,36 @@
 \def\exercisesheet{\texttt{exercisesheet}}
 
 \usepackage{titlesec}
-\titleformat{\chapter}[display]{\sffamily\huge}{Chapter~\thechapter}{1ex}{}
-\titleformat{\section}[display]{\sffamily\large}{Section~\thesection}{1ex}{}
-\titleformat{\subsection}[display]{\sffamily}{Subsection~\thesubsection}{1ex}{}
+\titleformat{\chapter}[display]{\raggedright\sffamily\huge}{Chapter~\thechapter}{1ex}{}
+\titleformat{\section}[display]{\raggedright\sffamily\large}{Section~\thesection}{1ex}{}
+\titleformat{\subsection}[display]{\raggedright\sffamily}{Subsection~\thesubsection}{1ex}{}
+
+\usepackage{blindtext}
+
+\def\documentoption#1#2{%
+  \par
+  \noindent
+  \lstinline{#1}%
+  \ifempty{#2}{}{\qquad default:~\lstinline{#2}}%
+  \par \nobreak \noindent \ignorespaces
+  \begin{list}{}{\rightmargin=2em\leftmargin=2em\listparindent=\parindent\parsep=\parskip}%
+  \item 
+}
+
+\def\enddocumentoption{\end{list}}
+
+\def\myempty{}
+\def\ifempty#1#2#3{%
+  \def\tmpempty{#1}%
+  \ifx\tmpempty\myempty
+    \expandafter\firstoftwo
+  \else
+    \expandafter\secondoftwo
+  \fi
+  {#2}{#3}}
+
+\def\firstoftwo#1#2{#1}
+\def\secondoftwo#1#2{#2}
 
 \usepackage[
   pdfborder={0 0 0},
@@ -249,12 +278,35 @@ difficult exercises. His template file now looks as follows.
 
 \lstinputlisting{template_instructor.tex}
 
+\chapter{The Concepts of the \exercisesheet{} Class}
+
+This chapter contains a brief introduction into the underlying
+concepts of this class.
+
+\section{Basic Concepts}
+
+\section{The \lstinline{student} Mode}
+
+\section{The \lstinline{instructor} Mode}
+
 \chapter{Reference}
 
 This section provides a comprehensive list of macros and options that
 are provided by the \exercisesheet{} class.
 
 \section{Document Class Options}
+
+\begin{documentoption}{narrowfactor}{.7}
+  The \lstinline{narrowfactor} parameter is relative proportion of the
+  textwidth that is used by \TeX{}/\LaTeX{} for typesetting exercises
+  and solutions.
+\end{documentoption}
+
+\begin{documentoption}{nonarrow}{false}
+  The \lstinline{nonarrow} removes the additional margin on the right
+  hand side of the page that is intended for correction proofreaders
+  marks.
+\end{documentoption}
 
 \section{Macros}
 
