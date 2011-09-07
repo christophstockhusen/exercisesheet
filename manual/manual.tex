@@ -24,7 +24,7 @@
 
 \usepackage{listings}
 \lstset{
-    basicstyle=\ttfamily,
+    basicstyle=\ttfamily\small,
     keywordstyle=\color{maincolor},
     language=[LaTeX]TeX,
     frame=lines,
@@ -39,18 +39,23 @@
       title,
       number,
       label,
+      credits,
       exerciselabel,
       exercisesheet,
       student,
       instructor,
       solution,
       nosolution,
+      nonarrow,
+      narrowfactor,
       maketitle,
       tableofcontents,
       lecture,
       lecturer,
       semester,
       colorlet,
+      sffamily,
+      rmfamily
     },
     otherkeywords={a4paper}
   }
@@ -143,7 +148,7 @@ Donald Knuth recommended in the \TeX{}book.
 
 With this setup Lia is now ready to typeset her first exercise sheet.
 Hence, she types in the following.
-\lstinputlisting[linerange={21-22,27-29,64-65}]{template_student.tex}
+\lstinputlisting[linerange={21-22,27-29,50-51}]{template_student.tex}
 Lia uses the \lstinline|\sheet| command to start a new exercise sheet.
 The command requires no argument but accepts an optional list of
 key-value pairs that affect the appearance of the sheet. She decides
@@ -154,7 +159,7 @@ first solution. Lia continues typing. She uses the following lines to
 typeset a solution for an exercise that is split into two
 subexercises.
 
-\lstinputlisting[linerange={32-46}]{template_student.tex}
+\lstinputlisting[linerange={31-46}]{template_student.tex}
 
 Lia is really happy about the simplicity of the \exercisesheet{}
 class. She notices that the can typeset multiple exercise sheets
@@ -201,12 +206,48 @@ option. This option makes the sample solutions that Foo types
 disappear. This way he can type down the solutions to his exercises
 and easily make them disappear if he wants to create the \textsc{pdf}
 version of the sheet for the website. Later on, he can use the
-\lstinline{solution} option if he wants to typeset the solutions and
-the previously invisible solutions reappear.
+\lstinline{solution} option if he wants the previously invisible
+solutions to reappear.
 
-\lstinputlisting[linerange={1-5}]{template_instructor.tex}
+\lstinputlisting[linerange={1-3,5-6}]{template_instructor.tex}
 
-\emph{To be continued\ldots}
+With this options, Foo is now able to include the sample solutions in
+a convenient way directly in his \LaTeX{} file without annoying
+commenting in and out. As Foo often places the sample solutions to the
+exercises at the very end of the sheet and not directly behind the
+exercises, he uses the build-in referencing mechanism to link the
+exercises with it's sample solutions. Moreover, he uses the
+\lstinline{credits} option to assign credit points to his exercises.
+Therefore, he augments his template as follows.
+
+\lstinputlisting[linerange={33-57}]{template_instructor.tex}
+
+When Foo typesets his document (which takes two runs to create the
+table of contents and get the references right) he notices that his
+exercise sheet has a very large margin at the right. He immediately
+understands that this must be intentional by the author of the
+\exercisesheet{} class to provide space for detailed corrections on
+the solutions of the students. He shortly thinks about adding the
+\lstinline{nonarrow} option to the call of the document class which
+would remove the additional margin on the right, but then he thinks
+about just changing the width of the right margin as a little space
+for the students to take notes might be very useful. So the uses the
+\lstinline{narrowfactor} option on the call of the document class
+which accepts values from $0$ to $1$ in order to set the amount of the
+text width taken by the class as additional margin. As the default
+value is \lstinline{.7}, Foo changes the document-class call as
+follows.
+
+\lstinputlisting[linerange={1-6}]{template_instructor.tex}
+
+As last, Foo changes the appearance of his exercise sheets by also
+changing the fonts (he doesn't want his sheets to look like Lia's). He
+decides to switch everything to Bitstream's \emph{Charter} and
+furthermore substitutes Lia's orange by a dark blue. Altogether Foo is
+really satisfied by his work and starts thinking about easy and
+difficult exercises. His template file now looks as follows.
+
+\lstinputlisting{template_instructor.tex}
 
 \chapter{Reference}
 

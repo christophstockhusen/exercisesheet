@@ -1,6 +1,7 @@
 \documentclass[
   a4paper,
   instructor,
+  narrowfactor=.85,
   nosolution % "solution" if sample solutions shall appear
     ]{exercisesheet}
 
@@ -13,7 +14,7 @@
 
 \usepackage[T1]{fontenc}
 \usepackage[bitstream-charter]{mathdesign}
-\let\sfdefault=\rmdefault
+\let\sffamily=\rmfamily
 
 \renewcommand{\sheettitlefont}{\sffamily\bfseries\Huge}
 \renewcommand{\sheetsubtitlefont}{\sffamily\bfseries\Huge\color{maincolor}}
@@ -31,7 +32,8 @@
 
 \exercise[
     title={Specimen of a Title of an Exercise},
-    credits=4
+    credits=4,
+    label={very_hard_exercise}
   ]
 
 \subexercise[
@@ -47,6 +49,12 @@ This might be an easy exercise\ldots
     ]
 
 \ldots but this one will be really complicated!
+
+\begin{solution}[
+    exerciselabel={very_hard_exercise}
+  ]
+  And here I will explain how easily everything can be solved.
+\end{solution}
 
 \sheet[
     title={Specimen of a Title of an Exercise Sheet}
