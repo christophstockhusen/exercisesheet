@@ -1,11 +1,13 @@
-\documentclass{report}
+\documentclass[a4paper,fleqn]{report}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
-\usepackage{DejaVuSerif}
-\usepackage{DejaVuSans}
-\usepackage{DejaVuSansMono}
+% \usepackage{DejaVuSerif}
+% \usepackage{DejaVuSans}
+% \usepackage{DejaVuSansMono}
+
+\let\sffamily=\rmfamily
 
 \usepackage{microtype}
 
@@ -19,6 +21,8 @@
   hmargin={2.5cm,2.5cm},
   vmargin={3cm,3.5cm}
     ]{geometry}
+
+\usepackage{amsmath}
 
 \usepackage{enumitem}
 \setlist{nolistsep}
@@ -48,6 +52,7 @@
       instructor,
       solution,
       nosolution,
+      narrow,
       nonarrow,
       narrowfactor,
       maketitle,
@@ -62,26 +67,25 @@
     otherkeywords={a4paper}
   }
 
-\def\exercisesheet{\texttt{exercisesheet}}
+\def\exercisesheet{{exercisesheet}}
 
 \usepackage{titlesec}
-\titleformat{\chapter}[display]{\raggedright\sffamily\huge}{Chapter~\thechapter}{1ex}{}
-\titleformat{\section}[display]{\raggedright\sffamily\large}{Section~\thesection}{1ex}{}
-\titleformat{\subsection}[display]{\raggedright\sffamily}{Subsection~\thesubsection}{1ex}{}
+\titleformat{\chapter}[display]{\raggedright\sffamily\bfseries\huge}{Chapter~\thechapter}{1ex}{}
+\titleformat{\section}[display]{\raggedright\sffamily\bfseries\large}{Section~\thesection}{1ex}{}
+\titleformat{\subsection}[display]{\raggedright\sffamily\bfseries}{Subsection~\thesubsection}{1ex}{}
 
 \usepackage{blindtext}
 
 \def\documentoption#1#2{%
-  \par
-  \noindent
-  \lstinline{#1}%
-  \ifempty{#2}{}{\qquad default:~\lstinline{#2}}%
-  \par \nobreak \noindent \ignorespaces
   \begin{list}{}{\rightmargin=2em\leftmargin=2em\listparindent=\parindent\parsep=\parskip}%
-  \item 
+  \item
+  \hskip-\leftmargin\lstinline{#1}\ifempty{#2}{}{\qquad
+    default:~\lstinline{#2}}\par\smallskip\noindent\ignorespaces
 }
-
 \def\enddocumentoption{\end{list}}
+
+\let\sheetmacro=\documentoption
+\let\endsheetmacro=\enddocumentoption
 
 \def\myempty{}
 \def\ifempty#1#2#3{%
@@ -105,8 +109,8 @@
 \begin{titlepage}
   \null \vskip .2\textheight
   \fontsize{36}{40}\selectfont
-  \sffamily Reference Manual for the \par
-  \exercisesheet{} Class \par \bigskip \bigskip
+  \sffamily\bfseries Reference Manual \par
+  of the \exercisesheet{} Class \par \bigskip \bigskip
   \Large \color{maincolor}%
   Christoph Stockhusen \par \bigskip
   \today \vskip .1\textheight
@@ -278,16 +282,45 @@ difficult exercises. His template file now looks as follows.
 
 \lstinputlisting{template_instructor.tex}
 
-\chapter{The Concepts of the \exercisesheet{} Class}
+
+\chapter{Using the \exercisesheet{} Class}
 
 This chapter contains a brief introduction into the underlying
-concepts of this class.
+concepts and design principles of the \exercisesheet{} class.
 
-\section{Basic Concepts}
 
-\section{The \lstinline{student} Mode}
+\section{Wide and Narrow Page Layout}
 
-\section{The \lstinline{instructor} Mode}
+Up to now, the \exercisesheet{} class supports two modes: The
+\emph{student mode} and the \emph{instructor mode}. While the
+instructor mode hasn't any notable impact on the page layout, the
+student mode has: It switches the width of the page dynamically
+according to the content currently typeset. While all the titles (that
+is sheet titles, exercise titles, subexercise titles, and so on) are
+typeset using the full text width, the remaining content uses only a
+fraction of the text width. This allows the correcting tutors to write
+down detailed comments on the students solution. The amount of space
+used for typesetting the solutions can be set by the
+\lstinline{narrowfactor} option when loading the document class. The
+additional margin then equals 
+\begin{equation*}
+  (1 - \text{narrow factor}) \cdot \text{text width}.
+\end{equation*}
+Hence, \lstinline{narrowfactor} takes arguments from $0$ to $1$, the
+default value is~$.7$. The option \lstinline{nonarrow} removes any
+additional margin.
+
+
+\section{Titles}
+
+According to the mode chosen within the call of the document class,
+that is \lstinline{student} or \lstinline{instructor}, the titles of 
+of the title page and the titles of the exercise sheets change. To
+customize the titles, redefine the following macros.
+
+\bigskip
+
+\noindent\emph{To be continued\ldots}
 
 \chapter{Reference}
 
@@ -296,17 +329,65 @@ are provided by the \exercisesheet{} class.
 
 \section{Document Class Options}
 
+The following list contains all the document class options that are
+currently available. Every option works with a key-value mechanism,
+that is, every key may be called like in the following example.
+\begin{lstlisting}
+\documentclass[
+  narrowfactor=.7,
+  solution=true
+    ]{exercisesheet}
+\end{lstlisting}
+Options that take Boolean values may be used without a value which
+results in setting the option to true. Therefore, the above example
+is equivalent to the following example.
+\begin{lstlisting}
+\documentclass[
+  narrowfactor=.7,
+  solution
+    ]{exercisesheet}
+\end{lstlisting}
+
+\begin{documentoption}{instructor}{false}
+  This option deactivates the dynamic page layout and adjusts the
+  titles.
+\end{documentoption}
+
+\begin{documentoption}{narrow}{true}
+  The \lstinline{narrow} option activates the additional margin on the
+  right hand side of the page that is intended for correction
+  proofreaders marks. 
+\end{documentoption}
+
 \begin{documentoption}{narrowfactor}{.7}
   The \lstinline{narrowfactor} parameter is relative proportion of the
   textwidth that is used by \TeX{}/\LaTeX{} for typesetting exercises
-  and solutions.
+  and solutions. Hence, it takes values from $0$ to $1$.
 \end{documentoption}
 
 \begin{documentoption}{nonarrow}{false}
-  The \lstinline{nonarrow} removes the additional margin on the right
-  hand side of the page that is intended for correction proofreaders
-  marks.
+  The \lstinline{nonarrow} option removes the additional margin on the
+  right hand side of the page that is intended for correction
+  proofreaders marks. 
 \end{documentoption}
+
+\begin{documentoption}{nosolution}{true}
+  The \lstinline{nosolution} option turns off the typesetting of
+  solutions that are typed within the \lstinline{solution}
+  environment.
+\end{documentoption}
+
+\begin{documentoption}{solution}{true}
+  The \lstinline{solution} option turns on the typesetting of
+  solutions that are typed within the \lstinline{solution}
+  environment.
+\end{documentoption}
+
+\begin{documentoption}{student}{true}
+  This option activates the dynamic page layout and adjusts the
+  titles. 
+\end{documentoption}
+
 
 \section{Macros}
 

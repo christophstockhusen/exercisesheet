@@ -24,21 +24,58 @@
 
 \def\sheet@defaultnarrowfactor{.7}
 \let\sheet@narrowfactor=\sheet@defaultnarrowfactor
+
 \DeclareOptionX{narrowfactor}{\def\sheet@narrowfactor{#1}}
-\DeclareOptionX{nonarrow}{\def\sheet@narrowfactor{1}}
-\DeclareOptionX{narrow}{\let\sheet@narrowfactor=\sheet@defaultnarrowfactor}
+
+\DeclareOptionX{nonarrow}[true]{%
+  \csname if#1\endcsname
+    \def\sheet@narrowfactor{1}
+  \else
+    \let\sheet@narrowfactor=\sheet@defaultnarrowfactor
+  \fi}
+
+\DeclareOptionX{narrow}[true]{
+  \csname if#1\endcsname
+    \let\sheet@narrowfactor=\sheet@defaultnarrowfactor
+  \else
+    \def\sheet@narrowfactor{1}
+  \fi}
 
 % Keys for the student version.
 
 \newif\ifstudent 
-\DeclareOptionX{student}{\studenttrue}
-\DeclareOptionX{instructor}{\studentfalse}
+
+\DeclareOptionX{student}[true]{%
+  \csname if#1\endcsname
+    \studenttrue
+  \else
+    \strudentfalse
+  \fi}
+
+\DeclareOptionX{instructor}[true]{5
+  \csname if#1\endcsname
+    \studentfalse
+  \else
+    \studenttrue
+  \fi}
 
 % Keys for solutions.
 
 \newif\ifsolution
-\DeclareOptionX{solution}{\solutiontrue}
-\DeclareOptionX{nosolution}{\solutionfalse}
+
+\DeclareOptionX{solution}[true]{%
+  \csname if#1\endcsname
+    \solutiontrue
+  \else
+    \solutionfalse
+  \fi}
+
+\DeclareOptionX{nosolution}[true]{
+  \csname if#1\endcsname
+    \solutionfalse
+  \else
+    \solutiontrue
+  \fi}
 
 % Pass undeclared options to the underlying class file.
 
@@ -304,9 +341,10 @@
       \normalfont
       \sheettitlefont
       \ifsolution
-        \solutionsname~\forname~%
+        \solutionsname~\forname~\sheetname~\thesheet
+      \else
+        \sheetname~\thesheet
       \fi
-      \sheetname~\thesheet
     }%
     {%
       % sheet title
