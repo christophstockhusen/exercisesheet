@@ -1,4 +1,4 @@
-\documentclass[a4paper,fleqn]{report}
+\documentclass[a4paper,fleqn,9pt]{report}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -30,14 +30,14 @@
 
 \usepackage{listings}
 \lstset{
-    basicstyle=\ttfamily,
+    basicstyle=\ttfamily\small,
     keywordstyle=\color{maincolor},
     language=[LaTeX]TeX,
     frame=lines,
+    framerule=1pt,
+    rulesep=2pt,
     backgroundcolor=\color{maincolor!15},
-    framerule=.8pt,
-    % numbers=left,
-    % numberstyle=\footnotesize,
+    rulecolor=\color{maincolor!70},
     morekeywords={
       sheet,
       exercise,
@@ -67,6 +67,8 @@
     otherkeywords={a4paper}
   }
 
+\lstMakeShortInline[basicstyle=\normalsize\ttfamily]|
+
 \def\exercisesheet{{exercisesheet}}
 
 \usepackage{titlesec}
@@ -76,11 +78,19 @@
 
 \usepackage{blindtext}
 
-\def\documentoption#1#2{%
+\def\documentoption#1#2#3{%
   \begin{list}{}{\rightmargin=2em\leftmargin=2em\listparindent=\parindent\parsep=\parskip}%
   \item
-  \hskip-\leftmargin\lstinline{#1}\ifempty{#2}{}{\qquad
-    default:~\lstinline{#2}}\par\smallskip\noindent\ignorespaces
+  \hskip-\leftmargin
+  \hbox to \textwidth{%
+    \lstinline[basicstyle=\normalsize\ttfamily]{#1}%
+    \lstinline[basicstyle=\normalsize\ttfamily]{=\{}%
+    \textit{#2}%
+    \lstinline[basicstyle=\normalsize\ttfamily]{\}}%
+    \hfill
+    \lstinline{#3}%
+  }%
+  \par\smallskip\noindent\ignorespaces
 }
 \def\enddocumentoption{\end{list}}
 
@@ -165,18 +175,18 @@ solutions for exercise sheets.
 At home from university, Lia downloads and installs a common \LaTeX{}
 distribution and starts to create a simple template file that she
 plans to use for her next exercise sheets. She creates a file 
-\lstinline[language=bash]{template_student.tex} and opens it in her
+|template_student.tex| and opens it in her
 favorite text editor \emph{GVim}. She sets up her file with the
 following lines.
 \lstinputlisting[linerange={1-9}]{template_student.tex}
-Lia passes the \lstinline{a4paper} to the
+Lia passes the |a4paper| to the
 \lstinline|\documentclass{exercisesheet}| command because she wants
 the paper layout to be \textsc{din}~A~4. Moreover, she uses the
-\lstinline{student} option which makes the class print its titles in
+|student| option which makes the class print its titles in
 an appropriate manner for submitting the solutions to her instructor.
 Then Lia specifies the name of the lecture, the name of the lecturer,
 the semester, and her name. Within these commands the makes use of the
-tilde~\lstinline{~} in order to suppress undesirable line breaks, like
+tilde~|~| in order to suppress undesirable line breaks, like
 Donald Knuth recommended in the \TeX{}book.
 
 With this setup Lia is now ready to typeset her first exercise sheet.
@@ -185,7 +195,7 @@ Hence, she types in the following.
 Lia uses the \lstinline|\sheet| command to start a new exercise sheet.
 The command requires no argument but accepts an optional list of
 key-value pairs that affect the appearance of the sheet. She decides
-to use the keys \lstinline{title} to set a temporary title.
+to use the keys |title| to set a temporary title.
 
 That was easy! At this point nothing can stop her typesetting her
 first solution. Lia continues typing. She uses the following lines to
@@ -197,7 +207,7 @@ subexercises.
 Lia is really happy about the simplicity of the \exercisesheet{}
 class. She notices that the can typeset multiple exercise sheets
 within a single \LaTeX{} document by simply using the
-\lstinline{\sheet} macro repeatedly. Therefore, she asks herself
+|\sheet| macro repeatedly. Therefore, she asks herself
 whether the \exercisesheet{} class is capable of typesetting a
 title page and a table of contents. She tries whether the following
 standard \LaTeX{} macros will work.
@@ -209,7 +219,7 @@ the exercise sheets and the exercises to her complete satisfaction.
 But now, as she has compiled her document taken a look at the produced
 \textsc{pdf} file, she is not very happy with the default fonts of
 \LaTeX{}. She decides to use some other fonts and bring more color
-into her sheets. Therefore, she loads the \lstinline{xcolor} package,
+into her sheets. Therefore, she loads the |xcolor| package,
 defines a nice orange as her base color, sets the serif font to
 Palatino and the sans-serif font to Biolinum. Furthermore, she
 redefines the fonts of the sheet title and the subtitle. This also
@@ -234,12 +244,12 @@ the template for his requirements.
 
 First, he changes the call of the document class as he is not a
 student anymore and mainly doesn't want his exercise sheets look like
-a sheet of solutions. Moreover, he adds the \lstinline{nosolution}
+a sheet of solutions. Moreover, he adds the |nosolution|
 option. This option makes the sample solutions that Foo types
 disappear. This way he can type down the solutions to his exercises
 and easily make them disappear if he wants to create the \textsc{pdf}
 version of the sheet for the website. Later on, he can use the
-\lstinline{solution} option if he wants the previously invisible
+|solution| option if he wants the previously invisible
 solutions to reappear.
 
 \lstinputlisting[linerange={1-3,5-6}]{template_instructor.tex}
@@ -250,7 +260,7 @@ commenting in and out. As Foo often places the sample solutions to the
 exercises at the very end of the sheet and not directly behind the
 exercises, he uses the build-in referencing mechanism to link the
 exercises with it's sample solutions. Moreover, he uses the
-\lstinline{credits} option to assign credit points to his exercises.
+|credits| option to assign credit points to his exercises.
 Therefore, he augments his template as follows.
 
 \lstinputlisting[linerange={33-57}]{template_instructor.tex}
@@ -261,14 +271,14 @@ exercise sheet has a very large margin at the right. He immediately
 understands that this must be intentional by the author of the
 \exercisesheet{} class to provide space for detailed corrections on
 the solutions of the students. He shortly thinks about adding the
-\lstinline{nonarrow} option to the call of the document class which
+|nonarrow| option to the call of the document class which
 would remove the additional margin on the right, but then he thinks
 about just changing the width of the right margin as a little space
 for the students to take notes might be very useful. So the uses the
-\lstinline{narrowfactor} option on the call of the document class
+|narrowfactor| option on the call of the document class
 which accepts values from $0$ to $1$ in order to set the amount of the
 text width taken by the class as additional margin. As the default
-value is \lstinline{.7}, Foo changes the document-class call as
+value is |.7|, Foo changes the document-class call as
 follows.
 
 \lstinputlisting[linerange={1-6}]{template_instructor.tex}
@@ -289,49 +299,12 @@ This chapter contains a brief introduction into the underlying
 concepts and design principles of the \exercisesheet{} class.
 
 
-\section{Wide and Narrow Page Layout}
+\section{A Note on Using the Document Class Options}
 
-Up to now, the \exercisesheet{} class supports two modes: The
-\emph{student mode} and the \emph{instructor mode}. While the
-instructor mode hasn't any notable impact on the page layout, the
-student mode has: It switches the width of the page dynamically
-according to the content currently typeset. While all the titles (that
-is sheet titles, exercise titles, subexercise titles, and so on) are
-typeset using the full text width, the remaining content uses only a
-fraction of the text width. This allows the correcting tutors to write
-down detailed comments on the students solution. The amount of space
-used for typesetting the solutions can be set by the
-\lstinline{narrowfactor} option when loading the document class. The
-additional margin then equals 
-\begin{equation*}
-  (1 - \text{narrow factor}) \cdot \text{text width}.
-\end{equation*}
-Hence, \lstinline{narrowfactor} takes arguments from $0$ to $1$, the
-default value is~$.7$. The option \lstinline{nonarrow} removes any
-additional margin.
-
-
-\section{Titles}
-
-According to the mode chosen within the call of the document class,
-that is \lstinline{student} or \lstinline{instructor}, the titles of 
-of the title page and the titles of the exercise sheets change. To
-customize the titles, redefine the following macros.
-
-\bigskip
-
-\noindent\emph{To be continued\ldots}
-
-\chapter{Reference}
-
-This section provides a comprehensive list of macros and options that
-are provided by the \exercisesheet{} class.
-
-\section{Document Class Options}
-
-The following list contains all the document class options that are
-currently available. Every option works with a key-value mechanism,
-that is, every key may be called like in the following example.
+Most of the parameters of the document class can be changed within the
+call of the document class. Every option works with a key-value
+mechanism, that is, every parameter may be set like in the following
+example.
 \begin{lstlisting}
 \documentclass[
   narrowfactor=.7,
@@ -348,47 +321,81 @@ is equivalent to the following example.
     ]{exercisesheet}
 \end{lstlisting}
 
-\begin{documentoption}{instructor}{false}
+
+\section{Sectioning and Solutions}
+
+\ldots
+
+\begin{documentoption}{nosolution}{boolean}{true}
+  The |nosolution| option turns off the typesetting of
+  solutions that are typed within the |solution|
+  environment.
+\end{documentoption}
+
+\begin{documentoption}{solution}{boolean}{true}
+  The |solution| option turns on the typesetting of
+  solutions that are typed within the |solution|
+  environment.
+\end{documentoption}
+
+
+\section{Titles}
+
+According to the mode chosen within the call of the document class,
+that is |student| or |instructor|, the titles of of the title page and
+the titles of the exercise sheets change. To customize the titles,
+redefine the following macros.
+
+
+\section{Wide and Narrow Page Layout}
+
+Up to now, the \exercisesheet{} class supports two modes: The
+\emph{student mode} and the \emph{instructor mode}. While the
+instructor mode hasn't any notable impact on the page layout, the
+student mode has: It switches the width of the page dynamically
+according to the content currently typeset. While all the titles (that
+is sheet titles, exercise titles, subexercise titles, and so on) are
+typeset using the full text width, the remaining content uses only a
+fraction of the text width. This allows the correcting tutors to write
+down detailed comments on the students solution. The amount of space
+used for typesetting the solutions can be set by the
+|narrowfactor| option when loading the document class. The
+additional margin then equals 
+\begin{equation*}
+  (1 - \text{narrow factor}) \cdot \text{text width}.
+\end{equation*}
+Hence, |narrowfactor| takes arguments from $0$ to $1$, the default
+value is~$.7$. The option |nonarrow| removes any additional margin.
+The following list contains all document class options that are
+related to the dynamic-page-layout mechanism of the \exercisesheet{}
+class.
+
+\begin{documentoption}{instructor}{boolean}{false}
   This option deactivates the dynamic page layout and adjusts the
   titles.
 \end{documentoption}
 
-\begin{documentoption}{narrow}{true}
-  The \lstinline{narrow} option activates the additional margin on the
+\begin{documentoption}{narrow}{boolean}{true}
+  The |narrow| option activates the additional margin on the
   right hand side of the page that is intended for correction
   proofreaders marks. 
 \end{documentoption}
 
-\begin{documentoption}{narrowfactor}{.7}
-  The \lstinline{narrowfactor} parameter is relative proportion of the
+\begin{documentoption}{narrowfactor}{decimal value from 0 to 1}{.7}
+  The |narrowfactor| parameter is relative proportion of the
   textwidth that is used by \TeX{}/\LaTeX{} for typesetting exercises
   and solutions. Hence, it takes values from $0$ to $1$.
 \end{documentoption}
 
-\begin{documentoption}{nonarrow}{false}
-  The \lstinline{nonarrow} option removes the additional margin on the
+\begin{documentoption}{nonarrow}{boolean}{false}
+  The |nonarrow| option removes the additional margin on the
   right hand side of the page that is intended for correction
   proofreaders marks. 
 \end{documentoption}
 
-\begin{documentoption}{nosolution}{true}
-  The \lstinline{nosolution} option turns off the typesetting of
-  solutions that are typed within the \lstinline{solution}
-  environment.
-\end{documentoption}
-
-\begin{documentoption}{solution}{true}
-  The \lstinline{solution} option turns on the typesetting of
-  solutions that are typed within the \lstinline{solution}
-  environment.
-\end{documentoption}
-
-\begin{documentoption}{student}{true}
+\begin{documentoption}{student}{boolean}{true}
   This option activates the dynamic page layout and adjusts the
-  titles. 
+  |titles|. 
 \end{documentoption}
-
-
-\section{Macros}
 
 \end{document}
