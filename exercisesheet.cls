@@ -52,7 +52,7 @@
     \strudentfalse
   \fi}
 
-\DeclareOptionX{instructor}[true]{5
+\DeclareOptionX{instructor}[true]{%
   \csname if#1\endcsname
     \studentfalse
   \else
