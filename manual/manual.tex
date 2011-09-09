@@ -7,6 +7,8 @@
 % \usepackage{DejaVuSans}
 % \usepackage{DejaVuSansMono}
 
+\usepackage{lmodern}
+
 \let\sffamily=\rmfamily
 
 \usepackage{microtype}
@@ -79,16 +81,24 @@
 \usepackage{blindtext}
 
 \def\documentoption#1#2#3{%
-  \begin{list}{}{\rightmargin=2em\leftmargin=2em\listparindent=\parindent\parsep=\parskip}%
+  \begin{list}{}{%
+    \rightmargin=2em
+    \leftmargin=2em
+    \listparindent=\parindent
+    \parsep=\parskip
+  }%
   \item
   \hskip-\leftmargin
-  \hbox to \textwidth{%
-    \lstinline[basicstyle=\normalsize\ttfamily]{#1}%
-    \lstinline[basicstyle=\normalsize\ttfamily]{=\{}%
-    \textit{#2}%
-    \lstinline[basicstyle=\normalsize\ttfamily]{\}}%
-    \hfill
-    \lstinline{#3}%
+  \hbox to \linewidth{%
+    \hbox to \textwidth{%
+      \lstinline[basicstyle=\normalsize\ttfamily]{#1}%
+      \lstinline[basicstyle=\normalsize\ttfamily]{=\{}%
+      \textit{#2}%
+      \lstinline[basicstyle=\normalsize\ttfamily]{\}}%
+      \hfill
+      \lstinline{#3}%
+    }%
+    \hss
   }%
   \par\smallskip\noindent\ignorespaces
 }
