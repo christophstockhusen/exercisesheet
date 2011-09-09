@@ -45,6 +45,7 @@
       exercise,
       subexercise,
       title,
+      deadline,
       number,
       label,
       credits,
@@ -104,8 +105,20 @@
 }
 \def\enddocumentoption{\end{list}}
 
-\let\sheetmacro=\documentoption
-\let\endsheetmacro=\enddocumentoption
+\def\syntax{%
+  \begin{list}{}{%
+    \leftmargin=\parindent
+    \rightmargin=0em
+    \listparindent=\parindent
+    \parsep=\parskip
+    \itemindent=-\leftmargin
+  }
+  \item
+}
+\def\endsyntax{\end{list}}
+
+\def\syntaxdefaultarg#1{\hfill\texttt{#1}\par\smallskip\noindent\ignorespaces}
+\def\metaargument#1{\textit{#1}}
 
 \def\myempty{}
 \def\ifempty#1#2#3{%
@@ -332,11 +345,145 @@ is equivalent to the following example.
 \end{lstlisting}
 
 
-\section{Sectioning and Solutions}
+\section{Creating Sheets and Configuring their Appearance}
 
-\ldots
+To typeset a new exercise sheet the |\sheet| command must be used.
+This section provides all information related to the this central
+command.
 
-\begin{documentoption}{nosolution}{boolean}{true}
+\begin{syntax}
+  |\sheet[|\metaargument{key-value-list}|]| \syntaxdefaultarg{}
+  The |\sheet| command starts a new exercise sheet. For this, is ships
+  out all remaining floats, starts a new page and prints the heading
+  of the exercise sheet. Depending on the current mode, the appearance
+  of the title is adjusted. For more details on configuring the
+  appearance see below in this section.
+
+  The |\sheet| command requires no argument. However, you can pass
+  optional arguments as a key-value-list to it. The following keys are
+  provided:
+  \begin{syntax}
+    |deadline={|\metaargument{string}|}| \syntaxdefaultarg{}
+    Sets the deadline of the sheet. For example, use 
+    |deadline={1.~November~2011}|. Note the |~| that prevents line
+    breaking.
+  \end{syntax}
+  \begin{syntax}
+    |label={|\metaargument{string}|}| \syntaxdefaultarg{}
+    By using the label option the exercise can be referenced later on
+    with the |\ref| command or by the |solution| environment.
+  \end{syntax}
+  \begin{syntax}
+    |number={|\metaargument{a natural number}|}| \syntaxdefaultarg{}
+    Sets the number of the exercise sheet. This is useful, if an
+    exercise sheet has been missed by a student, for example. If this
+    option is omitted, the number of the current exercise sheet is the
+    number of the last sheet plus one or one if it is the first sheet.
+  \end{syntax}
+  \begin{syntax}
+    |title={|\metaargument{string}|}| \syntaxdefaultarg{}
+    Sets the title of the sheet. For example, use 
+    |title={Basics on Turing Machines}| if that's what the exercises
+    on the sheet are about.
+  \end{syntax}
+\end{syntax}
+
+Students (as well as instructors) have to place a lot of information
+on their exercise sheets, for example, Students typically have to
+place their name, their matriculation number, the name of the
+corresponding lecture, the number of the current exercise sheet, and a
+lot more. The \exercisesheet{} class is provided with a bunch of
+macros to typeset all these information on the sheets.
+
+\begin{syntax}
+  |\lecture{|\metaargument{string}|}| \syntaxdefaultarg{}
+  This sets the name of the lecture. For example, use
+  |\lecture{Computational Complexity}| if the lecture is named
+  \emph{Computational Complexity}.
+\end{syntax}
+
+\begin{syntax}
+  |\lecturer{|\metaargument{string}|}| \syntaxdefaultarg{}
+  This sets the name of the lecturer. Prof.~Foo~Bar would use
+  |\lecturer{Prof.~Foo~Bar}| for his exercise sheets. Note the |~|
+  to prevent unintended line breaking.
+\end{syntax}
+
+\begin{syntax}
+  |\semester{|\metaargument{string}|}| \syntaxdefaultarg{}
+  Sets the current semester. For example, use 
+  |\semester{Summer~Semester~2011}|. Note the |~| to prevent
+  unintended line breaking.
+\end{syntax}
+
+\begin{syntax}
+  |\student{|\metaargument{string}|}| \syntaxdefaultarg{}
+  This sets the name of the student that has worked out the solutions
+  on the sheet. A list of names can be passed as an argument to this
+  macro if a group of students has been working on the sheets. For
+  example, use
+  |\student{Justus~Jonas, Peter~Shaw, and Bob~Andrews}|. Analogous you
+  can add matriculation numbers behind the names. Note the |~| that
+  prevents line breaking.
+\end{syntax}
+
+\noindent\emph{Explain how the titles can be changed\ldots}
+
+\section{Exercises and Subexercises}
+
+The \exercisesheet{} class supports two sectioning commands for
+structuring exercises: The |\exercise| command and the |\subexercise|
+command.
+
+\begin{syntax}
+  |\exercise[|\metaargument{key-value-list}|]| \syntaxdefaultarg{}
+  The |\exercise| command starts a new exercise. This command needs no
+  argument, but can be provided with a key-value-list to change the
+  appearance of the exercise title. The following list may also be
+  used for the |\subexercise| command.
+  \begin{syntax}
+    |credits={|\metaargument{a natural number}|}| \syntaxdefaultarg{}
+    This sets the credits points that can be achieved by successfully
+    solving this exercise.
+  \end{syntax}
+  \begin{syntax}
+    |label={|\metaargument{string}|}| \syntaxdefaultarg{}
+    By using the label option the exercise can be referenced later on
+    with the |\ref| command or by the |solution| environment.
+  \end{syntax}
+  \begin{syntax}
+    |title={|\metaargument{string}|}| \syntaxdefaultarg{}
+    This sets the title for the exercise.
+  \end{syntax}
+\end{syntax}
+
+\begin{syntax}
+  |\subexercise[|\metaargument{key-value-list}|]| \syntaxdefaultarg{}
+  This command is intended for structuring exercises and takes the
+  same arguments as the |\exercise| command.
+\end{syntax}
+
+\section{Solutions}
+
+Solutions can be typeset with the \exercisesheet{} class in two ways:
+First, in the |student| mode directly after an |\exercise| command,
+and second, in the |instructor| mode within the |solution|
+environment. Of course, the |solution| environment may also be used in
+the |student| mode if the text of the exercise shall also be presented
+on the sheet. However, in this section the |solution| environment is
+explained.
+
+\begin{syntax}
+  |\begin{solution}[|\metaargument{key-value-list}|]|\par
+  \hskip-\leftmargin\metaargument{solution text}\par\noindent
+  \hskip-\leftmargin|\end{solution}|
+  \syntaxdefaultarg{}
+  \ldots
+\end{syntax}
+
+
+
+\begin{documentoption}{nosolution}{boolean}{false}
   The |nosolution| option turns off the typesetting of
   solutions that are typed within the |solution|
   environment.
@@ -347,14 +494,6 @@ is equivalent to the following example.
   solutions that are typed within the |solution|
   environment.
 \end{documentoption}
-
-
-\section{Titles}
-
-According to the mode chosen within the call of the document class,
-that is |student| or |instructor|, the titles of of the title page and
-the titles of the exercise sheets change. To customize the titles,
-redefine the following macros.
 
 
 \section{Wide and Narrow Page Layout}
