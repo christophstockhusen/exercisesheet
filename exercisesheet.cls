@@ -314,8 +314,9 @@
   % conclude the last sheet
   \clearpage
   % parse keys
-  \setkeys{sheet@sheet}{label={},credits=-1,#1}
+  \setkeys{sheet@sheet}{label={},credits=-1,#1}%
   % begin new page
+  \global\@topnum\z@
   \setcounter{page}{1}%
   \ifnum \c@secnumdepth >\m@ne
     \refstepcounter{sheet}%
