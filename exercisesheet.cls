@@ -116,14 +116,14 @@
 %
 
 \def\sheettitlefont{\sffamily\fontsize{36}{40}\selectfont}
-\def\sheetsubtitlefont{\sffamily\Huge}
+\def\sheettopicfont{\sffamily\Huge}
 \def\sheetdeadlinefont{\sffamily\LARGE}
 \def\sheetlecturefont{\sffamily\footnotesize}
 \def\sheetsemesterfont{\sffamily\footnotesize}
 \def\sheetlecturerfont{\sffamily\footnotesize}
 \def\sheetstudentfont{\sffamily}
-\def\sheetexercisefont{\small\sffamily}
-\def\sheetsubexercisefont{\footnotesize\sffamily}
+\def\sheetexercisetopicfont{\small\sffamily}
+\def\sheetsubexercisetopicfont{\footnotesize\sffamily}
 
 %
 % Setting up the default layout.
@@ -180,7 +180,7 @@
 % Defining the keys for the sheets.
 %
 
-\define@key{sheet@sheet}{title}{\sheet@sheet@title={#1}}
+\define@key{sheet@sheet}{topic}{\sheet@sheet@topic={#1}}
 \define@key{sheet@sheet}{deadline}{\sheet@sheet@deadline={#1}}
 \define@key{sheet@sheet}{label}{\def\sheet@sheet@label{#1}}
 \define@key{sheet@sheet}{credits}{\sheet@sheet@credits=#1}
@@ -189,7 +189,7 @@
   \addtocounter{sheet}{-1}%
 }
 
-\newtoks\sheet@sheet@title
+\newtoks\sheet@sheet@topic
 \newtoks\sheet@sheet@deadline
 \def\sheet@sheet@label{}
 \newcount\sheet@sheet@credits
@@ -198,7 +198,7 @@
 % Defining the keys for the exercises.
 %
 
-\define@key{sheet@exercise}{title}{\sheet@exercise@title={#1}}
+\define@key{sheet@exercise}{topic}{\sheet@exercise@topic={#1}}
 \define@key{sheet@exercise}{label}{\def\sheet@exercise@label{#1}}
 \define@key{sheet@exercise}{credits}{\sheet@exercise@credits=#1}
 \define@key{sheet@exercise}{number}{%
@@ -206,7 +206,7 @@
   \addtocounter{exercise}{-1}%
 }
 
-\newtoks\sheet@exercise@title
+\newtoks\sheet@exercise@topic
 \def\sheet@exercise@label{}
 \newcount\sheet@exercise@credits
 
@@ -214,7 +214,7 @@
 % Defining the keys for the subexercises.
 %
 
-\define@key{sheet@subexercise}{title}{\sheet@subexercise@title={#1}}
+\define@key{sheet@subexercise}{topic}{\sheet@subexercise@topic={#1}}
 \define@key{sheet@subexercise}{label}{\def\sheet@subexercise@label{#1}}
 \define@key{sheet@subexercise}{credits}{\sheet@subexercise@credits=#1}
 \define@key{sheet@subexercise}{number}{%
@@ -222,7 +222,7 @@
   \addtocounter{subexercise}{-1}%
 }
 
-\newtoks\sheet@subexercise@title
+\newtoks\sheet@subexercise@topic
 \def\sheet@subexercise@label{}
 \newcount\sheet@subexercise@credits
 
@@ -249,19 +249,20 @@
 \newcommand\byname{by}
 \newcommand\creditname{credit}
 \newcommand\creditsname{credits}
+\newcommand\lecturetype{Lecture}
 
 %
 % Insert commands for sheets, exercises, and subexercises.
 %
 
-\newcommand\insertsheettitle{\the\sheet@sheet@title}
+\newcommand\insertsheettopic{\the\sheet@sheet@topic}
 \newcommand\insertsheetdeadline{\the\sheet@sheet@deadline}
 \newcommand\insertsheetcredits{\the\sheet@sheet@credits}
 
-\newcommand\insertexercisetitle{\the\sheet@exercise@title}
+\newcommand\insertexercisetopic{\the\sheet@exercise@topic}
 \newcommand\insertexercisecredits{\the\sheet@exercise@credits}
 
-\newcommand\insertsubexercisetitle{\the\sheet@subexercise@title}
+\newcommand\insertsubexercisetopic{\the\sheet@subexercise@topic}
 \newcommand\insertsubexercisecredits{\the\sheet@subexercise@credits}
 
 %
@@ -274,7 +275,7 @@
     \begingroup 
       \ifsolution
         \begingroup
-          \sheetsubtitlefont
+          \sheettopicfont
           \solutionsname~\forname \par \medskip
         \endgroup
       \fi
@@ -283,7 +284,7 @@
       \ifsolution
         \ifstudent
           \begingroup
-            \sheetsubtitlefont
+            \sheettopicont
             \medskip
             \byname~\insertstudent \par
           \endgroup
@@ -320,17 +321,19 @@
   \setcounter{page}{1}%
   \ifnum \c@secnumdepth >\m@ne
     \refstepcounter{sheet}%
-    \addcontentsline{toc}{sheet}{\protect\numberline{\sheetname~\thesheet}\insertsheettitle}%
+    \addcontentsline{toc}{sheet}{\protect\numberline{\sheetname~\thesheet}\insertsheettopic}%
   \else
-    \addcontentsline{toc}{sheet}{\insertsheettitle}%
+    \addcontentsline{toc}{sheet}{\insertsheettopic}%
   \fi
   \markboth{}{}%
+  %
   % insert logo
-  \ifx\insertsheetlogo\relax\else
+  %
+  \ifx\insertsheetlogo\relax
+  \else
     \leavevmode
     \insertsheetlogo
-    \par
-    \bigskip
+    \par \bigskip
   \fi
   {%
     \sheet@setwide
@@ -338,22 +341,30 @@
     \parskip=0pt
     \interlinepenalty \@M
     {% 
-      % sheet number
+      %
+      % insert sheet number
+      %
       \normalfont
       \sheettitlefont
-      \ifsolution
-        \solutionsname~\forname~\sheetname~\thesheet
+      %
+      \ifstudent
+        % student mode
+        \insertsheettitlestudent
       \else
-        \sheetname~\thesheet
+        % instructor mode
+        \ifsolution
+          \insertsheettitleinstructorsolution
+        \else
+          \insertsheettitleinstructornosolution
+        \fi
       \fi
     }%
     {%
-      % sheet title
-      \sheet@ifempty{\insertsheettitle}{}{%
+      % sheet topic
+      \sheet@ifempty{\insertsheettopic}{}{%
         \vskip 1em
         \normalfont
-        \sheetsubtitlefont
-        \insertsheettitle \par
+        \sheettopicfont{\insertsheettopic}\par
       }%
     }%
     {%
@@ -361,8 +372,7 @@
       \sheet@ifempty{\insertsheetdeadline}{}{%
         \vskip 1em
         \normalfont
-        \sheetdeadlinefont
-        \sheetdeadline~\insertsheetdeadline \par
+        \sheetdeadlinefont{\sheetdeadline~\insertsheetdeadline}\par
       }%
     }%
     {%
@@ -371,21 +381,18 @@
         \par \bigskip
       }%
       \sheet@ifempty{\insertlecture}{}{%
-        \sheetlecturefont
-        \sheetname~\forname~\emph{\insertlecture}%
+        \sheetlecturefont{\lecturetype~\emph{\insertlecture}}%
       }%
       \sheet@ifempty{\insertsemester}{}{%
-        \sheet@ifempty{\insertlecture}{}{, }%
-        \sheetsemesterfont
-        \insertsemester%
+        \sheet@ifempty{\insertlecture}{}{\sheetlecturefont{,} }%
+        \sheetsemesterfont{\insertsemester}%
       }%
     }%
     {%
       % lecturer
       \sheet@ifempty{\insertlecturer}{}{%
         \par \medskip
-        \sheetlecturerfont
-        \insertlecturer 
+        \sheetlecturerfont{\insertlecturer}%
       }%
     }%
     {%
@@ -393,8 +400,7 @@
       \ifstudent
         \sheet@ifempty{\insertstudent}{}{%
           \par \bigskip
-          \sheetstudentfont
-          \solutionsname~\byname~\insertstudent
+          \sheetstudentfont{\solutionsname~\byname~\insertstudent}%
         }%
       \fi
     }%
@@ -410,6 +416,27 @@
 }
 
 %
+% Title definitions.
+%
+
+\def\setsheettitlestudent#1{%
+  \def\insertsheettitlestudent{#1}}
+
+\def\setsheettitleinstructorsolution#1{%
+  \def\insertsheettitleinstructorsolution{#1}}
+
+\def\setsheettitleinstructornosolution#1{%
+  \def\insertsheettitleinstructornosolution{#1}}
+
+
+\setsheettitlestudent{Solutions for Exercise~Sheet~\thesheet}
+\setsheettitleinstructorsolution{Exercise~Sheet~\thesheet{} with 
+  Sample~Solutions}
+\setsheettitleinstructornosolution{Exercise~Sheet~\thesheet{}}
+
+
+
+%
 % \exercise
 %
 
@@ -423,8 +450,8 @@
   \@startsection{exercise}{2}{\z@}%
                 {-3ex \@plus -.2ex \@minus -.2ex}%
                 {1.5ex \@plus .2ex}%
-                {\normalfont\sheetexercisefont}%
-                [\insertexercisetitle]{\sheet@exercise@titletemplate}%
+                {\normalfont\sheetexercisetopicfont}%
+                [\insertexercisetopic]{\sheet@exercise@topictemplate}%
   \sheet@ifempty{\sheet@exercise@label}{}{%
     \expandafter\label\expandafter{\sheet@exercise@label}%
     \def\sheet@exercise@label{}%
@@ -432,10 +459,10 @@
   \sheet@setnarrow
 }
 
-\def\sheet@exercise@titletemplate{%
-  \insertexercisetitle
+\def\sheet@exercise@topictemplate{%
+  \insertexercisetopic
   \ifnum\insertexercisecredits>-1
-    \sheet@ifempty{\insertexercisetitle}{}{, }%
+    \sheet@ifempty{\insertexercisetopic}{}{, }%
     \insertexercisecredits~%
     \ifnum\insertexercisecredits=1
       \creditname
@@ -459,8 +486,8 @@
   \@startsection{subexercise}{3}{\z@}%
                 {-1.5ex \@plus -.1ex \@minus -.1ex}%
                 {.75ex \@plus .1ex \@minus .1ex}%
-                {\normalfont\sheetsubexercisefont}%
-                [\insertsubexercisetitle]{\sheet@subexercise@titletemplate}%
+                {\normalfont\sheetsubexercisetopicfont}%
+                [\insertsubexercisetopic]{\sheet@subexercise@topictemplate}%
   \sheet@ifempty{\sheet@subexercise@label}{}{%
     \expandafter\label\expandafter{\sheet@subexercise@label}%
     \def\sheet@subexercise@label{}%
@@ -468,10 +495,10 @@
   \sheet@setnarrow
 }
 
-\def\sheet@subexercise@titletemplate{%
-  \insertsubexercisetitle
+\def\sheet@subexercise@topictemplate{%
+  \insertsubexercisetopic
   \ifnum\insertsubexercisecredits>-1
-    \sheet@ifempty{\insertsubexercisetitle}{}{, }%
+    \sheet@ifempty{\insertsubexercisetopic}{}{, }%
     \insertsubexercisecredits~%
     \ifnum\insertsubexercisecredits=1
       \creditname
@@ -515,7 +542,7 @@
   \@startsection{solution}{2}{\z@}%
                 {-3ex \@plus -.2ex \@minus -.2ex}%
                 {1.5ex \@plus .2ex}%
-                {\normalfont\sheetexercisefont}%
+                {\normalfont\sheetexercisetopicfont}%
                 []{}%{\@seccntformat{}}
   \let\@seccntformat=\sheet@orig@seccntformat
 }

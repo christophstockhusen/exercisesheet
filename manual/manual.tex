@@ -3,10 +3,6 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
-% \usepackage{DejaVuSerif}
-% \usepackage{DejaVuSans}
-% \usepackage{DejaVuSansMono}
-
 \usepackage{lmodern}
 
 \let\sffamily=\rmfamily
@@ -47,6 +43,7 @@
       title,
       deadline,
       number,
+      topic,
       label,
       credits,
       exerciselabel,
@@ -192,7 +189,7 @@ Hence, she types in the following.
 Lia uses the \lstinline|\sheet| command to start a new exercise sheet.
 The command requires no argument but accepts an optional list of
 key-value pairs that affect the appearance of the sheet. She decides
-to use the keys |title| to set a temporary title.
+to use the keys |topic| to set a temporary topic.
 
 That was easy! At this point nothing can stop her typesetting her
 first solution. Lia continues typing. She uses the following lines to
@@ -219,7 +216,7 @@ But now, as she has compiled her document taken a look at the produced
 into her sheets. Therefore, she loads the |xcolor| package,
 defines a nice orange as her base color, sets the serif font to
 Palatino and the sans-serif font to Biolinum. Furthermore, she
-redefines the fonts of the sheet title and the subtitle. This also
+redefines the fonts of the sheet title and the topic. This also
 affects the title page and now Lia is really happy with her result.
 \lstinputlisting[linerange={11-19}]{template_student.tex}
 
@@ -355,9 +352,9 @@ command.
     number of the last sheet plus one or one if it is the first sheet.
   \end{syntax}
   \begin{syntax}
-    |title={|\metaargument{string}|}| \syntaxdefaultarg{}
-    Sets the title of the sheet. For example, use 
-    |title={Basics on Turing Machines}| if that's what the exercises
+    |topic={|\metaargument{string}|}| \syntaxdefaultarg{}
+    Sets the topic of the sheet. For example, use 
+    |topic={Basics on Turing Machines}| if that's what the exercises
     on the sheet are about.
   \end{syntax}
 \end{syntax}
@@ -426,8 +423,8 @@ command.
     with the |\ref| command or by the |solution| environment.
   \end{syntax}
   \begin{syntax}
-    |title={|\metaargument{string}|}| \syntaxdefaultarg{}
-    This sets the title for the exercise.
+    |topic={|\metaargument{string}|}| \syntaxdefaultarg{}
+    This sets the topic for the exercise.
   \end{syntax}
 \end{syntax}
 
