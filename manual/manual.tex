@@ -79,32 +79,6 @@
 \titleformat{\section}[display]{\raggedright\sffamily\bfseries\large}{Section~\thesection}{1ex}{}
 \titleformat{\subsection}[display]{\raggedright\sffamily\bfseries}{Subsection~\thesubsection}{1ex}{}
 
-\usepackage{blindtext}
-
-\def\documentoption#1#2#3{%
-  \begin{list}{}{%
-    \rightmargin=2em
-    \leftmargin=2em
-    \listparindent=\parindent
-    \parsep=\parskip
-  }%
-  \item
-  \hskip-\leftmargin
-  \hbox to \linewidth{%
-    \hbox to \textwidth{%
-      \lstinline[basicstyle=\normalsize\ttfamily]{#1}%
-      \lstinline[basicstyle=\normalsize\ttfamily]{=\{}%
-      \textit{#2}%
-      \lstinline[basicstyle=\normalsize\ttfamily]{\}}%
-      \hfill
-      \lstinline{#3}%
-    }%
-    \hss
-  }%
-  \par\smallskip\noindent\ignorespaces
-}
-\def\enddocumentoption{\end{list}}
-
 \def\syntax{%
   \begin{list}{}{%
     \leftmargin=\parindent
@@ -142,8 +116,8 @@
 \begin{titlepage}
   \null \vskip .2\textheight
   \fontsize{36}{40}\selectfont
-  \sffamily\bfseries Reference Manual \par
-  of the \exercisesheet{} Class \par \bigskip \bigskip
+  \sffamily\bfseries Manual of \par
+  the \exercisesheet{} Class \par \bigskip \bigskip
   \Large \color{maincolor}%
   Christoph Stockhusen \par \bigskip
   \today \vskip .1\textheight
@@ -152,8 +126,8 @@
 \begin{abstract}
   The \exercisesheet{} class provides a convenient way to produce
   hiqh-quality exercise sheets for both students and instructors. This
-  is the official reference manual. It contains tutorials for students
-  and instructors that explain the first steps in using this class.
+  is the official manual. It contains tutorials for students and
+  instructors that explain the first steps in using this class.
   Moreover, a complete list of the commands defined by the
   \exercisesheet{} class is contained.
 \end{abstract}
@@ -478,22 +452,52 @@ explained.
   \hskip-\leftmargin\metaargument{solution text}\par\noindent
   \hskip-\leftmargin|\end{solution}|
   \syntaxdefaultarg{}
-  \ldots
+  The contents of the solution, above denoted by
+  \metaargument{solution text}, only appears if the |solution| mode 
+  is turned on (which is the default). If the |solution| mode is
+  turned of (by adding the |nosolution| option to the call of the
+  document class), the solution is removed from the exercise sheet.
+  
+
+  \begin{syntax}
+    |exerciselabel={|\metaargument{label of the corresponding
+    exercise}|}| \syntaxdefaultarg{}
+    The solution can be linked to the exercise by adding a label to
+    the exercise and referencing this label by the |exerciselabel|
+    option. For example, consider the following example.
+    \begin{lstlisting}
+\exercise[
+    label={foolabel}
+  ]
+
+% Some content.
+
+\begin{solution}[
+    exerciselabel={foolabel}
+  ]
+  % The solution.
+\end{solution}
+
+    \end{lstlisting}
+    By using this kind of linking, the title of solution contains the
+    number of the corresponding exercise.
+  \end{syntax}
 \end{syntax}
 
 
-
-\begin{documentoption}{nosolution}{boolean}{false}
+\begin{syntax}
+  |nosolution={|\metaargument{boolean}|}| \syntaxdefaultarg{false}
   The |nosolution| option turns off the typesetting of
   solutions that are typed within the |solution|
   environment.
-\end{documentoption}
+\end{syntax}
 
-\begin{documentoption}{solution}{boolean}{true}
+\begin{syntax}
+  |solution={|\metaargument{boolean}|}| \syntaxdefaultarg{true}
   The |solution| option turns on the typesetting of
   solutions that are typed within the |solution|
   environment.
-\end{documentoption}
+\end{syntax}
 
 
 \section{Wide and Narrow Page Layout}
@@ -519,32 +523,38 @@ The following list contains all document class options that are
 related to the dynamic-page-layout mechanism of the \exercisesheet{}
 class.
 
-\begin{documentoption}{instructor}{boolean}{false}
+\begin{syntax}
+  |instructor={|\metaargument{boolean}|}| \syntaxdefaultarg{false}
   This option deactivates the dynamic page layout and adjusts the
   titles.
-\end{documentoption}
+\end{syntax}
 
-\begin{documentoption}{narrow}{boolean}{true}
+\begin{syntax}
+  |narrow={|\metaargument{boolean}|}| \syntaxdefaultarg{true}
   The |narrow| option activates the additional margin on the
   right hand side of the page that is intended for correction
   proofreaders marks. 
-\end{documentoption}
+\end{syntax}
 
-\begin{documentoption}{narrowfactor}{decimal value from 0 to 1}{.7}
+\begin{syntax}
+  |narrowfactor={|\metaargument{a decimal value between 0 and 1}|}| 
+  \syntaxdefaultarg{.7}
   The |narrowfactor| parameter is relative proportion of the
   textwidth that is used by \TeX{}/\LaTeX{} for typesetting exercises
   and solutions. Hence, it takes values from $0$ to $1$.
-\end{documentoption}
+\end{syntax}
 
-\begin{documentoption}{nonarrow}{boolean}{false}
+\begin{syntax}
+  |nonarrow={|\metaargument{boolean}|}| \syntaxdefaultarg{false}
   The |nonarrow| option removes the additional margin on the
-  right hand side of the page that is intended for correction
-  proofreaders marks. 
-\end{documentoption}
+  right hand side of the page that is intended for annotations of the
+  proofreader.
+\end{syntax}
 
-\begin{documentoption}{student}{boolean}{true}
+\begin{syntax}
+  |student={|\metaargument{boolean}|}| \syntaxdefaultarg{true}
   This option activates the dynamic page layout and adjusts the
   |titles|. 
-\end{documentoption}
+\end{syntax}
 
 \end{document}
