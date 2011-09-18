@@ -284,7 +284,7 @@
       \ifsolution
         \ifstudent
           \begingroup
-            \sheettopicont
+            \sheettopicfont
             \medskip
             \byname~\insertstudent \par
           \endgroup
