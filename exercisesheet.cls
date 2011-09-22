@@ -271,7 +271,13 @@
 
 \def\maketitle{%
   \begin{titlepage}
-    \null \vskip .25\textheight
+    \ifx\insertsheetlogo\relax
+    \else
+      \leavevmode
+      \insertsheetlogo
+      \par \bigskip
+    \fi
+    \null \vskip .15\textheight
     \begingroup 
       \normalfont
       % lecture title
