@@ -6,7 +6,7 @@
 % 2. under the GNU Public License.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2011/09/05]
+\ProvidesClass{exercisesheet}[2011/10/22]
 
 \RequirePackage{xkeyval}
 \RequirePackage{graphicx}
@@ -52,7 +52,7 @@
     \strudentfalse
   \fi}
 
-\DeclareOptionX{instructor}[true]{%
+\DeclareOptionX{teacher}[true]{%
   \csname if#1\endcsname
     \studentfalse
   \else
@@ -273,28 +273,31 @@
   \begin{titlepage}
     \null \vskip .25\textheight
     \begingroup 
-      \ifsolution
-        \begingroup
-          \sheettopicfont
-          \solutionsname~\forname \par \medskip
-        \endgroup
-      \fi
-      \sheettitlefont
-      \insertlecture \par 
-      \ifsolution
+      \normalfont
+      % lecture title
+      \begingroup
+        \sheettitlefont{\insertlecture}\par 
+      \endgroup
+      % document type (exercises, exercises with solutions, solutions)
+      \begingroup
         \ifstudent
-          \begingroup
-            \sheettopicfont
-            \medskip
-            \byname~\insertstudent \par
-          \endgroup
+          \sheettopicfont{\insertsolutionsname}\par\medskip
+        \else
+          \ifsolution
+            \sheettopicfont{\insertexerciseswithsamplesolutionsname}\par\medskip
+          \else
+            \sheettopicfont{\insertexercisesname}\par\medskip
+          \fi
         \fi
-      \fi
+      \endgroup
       \vskip .1\textheight
       \begingroup
-        \sheetdeadlinefont
-        \insertlecturer \par
-        \insertsemester \par
+        \ifstudent
+          \sheetdeadlinefont{\insertstudent}\par
+        \else
+          \sheetdeadlinefont{\insertlecturer}\par
+        \fi
+        \sheetdeadlinefont{\insertsemester}\par
       \endgroup
     \endgroup
   \end{titlepage}%
@@ -345,19 +348,19 @@
       % insert sheet number
       %
       \normalfont
-      \sheettitlefont
       %
       \ifstudent
         % student mode
-        \insertsheettitlestudent
+        \sheettitlefont{\insertsheettitlestudent}\par
       \else
-        % instructor mode
+        % teacher mode
         \ifsolution
-          \insertsheettitleinstructorsolution
+          \sheettitlefont{\insertsheettitleteachersolution}\par
         \else
-          \insertsheettitleinstructornosolution
+          \sheettitlefont{\insertsheettitleteachernosolution}\par
         \fi
       \fi
+      \par
     }%
     {%
       % sheet topic
@@ -422,17 +425,29 @@
 \def\setsheettitlestudent#1{%
   \def\insertsheettitlestudent{#1}}
 
-\def\setsheettitleinstructorsolution#1{%
-  \def\insertsheettitleinstructorsolution{#1}}
+\def\setsheettitleteachersolution#1{%
+  \def\insertsheettitleteachersolution{#1}}
 
-\def\setsheettitleinstructornosolution#1{%
-  \def\insertsheettitleinstructornosolution{#1}}
+\def\setsheettitleteachernosolution#1{%
+  \def\insertsheettitleteachernosolution{#1}}
+
+\def\setexercisesname#1{%
+  \def\insertexercisesname{#1}}
+
+\def\setexerciseswithsamplesolutionsname#1{%
+  \def\insertexerciseswithsamplesolutionsname{#1}}
+
+\def\setsolutionsname#1{%
+  \def\insertsolutionsname{#1}}
 
 
 \setsheettitlestudent{Solutions for Exercise~Sheet~\thesheet}
-\setsheettitleinstructorsolution{Exercise~Sheet~\thesheet{} with 
+\setsheettitleteachersolution{Exercise~Sheet~\thesheet{} with 
   Sample~Solutions}
-\setsheettitleinstructornosolution{Exercise~Sheet~\thesheet{}}
+\setsheettitleteachernosolution{Exercise~Sheet~\thesheet{}}
+\setexercisesname{Exercises}
+\setexerciseswithsamplesolutionsname{Exercises with Sample~Solutions}
+\setsolutionsname{Solutions}
 
 
 
