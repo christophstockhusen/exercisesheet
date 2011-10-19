@@ -49,7 +49,7 @@
       exerciselabel,
       exercisesheet,
       student,
-      instructor,
+      teacher,
       solution,
       nosolution,
       narrow,
@@ -122,9 +122,9 @@
 
 \begin{abstract}
   The \exercisesheet{} class provides a convenient way to produce
-  hiqh-quality exercise sheets for both students and instructors. This
+  hiqh-quality exercise sheets for both students and teachers. This
   is the official manual. It contains tutorials for students and
-  instructors that explain the first steps in using this class.
+  teachers that explain the first steps in using this class.
   Moreover, a complete list of the commands defined by the
   \exercisesheet{} class is contained.
 \end{abstract}
@@ -177,7 +177,7 @@ Lia passes the |a4paper| to the
 \lstinline|\documentclass{exercisesheet}| command because she wants
 the paper layout to be \textsc{din}~A~4. Moreover, she uses the
 |student| option which makes the class print its titles in
-an appropriate manner for submitting the solutions to her instructor.
+an appropriate manner for submitting the solutions to her teacher.
 Then Lia specifies the name of the lecture, the name of the lecturer,
 the semester, and her name. Within these commands the makes use of the
 tilde~|~| in order to suppress undesirable line breaks, like
@@ -246,7 +246,7 @@ version of the sheet for the website. Later on, he can use the
 |solution| option if he wants the previously invisible
 solutions to reappear.
 
-\lstinputlisting[linerange={1-3,5-6}]{template_instructor.tex}
+\lstinputlisting[linerange={1-3,5-6}]{template_teacher.tex}
 
 With this options, Foo is now able to include the sample solutions in
 a convenient way directly in his \LaTeX{} file without annoying
@@ -257,7 +257,7 @@ exercises with it's sample solutions. Moreover, he uses the
 |credits| option to assign credit points to his exercises.
 Therefore, he augments his template as follows.
 
-\lstinputlisting[linerange={33-57}]{template_instructor.tex}
+\lstinputlisting[linerange={33-57}]{template_teacher.tex}
 
 When Foo typesets his document (which takes two runs to create the
 table of contents and get the references right) he notices that his
@@ -275,7 +275,7 @@ text width taken by the class as additional margin. As the default
 value is |.7|, Foo changes the document-class call as
 follows.
 
-\lstinputlisting[linerange={1-6}]{template_instructor.tex}
+\lstinputlisting[linerange={1-6}]{template_teacher.tex}
 
 As last, Foo changes the appearance of his exercise sheets by also
 changing the fonts (he doesn't want his sheets to look like Lia's). He
@@ -284,7 +284,7 @@ furthermore substitutes Lia's orange by a dark blue. Altogether Foo is
 really satisfied by his work and starts thinking about easy and
 difficult exercises. His template file now looks as follows.
 
-\lstinputlisting{template_instructor.tex}
+\lstinputlisting{template_teacher.tex}
 
 
 \chapter{Using the \exercisesheet{} Class}
@@ -359,7 +359,7 @@ command.
   \end{syntax}
 \end{syntax}
 
-Students (as well as instructors) have to place a lot of information
+Students (as well as trachers) have to place a lot of information
 on their exercise sheets, for example, Students typically have to
 place their name, their matriculation number, the name of the
 corresponding lecture, the number of the current exercise sheet, and a
@@ -438,7 +438,7 @@ command.
 
 Solutions can be typeset with the \exercisesheet{} class in two ways:
 First, in the |student| mode directly after an |\exercise| command,
-and second, in the |instructor| mode within the |solution|
+and second, in the |teacher| mode within the |solution|
 environment. Of course, the |solution| environment may also be used in
 the |student| mode if the text of the exercise shall also be presented
 on the sheet. However, in this section the |solution| environment is
@@ -500,8 +500,8 @@ explained.
 \section{Wide and Narrow Page Layout}
 
 Up to now, the \exercisesheet{} class supports two modes: The
-\emph{student mode} and the \emph{instructor mode}. While the
-instructor mode hasn't any notable impact on the page layout, the
+\emph{student mode} and the \emph{teacher mode}. While the
+teacher mode hasn't any notable impact on the page layout, the
 student mode has: It switches the width of the page dynamically
 according to the content currently typeset. While all the titles (that
 is sheet titles, exercise titles, subexercise titles, and so on) are
@@ -519,12 +519,6 @@ value is~$.7$. The option |nonarrow| removes any additional margin.
 The following list contains all document class options that are
 related to the dynamic-page-layout mechanism of the \exercisesheet{}
 class.
-
-\begin{syntax}
-  |instructor={|\metaargument{boolean}|}| \syntaxdefaultarg{false}
-  This option deactivates the dynamic page layout and adjusts the
-  titles.
-\end{syntax}
 
 \begin{syntax}
   |narrow={|\metaargument{boolean}|}| \syntaxdefaultarg{true}
@@ -552,6 +546,12 @@ class.
   |student={|\metaargument{boolean}|}| \syntaxdefaultarg{true}
   This option activates the dynamic page layout and adjusts the
   |titles|. 
+\end{syntax}
+
+\begin{syntax}
+  |teacher={|\metaargument{boolean}|}| \syntaxdefaultarg{false}
+  This option deactivates the dynamic page layout and adjusts the
+  titles.
 \end{syntax}
 
 \end{document}
