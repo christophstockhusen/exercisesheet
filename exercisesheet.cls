@@ -16,7 +16,7 @@
 % This work consists of the file exercisesheet.cls.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2011/10/22]
+\ProvidesClass{exercisesheet}[2011/10/19]
 
 \RequirePackage{xkeyval}
 \RequirePackage{graphicx}
@@ -260,6 +260,17 @@
 \newcommand\creditname{credit}
 \newcommand\creditsname{credits}
 \newcommand\lecturetype{Lecture}
+\newcommand\solutionsbyname{Solutions by}
+
+\def\setsheetname#1{\def\sheetname{#1}}
+\def\setdeadlinename#1{\def\sheetdeadline{#1}}
+\def\setexercisename#1{\def\exercisename{#1}}
+\def\setsubexercisename#1{\def\subexercisename{#1}}
+\def\setsolutionname#1{\def\solutionname{#1}}
+\def\setcreditname#1{\def\creditname{#1}}
+\def\setcreditsname#1{\def\creditsname{#1}}
+\def\setlecturename#1{\def\lecturetype{#1}}
+\def\setsolutionsbyname#1{\def\solutionsbyname{#1}}
 
 %
 % Insert commands for sheets, exercises, and subexercises.
@@ -419,7 +430,7 @@
       \ifstudent
         \sheet@ifempty{\insertstudent}{}{%
           \par \bigskip
-          \sheetstudentfont{\solutionsname~\byname~\insertstudent}%
+          \sheetstudentfont{\solutionsbyname~\insertstudent}%
         }%
       \fi
     }%
@@ -456,6 +467,9 @@
 \def\setsolutionsname#1{%
   \def\insertsolutionsname{#1}}
 
+\def\setsolutionforname#1{%
+  \def\solutionforname{#1}}
+
 
 \setsheettitlestudent{Solutions for Exercise~Sheet~\thesheet}
 \setsheettitleteachersolution{Exercise~Sheet~\thesheet{} with 
@@ -464,6 +478,7 @@
 \setexercisesname{Exercises}
 \setexerciseswithsamplesolutionsname{Exercises with Sample~Solutions}
 \setsolutionsname{Solutions}
+\setsolutionforname{Solution for Exercise}
 
 
 
@@ -552,8 +567,7 @@
 % \newcommand\solution{\@ifnextchar[\sheet@start@solution{\sheet@start@solution[]}}
 
 \def\sheet@solution@refseccntformat#1{%
-  \solutionname~\forname~\exercisename~%
-    \expandafter\ref\expandafter{\sheet@solution@exerciselabel}%
+  \solutionforname~\expandafter\ref\expandafter{\sheet@solution@exerciselabel}%
 }
 
 \def\sheet@solution@plainseccntformat#1{%

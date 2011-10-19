@@ -23,7 +23,7 @@
 \usepackage{amsmath}
 
 \usepackage{enumitem}
-\setlist{nolistsep}
+\setlist{nolistsep,leftmargin=*}
 \setitemize{label={--}}
 
 \usepackage{listings}
@@ -62,7 +62,23 @@
       semester,
       colorlet,
       sffamily,
-      rmfamily
+      rmfamily,
+      setsheettitlestudent,
+      setsheettitleteachersolution,
+      setsheettitleteachernosolution,
+      setexercisesname,
+      setexerciseswithsamplesolutionsname,
+      setsolutionsname,
+      setsheetname,
+      setdeadlinename,
+      setexercisename,
+      setsubexercisename,
+      setsolutionname,
+      setsolutionforname,
+      setsolutionsbyname,
+      setcreditname,
+      setcreditsname,
+      setlecturename,
     },
     otherkeywords={a4paper}
   }
@@ -285,6 +301,51 @@ really satisfied by his work and starts thinking about easy and
 difficult exercises. His template file now looks as follows.
 
 \lstinputlisting{template_teacher.tex}
+
+
+\chapter{Installation}
+
+There are several ways to install the \exercisesheet{} class. In this
+section two of them are presented, namely the system-wide installation
+into the local texmf-tree and the easy installation for a single
+document.
+
+
+\section{Easy Installation for a Single Document}
+
+The easiest way to use the \exercisesheet{} class is to put the class
+file \lstinline[language=bash]|exercisesheet.cls| into the same folder
+as your source file. For example, to create a new exercise sheet, you
+create a new folder, for instance called |mysheets/|, and put the
+class file into this folder.  Afterwards, you create a new file
+|mysheets.tex| in the same folder or copy one of the templates that
+ship with this class. This will suffice to use the class.
+
+
+\section{System-Wide Installation}
+
+For a longer-lasting installation you have to put the class file into
+your |texmf| trees. Depending on your operating system, \TeX{} looks
+for the class file at several places:
+\begin{itemize}
+  \item The root tree at |/usr/share/texmf/| or |c:\texmf\|. This
+    folders contain classes and style files that ship with your \TeX{}
+    distribution.
+  \item The local tree at |/usr/local/share/texmf/| or
+    |c:\localtexmf\| that is intended to contain files that are
+    installed manually by the user for system-wide use, that is, every
+    user of the system has access to these files.
+  \item Your personal tree at |~/texmf/| or, for Mac~OS~X, at
+    |~/Library/texmf/|.
+\end{itemize}
+If you want to install the \exercisesheet{} class into one of the
+folders named above, you should make use of the archive file
+\lstinline[language=bash]{exercisesheet-tds.zip} whose contained
+files are already in the \TeX{} Directory Structure (TDS). Just unzip
+this file into one of the above folders. The archive is created in
+such a way, that the files are automatically placed into the correct
+subfolders. After this, run |texhash| or |mktexlsr| to introduce the
+new files to \TeX. That's it.
 
 
 \chapter{Using the \exercisesheet{} Class}
@@ -552,6 +613,133 @@ class.
   |teacher={|\metaargument{boolean}|}| \syntaxdefaultarg{false}
   This option deactivates the dynamic page layout and adjusts the
   titles.
+\end{syntax}
+
+
+\section{Setting the Titles and the Names}
+
+This chapter contains a list of macros that can be used to set the
+different titles and names that occur within the use of the
+\exercisesheet{} class. Here \emph{nearly arbitrary code} denotes code
+that does not contain a |\par|.
+
+\begin{syntax}
+  |\setsheettitlestudent{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Solutions for Exercise\~{}Sheet\~{}\textbackslash thesheet\{\}}
+  This sets the code that is inserted at that place of the sheet,
+  where the title should appear when the student mode is activated by
+  passing the |student| option to call of the document class. Inside
+  the code you can use |\thesheet| to make use of the sheet's current
+  number. 
+\end{syntax}
+
+\begin{syntax}
+  |\setsheettitleteachersolution{|\metaargument{nearly arbitrary
+    code}|}|
+  \nobreak\par
+  \syntaxdefaultarg{Exercise\~{}Sheet\~{}\textbackslash thesheet\{\}
+    with Sample~Solutions}
+  See |\setsheettitlestudent| where the code is inserted when the
+  following conditions are satisfied:
+  \begin{enumerate}
+    \item The |teacher| mode is turned on.
+    \item The |solution| mode is turned on.
+  \end{enumerate}
+\end{syntax}
+
+\begin{syntax}
+  |\setsheettitleteachernosolution{|\metaargument{nearly arbitrary
+    code}|}|
+  \syntaxdefaultarg{Exercise\~{}Sheet\~{}\textbackslash thesheet\{\}}
+  See |\setsheettitlestudent| where the code is inserted when the
+  following conditions are satisfied:
+  \begin{enumerate}
+    \item The |teacher| mode is turned on.
+    \item The |solution| mode is turned off.
+  \end{enumerate}
+\end{syntax}
+
+\begin{syntax}
+  |\setexercisesname{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Exercises}
+  Sets the code that is inserted on the title page when in teacher 
+  mode that shows, that this document contains the exercises of a
+  teacher. Simply use this command to define the translation of
+  \emph{Exercises} into your language.
+\end{syntax}
+
+\begin{syntax}
+  |\setexerciseswithsamplesolutionsname{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Exercises with Sample\~{}Solutions}
+  See |\setexercisesname| where this is typeset when the in teacher
+  mode and the |solution| option is passed to the document class.
+\end{syntax}
+
+\begin{syntax}
+  |\setsolutionsname{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Solutions}
+  See |\setexercisesname| where this is typeset when the in student  
+  mode.
+\end{syntax}
+
+\noindent 
+The following list of macros can be used to adapt the default names
+that are used by the \exercisesheet{} class, for instance if the class
+is intended to be used for a different language than English. The
+following names are used at many places within the typesetting
+process, mostly in the titles of exercises, subexercises, solutions
+and in the table of contents. As function of the individual commands
+should be clear from their names, many macros are given without
+further comments.
+
+\begin{syntax}
+  |\setcreditname{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{credit}
+\end{syntax}
+
+\begin{syntax}
+  |\setcreditsname{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{credits}
+\end{syntax}
+
+\begin{syntax}
+  |\setdeadlinename{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Deadline}
+\end{syntax}
+
+\begin{syntax}
+  |\setexercisename{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Exercise}
+\end{syntax}
+
+\begin{syntax}
+  |\setsheetname{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Exercise Sheet}
+\end{syntax}
+
+\begin{syntax}
+  |\setlecturename{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Lecture}
+\end{syntax}
+
+\begin{syntax}
+  |\setsolutionname{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Solution}
+\end{syntax}
+
+\begin{syntax}
+  |\setsolutionforname{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Solution for Exercise}
+\end{syntax}
+
+\begin{syntax}
+  |\setsolutionsbyname{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Solutions by}
+\end{syntax}
+
+\begin{syntax}
+  |\setsubexercisename{|\metaargument{nearly arbitrary code}|}|
+  \syntaxdefaultarg{Subexercise}
 \end{syntax}
 
 \end{document}
