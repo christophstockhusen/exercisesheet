@@ -241,21 +241,21 @@ Altogether, Lia has written the following template code.
 \lstinputlisting{template_student.tex}
 
 
-\section{A Tutorial for the Teacher Prof.~Foo~Bar}
+\section{A Tutorial for the Teacher Walter}
 
-When Prof.~Foo~Bar sees Lia's solutions he is highly impressed. Not
-only are Lia's solutions almost perfectly correct, also it's
-appearance is very beautiful in comparison with his exercise sheets.
-Hence, he asks Lia whether he may use her template to type his
-exercise sheets. Lia, really happy for this to happen, tells
-Prof.~Foo~Bar about the \exercisesheet{} class and emails her template
-to him. Foo immediately opens the template file and starts customizing
-the template for his requirements.
+When Walter sees Lia's solutions he is highly impressed. Not only are
+Lia's solutions almost perfectly correct, also it's appearance is very
+beautiful in comparison with his exercise sheets.  Hence, he asks Lia
+whether he may use her template to type his exercise sheets. Lia,
+really happy for this to happen, tells Walter about the
+\exercisesheet{} class and emails her template to him. Walter
+immediately opens the template file and starts customizing the
+template for his requirements.
 
 First, he changes the call of the document class as he is not a
 student anymore and mainly doesn't want his exercise sheets look like
 a sheet of solutions. Moreover, he adds the |nosolution|
-option. This option makes the sample solutions that Foo types
+option. This option makes the sample solutions that Walter types
 disappear. This way he can type down the solutions to his exercises
 and easily make them disappear if he wants to create the \textsc{pdf}
 version of the sheet for the website. Later on, he can use the
@@ -264,9 +264,9 @@ solutions to reappear.
 
 \lstinputlisting[linerange={1-3,5-6}]{template_teacher.tex}
 
-With this options, Foo is now able to include the sample solutions in
+With this options, Walter is now able to include the sample solutions in
 a convenient way directly in his \LaTeX{} file without annoying
-commenting in and out. As Foo often places the sample solutions to the
+commenting in and out. As Walter often places the sample solutions to the
 exercises at the very end of the sheet and not directly behind the
 exercises, he uses the build-in referencing mechanism to link the
 exercises with it's sample solutions. Moreover, he uses the
@@ -275,7 +275,7 @@ Therefore, he augments his template as follows.
 
 \lstinputlisting[linerange={33-57}]{template_teacher.tex}
 
-When Foo typesets his document (which takes two runs to create the
+When Walter typesets his document (which takes two runs to create the
 table of contents and get the references right) he notices that his
 exercise sheet has a very large margin at the right. He immediately
 understands that this must be intentional by the author of the
@@ -288,15 +288,15 @@ for the students to take notes might be very useful. So the uses the
 |narrowfactor| option on the call of the document class
 which accepts values from $0$ to $1$ in order to set the amount of the
 text width taken by the class as additional margin. As the default
-value is |.7|, Foo changes the document-class call as
+value is |.7|, Walter changes the document-class call as
 follows.
 
 \lstinputlisting[linerange={1-6}]{template_teacher.tex}
 
-As last, Foo changes the appearance of his exercise sheets by also
+As last, Walter changes the appearance of his exercise sheets by also
 changing the fonts (he doesn't want his sheets to look like Lia's). He
 decides to switch everything to Bitstream's \emph{Charter} and
-furthermore substitutes Lia's orange by a dark blue. Altogether Foo is
+furthermore substitutes Lia's orange by a dark blue. Altogether Walter is
 really satisfied by his work and starts thinking about easy and
 difficult exercises. His template file now looks as follows.
 
@@ -436,8 +436,8 @@ macros to typeset all these information on the sheets.
 
 \begin{syntax}
   |\lecturer{|\metaargument{string}|}| \syntaxdefaultarg{}
-  This sets the name of the lecturer. Prof.~Foo~Bar would use
-  |\lecturer{Prof.~Foo~Bar}| for his exercise sheets. Note the |~|
+  This sets the name of the lecturer. Walter would use
+  |\lecturer{Walter}| for his exercise sheets. Note the |~|
   to prevent unintended line breaking.
 \end{syntax}
 
