@@ -56,7 +56,7 @@
   \expandafter\def\expandafter\sheet@gs@genericcommand\expandafter{%
     \csname sheet@gs@generic@\sheet@gs@currentiotype\endcsname%
   }%
-  % then check for existance and choose which macro will be used
+  % then check for existance and chose which macro will be used
   \expandafter\ifx\sheet@gs@specialcommand\relax
     \let\sheet@gs@currentiocommand=\sheet@gs@genericcommand
   \else
@@ -100,12 +100,11 @@
 \def\sheet@gs@finalizecurrentvalue#1#2{#2}
 
 % - macro for key definition
-% - finalization macro for getting keys
-
+% - macro for getting keys
 
 % --------------------------------------------------------------------
 %
-% The Template Engine, based on the Getter-Setter Engine.
+% The Template Engine.
 %
 % --------------------------------------------------------------------
 
