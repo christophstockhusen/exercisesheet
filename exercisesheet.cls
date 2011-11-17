@@ -22,174 +22,9 @@
 \RequirePackage{graphicx}
 \RequirePackage{environ}
 
-
-% --------------------------------------------------------------------
-%
-% The Generic Getter and Setter Engine.
-%
-% --------------------------------------------------------------------
-
-% \sheet@gs@#1#2 is the central interface for all input and output of
-% the getter and setter engine. #1 defined the type of interaction
-% with the database
-
-\def\sheet@gs@#1{%
-  \def\sheet@gs@currentiotype{#1}%
-  \sheet@gs@checkspecial%
-}
-
-% \sheet@gs@checkspecial checks whether there is some special macro
-% for interacting with the database for this iotype and this family
-% defined. If there exists such a macro it is applied, otherwise the
-% generic version is applied.
-
-\def\sheet@gs@checkspecial#1{%
-  % store current family name
-  \edef\sheet@gs@currentfamilyname{#1}%
-  % check whether there is a special macro for this iotype and this
-  % family defined.
-  % first construct the name of the special command
-  \expandafter\def\expandafter\sheet@gs@specialcommand\expandafter{%
-    \csname sheet@gs@special@#1@\sheet@gs@currentiotype\endcsname%
-  }%
-  % second define the name of the generic command
-  \expandafter\def\expandafter\sheet@gs@genericcommand\expandafter{%
-    \csname sheet@gs@generic@\sheet@gs@currentiotype\endcsname%
-  }%
-  % then check for existance and chose which macro will be used
-  \expandafter\ifx\sheet@gs@specialcommand\relax
-    \let\sheet@gs@currentiocommand=\sheet@gs@genericcommand
-  \else
-    \let\sheet@gs@currentiocommand=\sheet@gs@specialcommand
-  \fi
-  %
-  \@ifnextchar[%
-    {\sheet@gs@setkeys}%
-    {\sheet@gs@currentiocommand}%
-}
-
-\def\sheet@gs@setkeys[#1]{%
-  \setkeys{\sheet@gs@currentfamilyname}{#1}%
-  \sheet@gs@currentiocommand%
-}
-
-\def\sheet@gs@generic@set#1#2{%
-  % preparing the name (for better readability of the code below)
-  \expandafter\def%
-    \expandafter\sheet@gs@storename%
-      \expandafter{\csname sheet@var@\sheet@gs@currentfamilyname @#1\endcsname}% 
-  % preparing the value
-  \def\sheet@gs@currentvalue{%
-    \sheet@gs@preparecurrentvalue{\sheet@gs@currentfamilyname}{#2}%
-  }%
-  % storing the value
-  \expandafter\let\sheet@gs@storename=\sheet@gs@currentvalue%
-}
-
-\def\sheet@gs@generic@get#1{%
-  \sheet@gs@finalizecurrentvalue{\sheet@gs@currentfamilyname}{%
-    \csname sheet@var@\sheet@gs@currentfamilyname @#1\endcsname%
-  }%
-}
-
-% Todo: Implement preparation and finalization of values with respect
-%       to the given family name and the optional arguments passed to 
-%       \sheet@gs@genericset@ and \sheet@gs@genericget@
-
-\def\sheet@gs@preparecurrentvalue#1#2{#2}
-\def\sheet@gs@finalizecurrentvalue#1#2{#2}
-
-% - macro for key definition
-% - macro for getting keys
-
-% --------------------------------------------------------------------
-%
-% The Template Engine.
-%
-% --------------------------------------------------------------------
-
-% True if the template should be placed into a group.
-
-\newif\ifsheet@template@grouping
-
-% Define keys for templates.
-
-\define@key{sheet@templates}{grouping}[true]{%
-  \csname sheet@template@grouping#1\endcsname%
-}
-
-% Resets the keys for setting/inserting templates to the default
-% values.
-
-\def\sheet@keys@resettemplatekeys{
-  \setkeys{sheet@templates}{%
-    grouping=true%
-  }%
-}
-
-% User level macro for setting a template.
-
-\def\setsheettemplate{%
-  \@ifnextchar[\sheet@settemplate{\sheet@settemplate[]}%
-}
-
-% Internal macro for template definition.
-
-\long\def\sheet@settemplate[#1]#2#3{%
-  % resetting keys
-  \sheet@keys@resettemplatekeys
-  % reading keys
-  \setkeys{sheet@templates}{#1}%
-  % defining the template macro
-  \expandafter\def\csname sheet@template@#2\endcsname{#3}%
-}
-
-% User level macro for inserting a template. 
-
-\def\insertsheettemplate{%
-  \@ifnextchar[\sheet@inserttemplate{\sheet@inserttemplate[]}}
-
-% Internal macro for inserting a template. Produces an error if the
-% requested template has not been defined.
-
-\def\sheet@inserttemplate[#1]#2{%
-  % checks whether this template has been defined
-  \expandafter\ifx\csname sheet@template@#2\endcsname\relax
-    % template has not been defined
-    \ClassError{exercisesheet}%
-      {Template "#2" has not been defined}%
-        {Define this template or avoid using it}
-    % gobble mandatory and optional arguments 
-    \def\sheet@tmp@next[#1]{#2}{}
-  \else
-    % template has been defined, start typesetting it
-    \let\sheet@tmp@next=\sheet@@inserttemplate
-  \fi
-  \sheet@tmp@next[#1]{#2}%
-}
-
-\def\sheet@@inserttemplate[#1]#2{%
-  % resetting keys
-  \sheet@keys@resettemplatekeys{}
-  % setting keys
-  \setkeys{sheet@templates}{#1}
-  % preparing template for insertion
-  \ifsheet@template@grouping
-    \def\sheet@tmp@nexttemplate{%
-      \begingroup\csname sheet@template@#2\endcsname\endgroup%
-    }
-  \else
-    \def\sheet@tmp@nexttemplate{\csname sheet@template@#2\endcsname}
-  \fi
-  \sheet@tmp@nexttemplate
-}
-
-
-% --------------------------------------------------------------------
 %
 % Loading the underlying class.
 %
-% --------------------------------------------------------------------
 
 %
 % Keys for the class.
@@ -286,11 +121,9 @@
 \newcommand*\student[1]{\sheet@student={#1}}
 \newcommand*\insertstudent{\the\sheet@student}
 
-% --------------------------------------------------------------------
 %
 % Setting up the default fonts.
 %
-% --------------------------------------------------------------------
 
 \def\sheettitlefont{\sffamily\fontsize{36}{40}\selectfont}
 \def\sheettopicfont{\sffamily\Huge}
@@ -302,11 +135,9 @@
 \def\sheetexercisetopicfont{\small\sffamily}
 \def\sheetsubexercisetopicfont{\footnotesize\sffamily}
 
-% --------------------------------------------------------------------
-% 
+%
 % Setting up the default layout.
 %
-% --------------------------------------------------------------------
 
 \textwidth=\paperwidth
 \advance\textwidth by -4cm
@@ -325,11 +156,9 @@
 \parindent=0pt
 \parskip=\smallskipamount
 
-% --------------------------------------------------------------------
 %
 % Macros for switching between the narrow and the wide layouts.
 %
-% --------------------------------------------------------------------
 
 \newdimen\sheet@textwidth 
 \sheet@textwidth=\textwidth
@@ -344,13 +173,9 @@
   \global\linewidth=#1
 }
 
-
-
-% --------------------------------------------------------------------
 %
-% Pagestyles.
+% Setting up the header and footer.
 %
-% --------------------------------------------------------------------
 
 \def\ps@headings{%
   \let\@oddhead\@empty
@@ -379,11 +204,9 @@
 \def\sheet@sheet@label{}
 \newcount\sheet@sheet@credits
 
-% --------------------------------------------------------------------
 %
 % Defining the keys for the exercises.
 %
-% --------------------------------------------------------------------
 
 \define@key{sheet@exercise}{topic}{\sheet@exercise@topic={#1}}
 \define@key{sheet@exercise}{label}{\def\sheet@exercise@label{#1}}
@@ -397,11 +220,9 @@
 \def\sheet@exercise@label{}
 \newcount\sheet@exercise@credits
 
-% --------------------------------------------------------------------
 %
 % Defining the keys for the subexercises.
 %
-% --------------------------------------------------------------------
 
 \define@key{sheet@subexercise}{topic}{\sheet@subexercise@topic={#1}}
 \define@key{sheet@subexercise}{label}{\def\sheet@subexercise@label{#1}}
@@ -415,22 +236,18 @@
 \def\sheet@subexercise@label{}
 \newcount\sheet@subexercise@credits
 
-% --------------------------------------------------------------------
 %
 % Defining the keys for the solutions.
 %
-% --------------------------------------------------------------------
 
 \define@key{sheet@solution}{exerciselabel}{\def\sheet@solution@exerciselabel{#1}}
 
 \def\sheet@solution@exerciselabel{}
 
-% --------------------------------------------------------------------
 %
 % Defining the names that are used within the titles of the sheets,
 % exercises and subexercises.
 %
-% --------------------------------------------------------------------
 
 \newcommand\sheetname{Exercise Sheet}
 \newcommand\sheetdeadline{Deadline}
@@ -455,11 +272,9 @@
 \def\setlecturename#1{\def\lecturetype{#1}}
 \def\setsolutionsbyname#1{\def\solutionsbyname{#1}}
 
-% --------------------------------------------------------------------
 %
 % Insert commands for sheets, exercises, and subexercises.
 %
-% --------------------------------------------------------------------
 
 \newcommand\insertsheettopic{\the\sheet@sheet@topic}
 \newcommand\insertsheetdeadline{\the\sheet@sheet@deadline}
@@ -471,11 +286,9 @@
 \newcommand\insertsubexercisetopic{\the\sheet@subexercise@topic}
 \newcommand\insertsubexercisecredits{\the\sheet@subexercise@credits}
 
-% --------------------------------------------------------------------
 %
 % The \maketitle command for typesetting the title page.
 %
-% --------------------------------------------------------------------
 
 \def\maketitle{%
   \begin{titlepage}
@@ -517,12 +330,10 @@
   \end{titlepage}%
 }
 
-% --------------------------------------------------------------------
 %
 % The \sheet command for typesetting the titling of a new exercise
 % sheet.
 %
-% --------------------------------------------------------------------
 
 \let\insertsheetlogo=\relax
 
@@ -561,22 +372,67 @@
     \interlinepenalty \@M
     {% 
       %
-      % insert front matter
+      % insert sheet number
       %
       \normalfont
       %
       \ifstudent
         % student mode
-        \insertsheettemplate{sheet front matter student}
+        \sheettitlefont{\insertsheettitlestudent}\par
       \else
         % teacher mode
         \ifsolution
-          \insertsheettemplate{sheet front matter teacher solution}
+          \sheettitlefont{\insertsheettitleteachersolution}\par
         \else
-          \insertsheettemplate{sheet front matter teacher no solution}
+          \sheettitlefont{\insertsheettitleteachernosolution}\par
         \fi
       \fi
       \par
+    }%
+    {%
+      % sheet topic
+      \sheet@ifempty{\insertsheettopic}{}{%
+        \vskip 1em
+        \normalfont
+        \sheettopicfont{\insertsheettopic}\par
+      }%
+    }%
+    {%
+      % sheet deadline
+      \sheet@ifempty{\insertsheetdeadline}{}{%
+        \vskip 1em
+        \normalfont
+        \sheetdeadlinefont{\sheetdeadline~\insertsheetdeadline}\par
+      }%
+    }%
+    {%
+      % lecture, semester
+      \sheet@ifempty{\insertlecture\insertsemester}{}{%
+        \par \bigskip
+      }%
+      \sheet@ifempty{\insertlecture}{}{%
+        \sheetlecturefont{\lecturetype~\emph{\insertlecture}}%
+      }%
+      \sheet@ifempty{\insertsemester}{}{%
+        \sheet@ifempty{\insertlecture}{}{\sheetlecturefont{,} }%
+        \sheetsemesterfont{\insertsemester}%
+      }%
+    }%
+    {%
+      % lecturer
+      \sheet@ifempty{\insertlecturer}{}{%
+        \par \medskip
+        \sheetlecturerfont{\insertlecturer}%
+      }%
+    }%
+    {%
+      % student
+      \ifstudent
+        \sheet@ifempty{\insertstudent}{}{%
+          \par \bigskip
+          \sheetstudentfont{\solutionsbyname~\insertstudent}%
+        }%
+      \fi
     }%
   }%
   \sheet@ifempty{\sheet@sheet@label}{}{%
@@ -584,16 +440,14 @@
     \def\sheet@sheet@label{}%
   }
   \nobreak
-  \vskip .5em
+  \vskip 1.5em
   \@afterheading
   \sheet@setnarrow
 }
 
-% --------------------------------------------------------------------
 %
 % Title definitions.
 %
-% --------------------------------------------------------------------
 
 \def\setsheettitlestudent#1{%
   \def\insertsheettitlestudent{#1}}
@@ -626,125 +480,11 @@
 \setsolutionsname{Solutions}
 \setsolutionforname{Solution for Exercise}
 
-% --------------------------------------------------------------------
-%
-% Setting up the templates.
-%
-% --------------------------------------------------------------------
 
-\setsheettemplate{sheet front matter generic (topic)}{%
-  \sheettopicfont{%
-    \sheet@ifempty{\insertsheettopic}{}{%
-      \insertsheettopic
-      \par\vskip 1em
-    }%
-  }%
-}
 
-\setsheettemplate{sheet front matter generic (lecture, semester)}{%
-  \sheetlecturefont{%
-    \sheet@ifempty{\insertlecture}{}{%
-      \lecturetype~\emph{\insertlecture}%
-    }%
-    \sheet@ifempty{\insertsemester}{}{%
-      \sheet@ifempty{\insertlecture}{}{, }%
-      \insertsemester%
-    }%
-    \sheet@ifempty{\insertlecture\insertsemester}{}{%
-      \par\vskip .5em
-    }%
-  }%
-}
-
-\setsheettemplate{sheet front matter student (main title)}{%
-  \sheettitlefont{%
-    Solutions for Exercise~Sheet~\thesheet{}%
-  }%
-  \par\vskip .5em
-}
-
-\setsheettemplate{sheet front matter student (student name)}{%
-  \par\vskip .5em
-  \sheetstudentfont{\insertstudent}%
-  \par\vskip .5em
-}
-
-\setsheettemplate{sheet front matter student}{%
-  \insertsheettemplate[grouping]{%
-    sheet front matter student (main title)%
-  }%
-  \insertsheettemplate[grouping]{%
-    sheet front matter generic (topic)%
-  }%
-  \insertsheettemplate[grouping]{%
-    sheet front matter generic (lecture, semester)%
-  }%
-  \insertsheettemplate[grouping]{%
-    sheet front matter student (student name)%
-  }
-}
-
-\setsheettemplate{sheet front matter teacher solution (main title)}{%
-  \sheettitlefont{%
-    Exercise~Sheet~\thesheet{} with Sample~Solutions%
-  }%
-  \par\vskip .5em
-}
-
-\setsheettemplate{sheet front matter teacher (teacher name)}{%
-  \par\vskip .5em
-  \sheetstudentfont{\insertlecturer}%
-  \par\vskip .5em
-}
-
-\setsheettemplate{sheet front matter teacher solution}{%
-  \insertsheettemplate[grouping]{%
-    sheet front matter teacher solution (main title)%
-  }%
-  \insertsheettemplate[grouping]{%
-    sheet front matter generic (topic)%
-  }%
-  \insertsheettemplate[grouping]{%
-    sheet front matter generic (lecture, semester)%
-  }
-  \insertsheettemplate[grouping]{%
-    sheet front matter teacher (teacher name)%
-  }
-}
-
-\setsheettemplate{sheet front matter teacher no solution (main title)}{%
-  \sheettitlefont{%
-    Exercise~Sheet~\thesheet{}%
-  }%
-  \par\vskip .5em
-}
-
-\setsheettemplate{sheet front matter teacher no solution}{%
-  \insertsheettemplate[grouping]{%
-    sheet front matter teacher no solution (main title)%
-  }%
-  \insertsheettemplate[grouping]{%
-    sheet front matter generic (topic)%
-  }%
-  \insertsheettemplate[grouping]{%
-    sheet front matter generic (lecture, semester)%
-  }
-  \insertsheettemplate[grouping]{%
-    sheet front matter teacher (teacher name)%
-  }
-}
-
-\setsheettemplate{exercises}{Exercises}
-
-\setsheettemplate{solutions}{Solutions}
-
-\setsheettemplate{solutions for exercise}{Solutions for Exercise}
-
-% --------------------------------------------------------------------
 %
 % \exercise
 %
-% --------------------------------------------------------------------
 
 \newcommand\exercise{\@ifnextchar[\sheet@start@exercise{\sheet@start@exercise[]}}
 
@@ -757,8 +497,7 @@
                 {-3ex \@plus -.2ex \@minus -.2ex}%
                 {1.5ex \@plus .2ex}%
                 {\normalfont\sheetexercisetopicfont}%
-                [\insertexercisetopic]%
-                {\insertsheettemplate{exercise title}}%
+                [\insertexercisetopic]{\sheet@exercise@topictemplate}%
   \sheet@ifempty{\sheet@exercise@label}{}{%
     \expandafter\label\expandafter{\sheet@exercise@label}%
     \def\sheet@exercise@label{}%
@@ -766,7 +505,7 @@
   \sheet@setnarrow
 }
 
-\setsheettemplate{exercise title}{%
+\def\sheet@exercise@topictemplate{%
   \insertexercisetopic
   \ifnum\insertexercisecredits>-1
     \sheet@ifempty{\insertexercisetopic}{}{, }%
@@ -779,11 +518,9 @@
   \fi
 }
 
-% --------------------------------------------------------------------
 %
 % \subexercise
 %
-% --------------------------------------------------------------------
 
 \newcommand\subexercise{\@ifnextchar[\sheet@start@subexercise{\sheet@start@subexercise[]}}
 
@@ -796,8 +533,7 @@
                 {-1.5ex \@plus -.1ex \@minus -.1ex}%
                 {.75ex \@plus .1ex \@minus .1ex}%
                 {\normalfont\sheetsubexercisetopicfont}%
-                [\insertsubexercisetopic]%
-                {\insertsheettemplate{subexercise title}}%
+                [\insertsubexercisetopic]{\sheet@subexercise@topictemplate}%
   \sheet@ifempty{\sheet@subexercise@label}{}{%
     \expandafter\label\expandafter{\sheet@subexercise@label}%
     \def\sheet@subexercise@label{}%
@@ -805,7 +541,7 @@
   \sheet@setnarrow
 }
 
-\setsheettemplate{subexercise title}{%
+\def\sheet@subexercise@topictemplate{%
   \insertsubexercisetopic
   \ifnum\insertsubexercisecredits>-1
     \sheet@ifempty{\insertsubexercisetopic}{}{, }%
@@ -818,19 +554,15 @@
   \fi
 }
 
-% --------------------------------------------------------------------
 % 
 % \@seccntformat
 %
-% --------------------------------------------------------------------
 
 \def\@seccntformat#1{\csname #1name\endcsname~\csname the#1\endcsname\quad}
 
-% --------------------------------------------------------------------
 %
 % \solution
 %
-% --------------------------------------------------------------------
 
 % \newcommand\solution{\@ifnextchar[\sheet@start@solution{\sheet@start@solution[]}}
 
@@ -860,12 +592,10 @@
   \let\@seccntformat=\sheet@orig@seccntformat
 }
 
-% --------------------------------------------------------------------
 % 
 % Solution environment for typesetting solutions that are only typeset
 % when the "solution" option is set.
 %
-% --------------------------------------------------------------------
 
 \def\sheet@startsolution{%
   \@ifnextchar[\sheet@start@solution{\sheet@start@solution[]}%
@@ -876,7 +606,6 @@
     \expandafter\sheet@startsolution\BODY%
   \fi}{}
 
-% --------------------------------------------------------------------
 %
 % Table of Contents
 %
@@ -885,7 +614,6 @@
 %   (and long) we always have to redefine the whole macro. If there
 %   are only minor changes, they are labeled.
 %
-% --------------------------------------------------------------------
 
 % \@makeschapterhead is only used for typesetting the title of the
 % table of contents. Therefore it is redefined to match the style of
@@ -999,11 +727,9 @@
      \par}%
   \fi}
 
-% --------------------------------------------------------------------
 %
-% Counters
+% counters
 %
-% --------------------------------------------------------------------
 
 \setcounter{secnumdepth}{3}
 
@@ -1020,22 +746,18 @@
 \let\sheet@orig@thepage=\thepage
 \def\thepage{\thesheet~--~\sheet@orig@thepage}
 
-% --------------------------------------------------------------------
 % 
 % marks
 %
-% --------------------------------------------------------------------
 
 \newcommand*\sheetmark[1]{}
 \newcommand*\exercisemark[1]{}
 \newcommand*\subexercisemark[1]{}
 \newcommand*\solutionmark[1]{}
 
-% --------------------------------------------------------------------
 %
 % helper
 %
-% --------------------------------------------------------------------
 
 \long\def\sheet@firstoftwo#1#2{#1}
 \long\def\sheet@secondoftwo#1#2{#2}
@@ -1051,11 +773,9 @@
   {#2}{#3}%
 }
 
-% --------------------------------------------------------------------
 %
 % hyperref support
 %
-% --------------------------------------------------------------------
 
 \newcommand\theHsheet{\@arabic\c@sheet}
 \newcommand\theHexercise{\theHsheet.\@arabic\c@exercise}
@@ -1071,4 +791,3 @@
 \let\l@exercise=\l@section
 \let\l@subexercise=\l@subsection
 \let\l@solution=\l@section
-
