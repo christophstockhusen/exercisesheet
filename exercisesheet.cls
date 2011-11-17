@@ -19,407 +19,173 @@
 \ProvidesClass{exercisesheet}[2011/10/19]
 
 \RequirePackage{xkeyval}
-\RequirePackage{pgfkeys}
+\RequirePackage{graphicx}
 \RequirePackage{environ}
-% \RequirePackage{graphicx}
+
 
 % --------------------------------------------------------------------
 %
-% helper
+% The Generic Getter and Setter Engine.
 %
 % --------------------------------------------------------------------
 
-\long\def\sheet@firstoftwo#1#2{#1}
-\long\def\sheet@secondoftwo#1#2{#2}
-\def\sheet@empty{}
+% \sheet@gs@#1#2 is the central interface for all input and output of
+% the getter and setter engine. #1 defined the type of interaction
+% with the database
 
-\long\def\sheet@ifempty#1#2#3{%
-  \edef\sheet@tmp{#1}%
-  \ifx\sheet@empty\sheet@tmp
-    \expandafter\sheet@firstoftwo
+\def\sheet@gs@#1{%
+  \def\sheet@gs@currentiotype{#1}%
+  \sheet@gs@checkspecial%
+}
+
+% \sheet@gs@checkspecial checks whether there is some special macro
+% for interacting with the database for this iotype and this family
+% defined. If there exists such a macro it is applied, otherwise the
+% generic version is applied.
+
+\def\sheet@gs@checkspecial#1{%
+  % store current family name
+  \edef\sheet@gs@currentfamilyname{#1}%
+  % check whether there is a special macro for this iotype and this
+  % family defined.
+  % first construct the name of the special command
+  \expandafter\def\expandafter\sheet@gs@specialcommand\expandafter{%
+    \csname sheet@gs@special@#1@\sheet@gs@currentiotype\endcsname%
+  }%
+  % second define the name of the generic command
+  \expandafter\def\expandafter\sheet@gs@genericcommand\expandafter{%
+    \csname sheet@gs@generic@\sheet@gs@currentiotype\endcsname%
+  }%
+  % then check for existance and choose which macro will be used
+  \expandafter\ifx\sheet@gs@specialcommand\relax
+    \let\sheet@gs@currentiocommand=\sheet@gs@genericcommand
   \else
-    \expandafter\sheet@secondoftwo
+    \let\sheet@gs@currentiocommand=\sheet@gs@specialcommand
   \fi
-  {#2}{#3}%
+  %
+  \@ifnextchar[%
+    {\sheet@gs@setkeys}%
+    {\sheet@gs@currentiocommand}%
 }
 
+\def\sheet@gs@setkeys[#1]{%
+  \setkeys{\sheet@gs@currentfamilyname}{#1}%
+  \sheet@gs@currentiocommand%
+}
+
+\def\sheet@gs@generic@set#1#2{%
+  % preparing the name (for better readability of the code below)
+  \expandafter\def%
+    \expandafter\sheet@gs@storename%
+      \expandafter{\csname sheet@var@\sheet@gs@currentfamilyname @#1\endcsname}% 
+  % preparing the value
+  \def\sheet@gs@currentvalue{%
+    \sheet@gs@preparecurrentvalue{\sheet@gs@currentfamilyname}{#2}%
+  }%
+  % storing the value
+  \expandafter\let\sheet@gs@storename=\sheet@gs@currentvalue%
+}
+
+\def\sheet@gs@generic@get#1{%
+  \sheet@gs@finalizecurrentvalue{\sheet@gs@currentfamilyname}{%
+    \csname sheet@var@\sheet@gs@currentfamilyname @#1\endcsname%
+  }%
+}
+
+% Todo: Implement preparation and finalization of values with respect
+%       to the given family name and the optional arguments passed to 
+%       \sheet@gs@genericset@ and \sheet@gs@genericget@
+
+\def\sheet@gs@preparecurrentvalue#1#2{#2}
+\def\sheet@gs@finalizecurrentvalue#1#2{#2}
+
+% - macro for key definition
+% - finalization macro for getting keys
+
+
 % --------------------------------------------------------------------
 %
-% Setting up the Key Tree
+% The Template Engine, based on the Getter-Setter Engine.
 %
 % --------------------------------------------------------------------
 
-\newif\if@sheet@student
+% True if the template should be placed into a group.
 
-\pgfkeys{%
-  %
-  % global keys
-  %
-  /exercisesheet/.cd,
-  %
-  student/.is if=@sheet@student,
-  student/.initial=true,
-  student/.default=true,
-  %
-  narrow/.initial=.7,
-  narrow/.value required,
-  nonarrow/.is if=@sheet@nonarrow,
-  nonarrow/.initial=false,
-  nonarrow/.default=true,
-  %
-  solution/.is if=@sheet@solution,
-  solution/.initial=false,
-  solution/.default=true,
-  %
-  author/.value required,
-  author/.initial={NO AUTHOR DEFINED!},
-  %
-  lecture/.value required,
-  lecture/.initial={NO LECTURE DEFINED!},
-  %
-  lecturer/.value required,
-  lecturer/.initial={NO LECTURER DEFINED!},
-  %
-  semester/.value required,
-  semester/.initial={NO SEMESTER DEFINED!},
-  %
-  %
-  % fonts
-  %
-  /exercisesheet/fonts/.cd,
-  %
-  basic/.value required,
-  basic/.initial=\normalfont\rmfamily,
-  %
-  sheet title/.value required,
-  sheet title/.initial=\sffamily\fontsize{36}{40}\selectfont,
-  %
-  sheet topic/.value required,
-  sheet topic/.initial=\sffamily\Huge,
-  %
-  sheet deadline/.value required,
-  sheet deadline/.initial=\sffamily\LARGE,
-  %
-  sheet author/.value required,
-  sheet author/.initial=\sffamily\footnotesize,
-  %
-  exercise topic/.value required,
-  exercise topic/.initial=\small\sffamily,
-  %
-  subexercise topic/.value required,
-  subexercise topic/.initial=\footnotesize\sffamily,
-  %
-  % variables
-  %
-  % sheets
-  /exercisesheet/variables/sheet/.cd,
-  %
-  topic/.value required,
-  topic/.initial={},
-  %
-  deadline/.value required,
-  deadline/.initial={},
-  %
-  % exercises
-  /exercisesheet/variables/exercise/.cd,
-  %
-  topic/.value required,
-  topic/.initial={},
-  %
-  credits/.value required,
-  credits/.initial={},
-  %
-  % subexercises
-  /exercisesheet/variables/subexercise/.cd,
-  %
-  topic/.value required,
-  topic/.initial={},
-  %
-  credits/.value required,
-  credits/.initial={},
-  %
-  % templates
-  %
-  /exercisesheet/templates/.cd,
-  %
-  % generic templates
-  %
-  sheet topic/.value required,
-  sheet topic/.initial={%
-    \sheetusefont{sheet topic}{%
-      \sheet@ifempty{\sheetgetsheettopic}{}{%
-        \sheetgetsheettopic
-        \par
-      }%
-    }%
-  },
-  %
-  sheet topic
-  %
-  sheet deadline/.value required,
-  sheet deadline/.initial={%
-    \sheetusefont{sheet deadline}{%
-      \sheet@ifempty{\sheetgetsheetdeadline}{}{%
-        \insertsheettopic
-        \par
-      }%
-    }%
-  }
-  sheet title (student)/.value required,
-  sheet title (student)/.initial={Exercise~Sheet~\thesheet{}},
-  %
-  sheet title (teacher without solutions)/.value required,
-  sheet title (teacher without solutions)/.initial={%
-    Exercise~Sheet~\thesheet{}%
-  },
-  %
-  sheet title (teacher with solutions)/.value required,
-  sheet title (teacher with solutions)/.initial={%
-    Exercise~Sheet~\thesheet{} with Solutions%
-  },
-  %
-  sheet front matter (student)/.value required,
-  sheet front matter (student)/.initial={%
-    \sheetusefont{sheet title}{%
-      \sheetinserttemplate{sheet title (student)}%
-      \vskip .5ex \par
-    }%
-    \sheet@ifempty{\sheetgetsheettopic}{}{%
-      \sheetusefont{sheet topic}{%
-        \vskip .5ex
-        \sheetgetsheettopic
-        \vskip .5ex \par
-      }
-    }%
-    \sheet@ifempty{\sheetinsertsemester}{}{%
-      \sheetusefont{sheet author}{%
-        \vskip 1ex
-        \sheetinsertsemester
-        \vskip 1ex \par
-      }%
-    }%
-    \sheetusefont{sheet author}{%
-      \vskip 1ex
-      \sheetinsertauthor
-      \vskip 1ex \par
+\newif\ifsheet@template@grouping
+
+% Define keys for templates.
+
+\define@key{sheet@templates}{grouping}[true]{%
+  \csname sheet@template@grouping#1\endcsname%
+}
+
+% Resets the keys for setting/inserting templates to the default
+% values.
+
+\def\sheet@keys@resettemplatekeys{
+  \setkeys{sheet@templates}{%
+    grouping=true%
+  }%
+}
+
+% User level macro for setting a template.
+
+\def\setsheettemplate{%
+  \@ifnextchar[\sheet@settemplate{\sheet@settemplate[]}%
+}
+
+% Internal macro for template definition.
+
+\long\def\sheet@settemplate[#1]#2#3{%
+  % resetting keys
+  \sheet@keys@resettemplatekeys
+  % reading keys
+  \setkeys{sheet@templates}{#1}%
+  % defining the template macro
+  \expandafter\def\csname sheet@template@#2\endcsname{#3}%
+}
+
+% User level macro for inserting a template. 
+
+\def\insertsheettemplate{%
+  \@ifnextchar[\sheet@inserttemplate{\sheet@inserttemplate[]}}
+
+% Internal macro for inserting a template. Produces an error if the
+% requested template has not been defined.
+
+\def\sheet@inserttemplate[#1]#2{%
+  % checks whether this template has been defined
+  \expandafter\ifx\csname sheet@template@#2\endcsname\relax
+    % template has not been defined
+    \ClassError{exercisesheet}%
+      {Template "#2" has not been defined}%
+        {Define this template or avoid using it}
+    % gobble mandatory and optional arguments 
+    \def\sheet@tmp@next[#1]{#2}{}
+  \else
+    % template has been defined, start typesetting it
+    \let\sheet@tmp@next=\sheet@@inserttemplate
+  \fi
+  \sheet@tmp@next[#1]{#2}%
+}
+
+\def\sheet@@inserttemplate[#1]#2{%
+  % resetting keys
+  \sheet@keys@resettemplatekeys{}
+  % setting keys
+  \setkeys{sheet@templates}{#1}
+  % preparing template for insertion
+  \ifsheet@template@grouping
+    \def\sheet@tmp@nexttemplate{%
+      \begingroup\csname sheet@template@#2\endcsname\endgroup%
     }
-  },
-  %
-  sheet front matter (teacher without solutions)/.value required,
-  sheet front matter (teacher without solutions)/.initial={},
-  %
-  sheet front matter (teacher with solutions)/.value required,
-  sheet front matter (teacher with solutions)/.initial={},
-  %
-  exercise title/.value required,
-  exercise title/.initial={},
-  %
+  \else
+    \def\sheet@tmp@nexttemplate{\csname sheet@template@#2\endcsname}
+  \fi
+  \sheet@tmp@nexttemplate
 }
 
 
-% \sheetsettemplate{sheet front matter generic (topic)}{%
-%   \sheetusefont{sheet topic}{%
-%     \sheet@ifempty{\insertsheettopic}{}{%
-%       \insertsheettopic
-%       \par\vskip 1em
-%     }%
-%   }%
-% }
-% 
-% \sheetsettemplate{sheet front matter generic (lecture, semester)}{%
-%   \sheetusefont{sheet author}{%
-%     \sheet@ifempty{\insertlecture}{}{%
-%       \lecturetype~\emph{\insertlecture}%
-%     }%
-%     \sheet@ifempty{\insertsemester}{}{%
-%       \sheet@ifempty{\insertlecture}{}{, }%
-%       \insertsemester%
-%     }%
-%     \sheet@ifempty{\insertlecture\insertsemester}{}{%
-%       \par\vskip .5em
-%     }%
-%   }%
-% }
-% 
-% \sheetsettemplate{sheet front matter student (main title)}{%
-%   \sheettitlefont{%
-%     Solutions for Exercise~Sheet~\thesheet{}%
-%   }%
-%   \par\vskip .5em
-% }
-% 
-% \setsheettemplate{sheet front matter student (student name)}{%
-%   \par\vskip .5em
-%   \sheetstudentfont{\insertstudent}%
-%   \par\vskip .5em
-% }
-% 
-% \setsheettemplate{sheet front matter student}{%
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter student (main title)%
-%   }%
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter generic (topic)%
-%   }%
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter generic (lecture, semester)%
-%   }%
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter student (student name)%
-%   }
-% }
-% 
-% \setsheettemplate{sheet front matter teacher solution (main title)}{%
-%   \sheettitlefont{%
-%     Exercise~Sheet~\thesheet{} with Sample~Solutions%
-%   }%
-%   \par\vskip .5em
-% }
-% 
-% \setsheettemplate{sheet front matter teacher (teacher name)}{%
-%   \par\vskip .5em
-%   \sheetstudentfont{\insertlecturer}%
-%   \par\vskip .5em
-% }
-% 
-% \setsheettemplate{sheet front matter teacher solution}{%
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter teacher solution (main title)%
-%   }%
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter generic (topic)%
-%   }%
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter generic (lecture, semester)%
-%   }
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter teacher (teacher name)%
-%   }
-% }
-% 
-% \setsheettemplate{sheet front matter teacher no solution (main title)}{%
-%   \sheettitlefont{%
-%     Exercise~Sheet~\thesheet{}%
-%   }%
-%   \par\vskip .5em
-% }
-% 
-% \setsheettemplate{sheet front matter teacher no solution}{%
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter teacher no solution (main title)%
-%   }%
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter generic (topic)%
-%   }%
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter generic (lecture, semester)%
-%   }
-%   \sheetinserttemplate[grouping]{%
-%     sheet front matter teacher (teacher name)%
-%   }
-% }
-% 
-% \setsheettemplate{exercises}{Exercises}
-% 
-% \setsheettemplate{solutions}{Solutions}
-% 
-% \setsheettemplate{solutions for exercise}{Solutions for Exercise}
-
-
-
-% Generic Getter and Setter Methods
-
-\def\sheet@generickeysetter#1#2#3{%
-  \sheet@ifempty{#1}{%
-    \pgfkeyssetvalue{/exercisesheet/#2}{#3}%
-  }{%
-    \pgfkeyssetvalue{/exercisesheet/#1/#2}{#3}%
-  }%
-}
-
-\def\sheet@generickeygetter#1#2{%
-  \sheet@ifempty{#1}{%
-    \pgfkeysvalueof{/exercisesheet/#2}%
-  }{%
-    \pgfkeysvalueof{/exercisesheet/#1/#2}%
-  }%
-}
-
-
-% Getter and Setter for Fonts
-
-\def\sheetsetfont#1#2{%
-  \sheet@generickeysetter{fonts}{#1}{#2}%
-}
-
-\def\sheetusefont#1{%
-  \sheet@generickeygetter{fonts}{#1}%
-}
-
-
-% Getter and Setter for Templates
-
-\def\sheetsettemplate#1#2{%
-  \sheet@generickeysetter{templates}{#1}{#2}%
-}
-
-\def\sheetinserttemplate#1{%
-  \sheet@generickeygetter{templates}{#1}%
-}
-
-
-% Getter and Setter for Semester
-
-\def\sheetinsertsemester{%
-  \sheet@generickeygetter{}{semester}%
-}
-
-\def\sheetsetsemester#1{%
-  \sheet@generickeysetter{}{semester}{#1}%
-}
-
-
-% Getter and Setter for Author
-
-\def\sheetinsertauthor{%
-  \sheet@generickeygetter{}{author}%
-}
-
-\def\sheetsetauthor#1{%
-  \sheet@generickeysetter{}{author}{#1}%
-}
-
-
-% Getter and Setter for Sheets
-
-\def\sheetgetsheettopic{%
-  \sheet@generickeygetter{variables/sheet}{topic}%
-}
-
-\def\sheetgetsheetdeadline{%
-  \sheet@generickeygetter{variables/sheet}{deadline}%
-}
-
-
-% Getter and Setter for Exercises and Subexercises
-
-\def\sheetgetexercisetopic{%
-  \sheet@generickeygetter{variables/exercise}{topic}%
-}
-
-\def\sheetgetexercisecredits{%
-  \sheet@generickeygetter{variables/exercise}{credits}%
-}
-
-\def\sheetgetsubexercisetopic{%
-  \sheet@generickeygetter{variables/subexericse}{topic}%
-}
-
-\def\sheetgetsubexercisecredits{%
-  \sheet@generickeygetter{variables/subexercise}{credits}%
-}
-
-  
 % --------------------------------------------------------------------
 %
 % Loading the underlying class.
@@ -770,7 +536,6 @@
   \clearpage
   % parse keys
   \setkeys{sheet@sheet}{label={},credits=-1,#1}%
-  \pgfqkeys{/exercisesheet/variables/sheet}{#1}%
   % begin new page
   \global\@topnum\z@
   \setcounter{page}{1}%
@@ -803,13 +568,13 @@
       %
       \ifstudent
         % student mode
-        \sheetinserttemplate{sheet front matter (student)}
+        \insertsheettemplate{sheet front matter student}
       \else
         % teacher mode
         \ifsolution
-          % \sheetinserttemplate{sheet front matter teacher solution}
+          \insertsheettemplate{sheet front matter teacher solution}
         \else
-          % \sheetinserttemplate{sheet front matter teacher no solution}
+          \insertsheettemplate{sheet front matter teacher no solution}
         \fi
       \fi
       \par
@@ -868,6 +633,114 @@
 %
 % --------------------------------------------------------------------
 
+\setsheettemplate{sheet front matter generic (topic)}{%
+  \sheettopicfont{%
+    \sheet@ifempty{\insertsheettopic}{}{%
+      \insertsheettopic
+      \par\vskip 1em
+    }%
+  }%
+}
+
+\setsheettemplate{sheet front matter generic (lecture, semester)}{%
+  \sheetlecturefont{%
+    \sheet@ifempty{\insertlecture}{}{%
+      \lecturetype~\emph{\insertlecture}%
+    }%
+    \sheet@ifempty{\insertsemester}{}{%
+      \sheet@ifempty{\insertlecture}{}{, }%
+      \insertsemester%
+    }%
+    \sheet@ifempty{\insertlecture\insertsemester}{}{%
+      \par\vskip .5em
+    }%
+  }%
+}
+
+\setsheettemplate{sheet front matter student (main title)}{%
+  \sheettitlefont{%
+    Solutions for Exercise~Sheet~\thesheet{}%
+  }%
+  \par\vskip .5em
+}
+
+\setsheettemplate{sheet front matter student (student name)}{%
+  \par\vskip .5em
+  \sheetstudentfont{\insertstudent}%
+  \par\vskip .5em
+}
+
+\setsheettemplate{sheet front matter student}{%
+  \insertsheettemplate[grouping]{%
+    sheet front matter student (main title)%
+  }%
+  \insertsheettemplate[grouping]{%
+    sheet front matter generic (topic)%
+  }%
+  \insertsheettemplate[grouping]{%
+    sheet front matter generic (lecture, semester)%
+  }%
+  \insertsheettemplate[grouping]{%
+    sheet front matter student (student name)%
+  }
+}
+
+\setsheettemplate{sheet front matter teacher solution (main title)}{%
+  \sheettitlefont{%
+    Exercise~Sheet~\thesheet{} with Sample~Solutions%
+  }%
+  \par\vskip .5em
+}
+
+\setsheettemplate{sheet front matter teacher (teacher name)}{%
+  \par\vskip .5em
+  \sheetstudentfont{\insertlecturer}%
+  \par\vskip .5em
+}
+
+\setsheettemplate{sheet front matter teacher solution}{%
+  \insertsheettemplate[grouping]{%
+    sheet front matter teacher solution (main title)%
+  }%
+  \insertsheettemplate[grouping]{%
+    sheet front matter generic (topic)%
+  }%
+  \insertsheettemplate[grouping]{%
+    sheet front matter generic (lecture, semester)%
+  }
+  \insertsheettemplate[grouping]{%
+    sheet front matter teacher (teacher name)%
+  }
+}
+
+\setsheettemplate{sheet front matter teacher no solution (main title)}{%
+  \sheettitlefont{%
+    Exercise~Sheet~\thesheet{}%
+  }%
+  \par\vskip .5em
+}
+
+\setsheettemplate{sheet front matter teacher no solution}{%
+  \insertsheettemplate[grouping]{%
+    sheet front matter teacher no solution (main title)%
+  }%
+  \insertsheettemplate[grouping]{%
+    sheet front matter generic (topic)%
+  }%
+  \insertsheettemplate[grouping]{%
+    sheet front matter generic (lecture, semester)%
+  }
+  \insertsheettemplate[grouping]{%
+    sheet front matter teacher (teacher name)%
+  }
+}
+
+\setsheettemplate{exercises}{Exercises}
+
+\setsheettemplate{solutions}{Solutions}
+
+\setsheettemplate{solutions for exercise}{Solutions for Exercise}
+
 % --------------------------------------------------------------------
 %
 % \exercise
@@ -886,7 +759,7 @@
                 {1.5ex \@plus .2ex}%
                 {\normalfont\sheetexercisetopicfont}%
                 [\insertexercisetopic]%
-                {\sheetinserttemplate{exercise title}}%
+                {\insertsheettemplate{exercise title}}%
   \sheet@ifempty{\sheet@exercise@label}{}{%
     \expandafter\label\expandafter{\sheet@exercise@label}%
     \def\sheet@exercise@label{}%
@@ -894,7 +767,7 @@
   \sheet@setnarrow
 }
 
-\sheetsettemplate{exercise title}{%
+\setsheettemplate{exercise title}{%
   \insertexercisetopic
   \ifnum\insertexercisecredits>-1
     \sheet@ifempty{\insertexercisetopic}{}{, }%
@@ -925,7 +798,7 @@
                 {.75ex \@plus .1ex \@minus .1ex}%
                 {\normalfont\sheetsubexercisetopicfont}%
                 [\insertsubexercisetopic]%
-                {\sheetinserttemplate{subexercise title}}%
+                {\insertsheettemplate{subexercise title}}%
   \sheet@ifempty{\sheet@subexercise@label}{}{%
     \expandafter\label\expandafter{\sheet@subexercise@label}%
     \def\sheet@subexercise@label{}%
@@ -933,7 +806,7 @@
   \sheet@setnarrow
 }
 
-\sheetsettemplate{subexercise title}{%
+\setsheettemplate{subexercise title}{%
   \insertsubexercisetopic
   \ifnum\insertsubexercisecredits>-1
     \sheet@ifempty{\insertsubexercisetopic}{}{, }%
@@ -1158,6 +1031,26 @@
 \newcommand*\exercisemark[1]{}
 \newcommand*\subexercisemark[1]{}
 \newcommand*\solutionmark[1]{}
+
+% --------------------------------------------------------------------
+%
+% helper
+%
+% --------------------------------------------------------------------
+
+\long\def\sheet@firstoftwo#1#2{#1}
+\long\def\sheet@secondoftwo#1#2{#2}
+\def\sheet@empty{}
+
+\long\def\sheet@ifempty#1#2#3{%
+  \edef\sheet@tmp{#1}%
+  \ifx\sheet@empty\sheet@tmp
+    \expandafter\sheet@firstoftwo
+  \else
+    \expandafter\sheet@secondoftwo
+  \fi
+  {#2}{#3}%
+}
 
 % --------------------------------------------------------------------
 %
