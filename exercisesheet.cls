@@ -122,6 +122,10 @@
   %
   number/.value required,
   number/.initial={1},
+  %
+  label/.value required,
+  label/.initial={},
+  %
   % exercises
   /exercisesheet/variables/exercise/.cd,
   %
@@ -339,11 +343,12 @@
 % Generic Getter and Setter Methods
 
 \def\sheet@generickeysetter#1#2{%
-    \pgfkeyssetvalue{/exercisesheet/#1}{#2}%
+  \pgfkeyssetvalue{/exercisesheet/#1}{#2}%
 }
 
 \def\sheet@generickeygetter#1{%
-    \pgfkeysvalueof{/exercisesheet/#1}%
+  \pgfkeysvalueof{/exercisesheet/#1}%
+  % \csname pgfk@/exercisesheet/#1\endcsname
 }
 
 
@@ -771,14 +776,19 @@
   % conclude the last sheet
   \clearpage
   % parse keys
-  \setkeys{sheet@sheet}{label={},credits=-1,#1}%
-  \pgfqkeys{/exercisesheet/variables/sheet}{#1}%
+  % \setkeys{sheet@sheet}{label={},credits=-1,#1}%
+  \pgfqkeys{/exercisesheet/variables/sheet}{%
+    label={},%
+    #1%
+  }%
   % begin new page
   \global\@topnum\z@
   \setcounter{page}{1}%
   \ifnum \c@secnumdepth >\m@ne
     \refstepcounter{sheet}%
-    \addcontentsline{toc}{sheet}{\protect\numberline{\sheetname~\thesheet}\insertsheettopic}%
+    \addcontentsline{toc}{sheet}{%
+      \protect\numberline{\sheetname~\thesheet}\insertsheettopic%
+    }%
   \else
     \addcontentsline{toc}{sheet}{\insertsheettopic}%
   \fi
