@@ -34,13 +34,33 @@
 \def\sheet@empty{}
 
 \long\def\sheet@ifempty#1#2#3{%
-  \edef\sheet@tmp{#1}%
+  \def\sheet@tmp{#1}%
   \ifx\sheet@empty\sheet@tmp
     \expandafter\sheet@firstoftwo
   \else
     \expandafter\sheet@secondoftwo
   \fi
   {#2}{#3}%
+}
+
+\long\def\sheet@ifempty@#1#2#3{%
+  \expandafter\sheet@ifempty\expandafter{#1}{#2}{#3}%
+}
+
+\long\def\sheet@ifempty@@#1#2#3{%
+  \expandafter\sheet@ifempty@\expandafter{#1}{#2}{#3}%
+}
+
+\long\def\sheet@ifempty@@@#1#2#3{%
+  \expandafter\sheet@ifempty@@\expandafter{#1}{#2}{#3}%
+}
+
+\long\def\sheet@ifempty@@@@#1#2#3{%
+  \expandafter\sheet@ifempty@@@\expandafter{#1}{#2}{#3}%
+}
+
+\long\def\sheet@ifempty@@@@@#1#2#3{%
+  \expandafter\sheet@ifempty@@@@\expandafter{#1}{#2}{#3}%
 }
 
 % --------------------------------------------------------------------
@@ -190,24 +210,28 @@
       \usesheettemplate{sheet title (student)}%
       \vskip .5ex \par
     }%
-    \sheet@ifempty{\usesheettopic}{}{%
+    \sheet@ifempty@@@@@{\usesheettopic}{}{%
       \usesheetfont{sheet topic}{%
         % \vskip .5ex
         \usesheettopic
         \vskip .5ex \par
       }
     }%
-    \sheet@ifempty{\insertlecture\insertsemester}{}{%
+    \sheet@ifempty@@@@@{\insertlecture}{%
+      \sheet@ifempty@@@@@{\insertsemester}{}{%
+        \usesheetfont{sheet author}{%
+          \vskip 2ex
+          \insertsemester
+          \vskip 2ex \par
+        }%
+      }%
+    }{%
       \usesheetfont{sheet author}{%
         \vskip 2ex
-        \sheet@ifempty{\insertlecture}{%
-          \insertsemester
-          }{%
-            \insertlecture%
-              \sheet@ifempty{\insertsemester}{}{%
-                , \insertsemester
-              }%
-          }%
+        \insertlecture%
+          \sheet@ifempty@@@@@{\insertsemester}{}{%
+            , \insertsemester
+        }%
         \vskip 2ex \par
       }%
     }%
@@ -348,7 +372,6 @@
 
 \def\sheet@generickeygetter#1{%
   \pgfkeysvalueof{/exercisesheet/#1}%
-  % \csname pgfk@/exercisesheet/#1\endcsname
 }
 
 
@@ -827,7 +850,7 @@
       \par
     }%
   }%
-  \sheet@ifempty{\sheet@sheet@label}{}{%
+  \sheet@ifempty@{\sheet@sheet@label}{}{%
     \expandafter\label\expandafter{\sheet@sheet@label}%
     \def\sheet@sheet@label{}%
   }
