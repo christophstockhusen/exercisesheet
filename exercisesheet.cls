@@ -16,7 +16,7 @@
 % This work consists of the file exercisesheet.cls.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2011/10/19]
+\ProvidesClass{exercisesheet}[2011/11/27]
 
 \RequirePackage{xkeyval}
 \RequirePackage{pgfkeys}
@@ -70,6 +70,7 @@
 % --------------------------------------------------------------------
 
 \newif\if@sheet@student
+\newif\if@sheet@solution
 
 \pgfkeys{%
   %
@@ -121,7 +122,13 @@
   sheet deadline/.initial=\sffamily\LARGE,
   %
   sheet author/.value required,
-  sheet author/.initial=\sffamily\footnotesize,
+  sheet author/.initial=\sffamily\small,
+  %
+  sheet lecture/.value required,
+  sheet lecture/.initial=\sffamily\scriptsize,
+  %
+  sheet semester/.value required,
+  sheet semester/.initial=\sffamily\scriptsize,
   %
   exercise topic/.value required,
   exercise topic/.initial=\small\sffamily,
@@ -140,9 +147,6 @@
   deadline/.value required,
   deadline/.initial={},
   %
-  number/.value required,
-  number/.initial={1},
-  %
   label/.value required,
   label/.initial={},
   %
@@ -153,7 +157,10 @@
   topic/.initial={},
   %
   credits/.value required,
-  credits/.initial={},
+  credits/.initial={-1},
+  %
+  label/.value required,
+  label/.initial={},
   %
   % subexercises
   /exercisesheet/variables/subexercise/.cd,
@@ -162,7 +169,17 @@
   topic/.initial={},
   %
   credits/.value required,
-  credits/.initial={},
+  credits/.initial={-1},
+  %
+  label/.value required,
+  label/.initial={},
+  %
+  % subexercises
+  /exercisesheet/variables/solution/.cd,
+  %
+  of/.value required,
+  of/.initial={},
+  %
   %
   % templates
   %
@@ -170,28 +187,9 @@
   %
   % generic templates
   %
-  sheet topic/.value required,
-  sheet topic/.initial={%
-    \usesheetfont{sheet topic}{%
-      \sheet@ifempty{\usesheettopic}{}{%
-        \usesheettopic
-        \par
-      }%
-    }%
-  },
-  %
-  sheet deadline/.value required,
-  sheet deadline/.initial={%
-    \usesheetfont{sheet deadline}{%
-      \sheet@ifempty{\usesheetdeadline}{}{%
-        \insertsheettopic
-        \par
-      }%
-    }%
-  }
   sheet title (student)/.value required,
   sheet title (student)/.initial={%
-    Exercise~Sheet~\thesheet{}%
+    Solutions of Exercise~Sheet~\thesheet{}%
   },
   %
   sheet title (teacher without solutions)/.value required,
@@ -204,165 +202,147 @@
     Exercise~Sheet~\thesheet{} with Solutions%
   },
   %
+  sheet front matter (generic)/.value required,
+  sheet front matter (generic)/.initial={%
+    \sheet@ifusetemplateempty{\usesheettopic}{}{%
+      \begingroup
+        \usesheetfont{sheet topic}{%
+          \usesheettopic
+          \vskip 1ex \par
+        }%
+      \endgroup
+    }%
+    \sheet@ifusetemplateempty{\usesheetdeadline}{}{%
+      \begingroup
+        \usesheetfont{sheet deadline}{%
+          \usesheetdeadline
+          \vskip 1.5ex \par
+        }%
+      \endgroup
+    }%
+    \sheet@ifusetemplateempty{\insertlecture}{}{%
+      \begingroup
+        \usesheetfont{sheet lecture}{%
+          \vskip .5ex
+          \insertlecture%
+          \vskip .5ex
+        }%
+      \endgroup
+    }%
+    \sheet@ifusetemplateempty{\insertsemester}{}{%
+      \begingroup
+        \usesheetfont{sheet semester}{%
+          \vskip .5ex
+          \insertsemester
+          \vskip .5ex \par
+        }%
+      \endgroup
+    }%
+    \begingroup
+      \usesheetfont{sheet author}{%
+        \vskip 2.5ex
+        \insertauthor
+        \vskip 2.5ex \par
+      }
+    \endgroup
+  },
+  %
   sheet front matter (student)/.value required,
   sheet front matter (student)/.initial={%
     \usesheetfont{sheet title}{%
       \usesheettemplate{sheet title (student)}%
       \vskip .5ex \par
     }%
-    \sheet@ifempty@@@@@{\usesheettopic}{}{%
-      \usesheetfont{sheet topic}{%
-        % \vskip .5ex
-        \usesheettopic
-        \vskip .5ex \par
-      }
-    }%
-    \sheet@ifempty@@@@@{\insertlecture}{%
-      \sheet@ifempty@@@@@{\insertsemester}{}{%
-        \usesheetfont{sheet author}{%
-          \vskip 2ex
-          \insertsemester
-          \vskip 2ex \par
-        }%
-      }%
-    }{%
-      \usesheetfont{sheet author}{%
-        \vskip 2ex
-        \insertlecture%
-          \sheet@ifempty@@@@@{\insertsemester}{}{%
-            , \insertsemester
-        }%
-        \vskip 2ex \par
-      }%
-    }%
-    \usesheetfont{sheet author}{%
-      \vskip 1ex
-      \insertauthor
-      \vskip 1ex \par
-    }
+    \usesheettemplate{sheet front matter (generic)}%
   },
   %
   sheet front matter (teacher without solutions)/.value required,
-  sheet front matter (teacher without solutions)/.initial={},
+  sheet front matter (teacher without solutions)/.initial={%
+    \usesheetfont{sheet title}{%
+      \usesheettemplate{sheet title (teacher without solutions)}%
+      \vskip .5ex \par
+    }%
+    \usesheettemplate{sheet front matter (generic)}%
+  },
   %
   sheet front matter (teacher with solutions)/.value required,
-  sheet front matter (teacher with solutions)/.initial={},
+  sheet front matter (teacher with solutions)/.initial={%
+    \usesheetfont{sheet title}{%
+      \usesheettemplate{sheet title (teacher with solutions)}%
+      \vskip .5ex \par
+    }%
+    \usesheettemplate{sheet front matter (generic)}%
+  },
   %
   exercise title/.value required,
-  exercise title/.initial={},
+  exercise title/.initial={%
+    \useexercisetopic
+    \ifnum\useexercisecredits>-1
+      \sheet@ifusetemplateempty{\useexercisetopic}{}{, }%
+      \usesheettemplate{exercise title (credits)}
+    \fi
+  },
   %
+  exercise title (credits)/.value required,
+  exercise title (credits)/.initial={%
+    \useexercisecredits~%
+    \ifnum\useexercisecredits=1
+      \usesheettemplate{credit name}%
+    \else
+      \usesheettemplate{credits name}%
+    \fi
+  },
+  %
+  subexercise title/.value required,
+  subexercise title/.initial={%
+    \usesubexercisetopic
+    \ifnum\usesubexercisecredits>-1
+      \sheet@ifusetemplateempty{\usesubexercisetopic}{}{, }%
+      \usesheettemplate{subexercise title (credits)}
+    \fi
+  },
+  %
+  subexercise title (credits)/.value required,
+  subexercise title (credits)/.initial={%
+    \usesubexercisecredits~%
+    \ifnum\usesubexercisecredits=1
+      \usesheettemplate{credit name}%
+    \else
+      \usesheettemplate{credits name}%
+    \fi
+  },
+  %
+  credit name/.value required,
+  credit name/.initial={Credit},
+  %
+  credits name/.value required,
+  credits name/.initial={Credits},
+  %
+  solution title (with reference)/.value required,
+  solution title (with reference)/.initial={%
+    Solution~of~\ref{\useexerciselabelofsolution}%
+  },
+  %
+  solution title (without reference)/.value required,
+  solution title (without reference)/.initial={%
+    Solution%
+  }
 }
 
+\pgfkeysdef{/exercisesheet/variables/sheet/number}{%
+  \setcounter{sheet}{#1}%
+  \addtocounter{sheet}{-1}%
+}
 
-% \setsheettemplate{sheet front matter generic (topic)}{%
-%   \usesheetfont{sheet topic}{%
-%     \sheet@ifempty{\insertsheettopic}{}{%
-%       \insertsheettopic
-%       \par\vskip 1em
-%     }%
-%   }%
-% }
-% 
-% \setsheettemplate{sheet front matter generic (lecture, semester)}{%
-%   \usesheetfont{sheet author}{%
-%     \sheet@ifempty{\insertlecture}{}{%
-%       \lecturetype~\emph{\insertlecture}%
-%     }%
-%     \sheet@ifempty{\insertsemester}{}{%
-%       \sheet@ifempty{\insertlecture}{}{, }%
-%       \insertsemester%
-%     }%
-%     \sheet@ifempty{\insertlecture\insertsemester}{}{%
-%       \par\vskip .5em
-%     }%
-%   }%
-% }
-% 
-% \setsheettemplate{sheet front matter student (main title)}{%
-%   \sheettitlefont{%
-%     Solutions for Exercise~Sheet~\thesheet{}%
-%   }%
-%   \par\vskip .5em
-% }
-% 
-% \setsheettemplate{sheet front matter student (student name)}{%
-%   \par\vskip .5em
-%   \sheetstudentfont{\insertstudent}%
-%   \par\vskip .5em
-% }
-% 
-% \setsheettemplate{sheet front matter student}{%
-%   \usesheettemplate[grouping]{%
-%     sheet front matter student (main title)%
-%   }%
-%   \usesheettemplate[grouping]{%
-%     sheet front matter generic (topic)%
-%   }%
-%   \usesheettemplate[grouping]{%
-%     sheet front matter generic (lecture, semester)%
-%   }%
-%   \usesheettemplate[grouping]{%
-%     sheet front matter student (student name)%
-%   }
-% }
-% 
-% \setsheettemplate{sheet front matter teacher solution (main title)}{%
-%   \sheettitlefont{%
-%     Exercise~Sheet~\thesheet{} with Sample~Solutions%
-%   }%
-%   \par\vskip .5em
-% }
-% 
-% \setsheettemplate{sheet front matter teacher (teacher name)}{%
-%   \par\vskip .5em
-%   \sheetstudentfont{\insertlecturer}%
-%   \par\vskip .5em
-% }
-% 
-% \setsheettemplate{sheet front matter teacher solution}{%
-%   \usesheettemplate[grouping]{%
-%     sheet front matter teacher solution (main title)%
-%   }%
-%   \usesheettemplate[grouping]{%
-%     sheet front matter generic (topic)%
-%   }%
-%   \usesheettemplate[grouping]{%
-%     sheet front matter generic (lecture, semester)%
-%   }
-%   \usesheettemplate[grouping]{%
-%     sheet front matter teacher (teacher name)%
-%   }
-% }
-% 
-% \setsheettemplate{sheet front matter teacher no solution (main title)}{%
-%   \sheettitlefont{%
-%     Exercise~Sheet~\thesheet{}%
-%   }%
-%   \par\vskip .5em
-% }
-% 
-% \setsheettemplate{sheet front matter teacher no solution}{%
-%   \usesheettemplate[grouping]{%
-%     sheet front matter teacher no solution (main title)%
-%   }%
-%   \usesheettemplate[grouping]{%
-%     sheet front matter generic (topic)%
-%   }%
-%   \usesheettemplate[grouping]{%
-%     sheet front matter generic (lecture, semester)%
-%   }
-%   \usesheettemplate[grouping]{%
-%     sheet front matter teacher (teacher name)%
-%   }
-% }
-% 
-% \setsheettemplate{exercises}{Exercises}
-% 
-% \setsheettemplate{solutions}{Solutions}
-% 
-% \setsheettemplate{solutions for exercise}{Solutions for Exercise}
+\pgfkeysdef{/exercisesheet/variables/exercise/number}{%
+  \setcounter{exercise}{#1}%
+  \addtocounter{exercise}{-1}%
+}
 
-
+\pgfkeysdef{/exercisesheet/variables/subexercise/number}{%
+  \setcounter{subexercise}{#1}%
+  \addtocounter{subexercise}{-1}%
+}
 
 % Generic Getter and Setter Methods
 
@@ -372,6 +352,13 @@
 
 \def\sheet@generickeygetter#1{%
   \pgfkeysvalueof{/exercisesheet/#1}%
+}
+
+
+% Test whether template is the empty string
+
+\long\def\sheet@ifusetemplateempty#1#2#3{%
+  \sheet@ifempty@@@@@{#1}{#2}{#3}%
 }
 
 
@@ -429,6 +416,10 @@
   \sheet@generickeygetter{variables/sheet/deadline}%
 }
 
+\def\usesheetlabel{%
+  \sheet@generickeygetter{variables/sheet/label}%
+}
+
 
 % Getter and Setter for Exercises and Subexercises
 
@@ -440,12 +431,24 @@
   \sheet@generickeygetter{variables/exercise/credits}%
 }
 
+\def\useexerciselabel{%
+  \sheet@generickeygetter{variables/exercise/label}%
+}
+
 \def\usesubexercisetopic{%
-  \sheet@generickeygetter{variables/subexericse/topic}%
+  \sheet@generickeygetter{variables/subexercise/topic}%
 }
 
 \def\usesubexercisecredits{%
   \sheet@generickeygetter{variables/subexercise/credits}%
+}
+
+\def\usesubexerciselabel{%
+  \sheet@generickeygetter{variables/subexercise/label}%
+}
+
+\def\useexerciselabelofsolution{%
+  \sheet@generickeygetter{variables/solution/of}%
 }
 
 % Getter and Setter for the Lecture Name
@@ -465,6 +468,7 @@
 \newcommand*\insertlecturer{%
   \sheet@generickeygetter{lecturer}%
 }
+
   
 % --------------------------------------------------------------------
 %
@@ -539,33 +543,17 @@
 
 % Set default values for the class options.
 
-\ExecuteOptionsX{narrow,student,solution}
+\ExecuteOptionsX{narrow,student}
 \ProcessOptionsX
 \LoadClass{report}
 
 % 
 
-\def\exercisesheet{\texttt{exercisesheet}}
+\def\exercisesheet{{\upshape\texttt{exercisesheet}}}
 
 %
 % 
 %
-
-% --------------------------------------------------------------------
-%
-% Setting up the default fonts.
-%
-% --------------------------------------------------------------------
-
-\def\sheettitlefont{\sffamily\fontsize{36}{40}\selectfont}
-\def\sheettopicfont{\sffamily\Huge}
-\def\sheetdeadlinefont{\sffamily\LARGE}
-\def\sheetlecturefont{\sffamily\footnotesize}
-\def\sheetsemesterfont{\sffamily\footnotesize}
-\def\sheetlecturerfont{\sffamily\footnotesize}
-\def\sheetstudentfont{\sffamily}
-\def\sheetexercisetopicfont{\small\sffamily}
-\def\sheetsubexercisetopicfont{\footnotesize\sffamily}
 
 % --------------------------------------------------------------------
 % 
@@ -584,7 +572,7 @@
 \advance\textheight by -\headheight
 \advance\textheight by -\headsep
 \advance\textheight by -\footskip
-\advance\textheight by -1cm
+% \advance\textheight by -1cm
 \voffset=-1in
 
 \parindent=0pt
@@ -626,59 +614,6 @@
 
 \pagestyle{headings}
 
-%
-% Defining the keys for the sheets.
-%
-
-\define@key{sheet@sheet}{topic}{\sheet@sheet@topic={#1}}
-\define@key{sheet@sheet}{deadline}{\sheet@sheet@deadline={#1}}
-\define@key{sheet@sheet}{label}{\def\sheet@sheet@label{#1}}
-\define@key{sheet@sheet}{credits}{\sheet@sheet@credits=#1}
-\define@key{sheet@sheet}{number}{%
-  \setcounter{sheet}{#1}%
-  \addtocounter{sheet}{-1}%
-}
-
-\newtoks\sheet@sheet@topic
-\newtoks\sheet@sheet@deadline
-\def\sheet@sheet@label{}
-\newcount\sheet@sheet@credits
-
-% --------------------------------------------------------------------
-%
-% Defining the keys for the exercises.
-%
-% --------------------------------------------------------------------
-
-\define@key{sheet@exercise}{topic}{\sheet@exercise@topic={#1}}
-\define@key{sheet@exercise}{label}{\def\sheet@exercise@label{#1}}
-\define@key{sheet@exercise}{credits}{\sheet@exercise@credits=#1}
-\define@key{sheet@exercise}{number}{%
-  \setcounter{exercise}{#1}%
-  \addtocounter{exercise}{-1}%
-}
-
-\newtoks\sheet@exercise@topic
-\def\sheet@exercise@label{}
-\newcount\sheet@exercise@credits
-
-% --------------------------------------------------------------------
-%
-% Defining the keys for the subexercises.
-%
-% --------------------------------------------------------------------
-
-\define@key{sheet@subexercise}{topic}{\sheet@subexercise@topic={#1}}
-\define@key{sheet@subexercise}{label}{\def\sheet@subexercise@label{#1}}
-\define@key{sheet@subexercise}{credits}{\sheet@subexercise@credits=#1}
-\define@key{sheet@subexercise}{number}{%
-  \setcounter{subexercise}{#1}%
-  \addtocounter{subexercise}{-1}%
-}
-
-\newtoks\sheet@subexercise@topic
-\def\sheet@subexercise@label{}
-\newcount\sheet@subexercise@credits
 
 % --------------------------------------------------------------------
 %
@@ -693,7 +628,7 @@
 % --------------------------------------------------------------------
 %
 % Defining the names that are used within the titles of the sheets,
-% exercises and subexercises.
+% exercises and subexercises (especially by @seccntformat).
 %
 % --------------------------------------------------------------------
 
@@ -702,39 +637,16 @@
 \newcommand\exercisename{Exercise}
 \newcommand\subexercisename{Subexercise}
 \newcommand\solutionname{Solution}
-\newcommand\solutionsname{Solutions}
-\newcommand\forname{for}
-\newcommand\byname{by}
-\newcommand\creditname{credit}
-\newcommand\creditsname{credits}
-\newcommand\lecturetype{Lecture}
-\newcommand\solutionsbyname{Solutions by}
 
-\def\setsheetname#1{\def\sheetname{#1}}
-\def\setdeadlinename#1{\def\sheetdeadline{#1}}
-\def\setexercisename#1{\def\exercisename{#1}}
-\def\setsubexercisename#1{\def\subexercisename{#1}}
-\def\setsolutionname#1{\def\solutionname{#1}}
-\def\setcreditname#1{\def\creditname{#1}}
-\def\setcreditsname#1{\def\creditsname{#1}}
-\def\setlecturename#1{\def\lecturetype{#1}}
-\def\setsolutionsbyname#1{\def\solutionsbyname{#1}}
 
 % --------------------------------------------------------------------
-%
-% Insert commands for sheets, exercises, and subexercises.
+% 
+% \@seccntformat
 %
 % --------------------------------------------------------------------
 
-\newcommand\insertsheettopic{\the\sheet@sheet@topic}
-\newcommand\insertsheetdeadline{\the\sheet@sheet@deadline}
-\newcommand\insertsheetcredits{\the\sheet@sheet@credits}
+\def\@seccntformat#1{\csname #1name\endcsname~\csname the#1\endcsname\quad}
 
-\newcommand\insertexercisetopic{\the\sheet@exercise@topic}
-\newcommand\insertexercisecredits{\the\sheet@exercise@credits}
-
-\newcommand\insertsubexercisetopic{\the\sheet@subexercise@topic}
-\newcommand\insertsubexercisecredits{\the\sheet@subexercise@credits}
 
 % --------------------------------------------------------------------
 %
@@ -762,7 +674,8 @@
         \ifstudent
           \sheettopicfont{\insertsolutionsname}\par\medskip
         \else
-          \ifsolution
+          %\ifsolution
+          \if@sheet@solution
             \sheettopicfont{\insertexerciseswithsamplesolutionsname}\par\medskip
           \else
             \sheettopicfont{\insertexercisesname}\par\medskip
@@ -810,10 +723,10 @@
   \ifnum \c@secnumdepth >\m@ne
     \refstepcounter{sheet}%
     \addcontentsline{toc}{sheet}{%
-      \protect\numberline{\sheetname~\thesheet}\insertsheettopic%
+      \protect\numberline{\sheetname~\thesheet}\usesheettopic%
     }%
   \else
-    \addcontentsline{toc}{sheet}{\insertsheettopic}%
+    \addcontentsline{toc}{sheet}{\usesheettopic}%
   \fi
   \markboth{}{}%
   %
@@ -841,18 +754,18 @@
         \usesheettemplate{sheet front matter (student)}
       \else
         % teacher mode
-        \ifsolution
-          % \usesheettemplate{sheet front matter teacher solution}
+        % \ifsolution
+        \if@sheet@solution
+          \usesheettemplate{sheet front matter (teacher with solutions)}
         \else
-          % \usesheettemplate{sheet front matter teacher no solution}
+          \usesheettemplate{sheet front matter (teacher without solutions)}
         \fi
       \fi
       \par
     }%
   }%
-  \sheet@ifempty@{\sheet@sheet@label}{}{%
-    \expandafter\label\expandafter{\sheet@sheet@label}%
-    \def\sheet@sheet@label{}%
+  \sheet@ifusetemplateempty{\usesheetlabel}{}{%
+    \label{\usesheetlabel}%
   }
   \nobreak
   \vskip .5em
@@ -862,84 +775,33 @@
 
 % --------------------------------------------------------------------
 %
-% Title definitions.
-%
-% --------------------------------------------------------------------
-
-\def\setsheettitlestudent#1{%
-  \def\insertsheettitlestudent{#1}}
-
-\def\setsheettitleteachersolution#1{%
-  \def\insertsheettitleteachersolution{#1}}
-
-\def\setsheettitleteachernosolution#1{%
-  \def\insertsheettitleteachernosolution{#1}}
-
-\def\setexercisesname#1{%
-  \def\insertexercisesname{#1}}
-
-\def\setexerciseswithsamplesolutionsname#1{%
-  \def\insertexerciseswithsamplesolutionsname{#1}}
-
-\def\setsolutionsname#1{%
-  \def\insertsolutionsname{#1}}
-
-\def\setsolutionforname#1{%
-  \def\solutionforname{#1}}
-
-
-\setsheettitlestudent{Solutions for Exercise~Sheet~\thesheet}
-\setsheettitleteachersolution{Exercise~Sheet~\thesheet{} with 
-  Sample~Solutions}
-\setsheettitleteachernosolution{Exercise~Sheet~\thesheet{}}
-\setexercisesname{Exercises}
-\setexerciseswithsamplesolutionsname{Exercises with Sample~Solutions}
-\setsolutionsname{Solutions}
-\setsolutionforname{Solution for Exercise}
-
-% --------------------------------------------------------------------
-%
-% Setting up the templates.
-%
-% --------------------------------------------------------------------
-
-% --------------------------------------------------------------------
-%
 % \exercise
 %
 % --------------------------------------------------------------------
 
-\newcommand\exercise{\@ifnextchar[\sheet@start@exercise{\sheet@start@exercise[]}}
+\newcommand\exercise{%
+  \@ifnextchar[%
+    \sheet@start@exercise%
+    {\sheet@start@exercise[]}%
+}
 
 \def\sheet@start@exercise[#1]{
-  % parse keys
-  \setkeys{sheet@exercise}{label={},credits=-1,#1}
+  \pgfqkeys{/exercisesheet/variables/exercise}{%
+    label={},
+    credits=-1,
+    #1%
+  }%
   \sheet@setwide
-  % typeset 
   \@startsection{exercise}{2}{\z@}%
                 {-3ex \@plus -.2ex \@minus -.2ex}%
                 {1.5ex \@plus .2ex}%
-                {\normalfont\sheetexercisetopicfont}%
-                [\insertexercisetopic]%
+                {\normalfont\usesheetfont{exercise topic}}%
+                [\useexercisetopic]%
                 {\usesheettemplate{exercise title}}%
-  \sheet@ifempty{\sheet@exercise@label}{}{%
-    \expandafter\label\expandafter{\sheet@exercise@label}%
-    \def\sheet@exercise@label{}%
+  \sheet@ifusetemplateempty{\useexerciselabel}{}{%
+    \label{\useexerciselabel}%
   }%
   \sheet@setnarrow
-}
-
-\setsheettemplate{exercise title}{%
-  \insertexercisetopic
-  \ifnum\insertexercisecredits>-1
-    \sheet@ifempty{\insertexercisetopic}{}{, }%
-    \insertexercisecredits~%
-    \ifnum\insertexercisecredits=1
-      \creditname
-    \else
-      \creditsname
-    \fi
-  \fi
 }
 
 % --------------------------------------------------------------------
@@ -948,46 +810,31 @@
 %
 % --------------------------------------------------------------------
 
-\newcommand\subexercise{\@ifnextchar[\sheet@start@subexercise{\sheet@start@subexercise[]}}
+\newcommand\subexercise{%
+  \@ifnextchar[%
+    \sheet@start@subexercise%
+    {\sheet@start@subexercise[]}%
+}
 
 \def\sheet@start@subexercise[#1]{
-  % parse keys
-  \setkeys{sheet@subexercise}{label={},credits=-1,#1}
+  \pgfqkeys{/exercisesheet/variables/subexercise}{%
+    label={},
+    credits=-1,
+    #1%
+  }
   \sheet@setwide
-  % typeset 
   \@startsection{subexercise}{3}{\z@}%
                 {-1.5ex \@plus -.1ex \@minus -.1ex}%
                 {.75ex \@plus .1ex \@minus .1ex}%
-                {\normalfont\sheetsubexercisetopicfont}%
-                [\insertsubexercisetopic]%
+                {\normalfont\usesheetfont{subexercise topic}}%
+                [\usesubexercisetopic]%
                 {\usesheettemplate{subexercise title}}%
-  \sheet@ifempty{\sheet@subexercise@label}{}{%
-    \expandafter\label\expandafter{\sheet@subexercise@label}%
-    \def\sheet@subexercise@label{}%
+  \sheet@ifusetemplateempty{\usesubexerciselabel}{}{%
+    \label{\usesubexerciselabel}%
   }%
   \sheet@setnarrow
 }
 
-\setsheettemplate{subexercise title}{%
-  \insertsubexercisetopic
-  \ifnum\insertsubexercisecredits>-1
-    \sheet@ifempty{\insertsubexercisetopic}{}{, }%
-    \insertsubexercisecredits~%
-    \ifnum\insertsubexercisecredits=1
-      \creditname
-    \else
-      \creditsname
-    \fi
-  \fi
-}
-
-% --------------------------------------------------------------------
-% 
-% \@seccntformat
-%
-% --------------------------------------------------------------------
-
-\def\@seccntformat#1{\csname #1name\endcsname~\csname the#1\endcsname\quad}
 
 % --------------------------------------------------------------------
 %
@@ -998,16 +845,22 @@
 % \newcommand\solution{\@ifnextchar[\sheet@start@solution{\sheet@start@solution[]}}
 
 \def\sheet@solution@refseccntformat#1{%
-  \solutionforname~\expandafter\ref\expandafter{\sheet@solution@exerciselabel}%
+  %\solutionforname~\expandafter\ref\expandafter{\sheet@solution@exerciselabel}%
+  \usesheettemplate{solution title (with reference)}%
 }
 
 \def\sheet@solution@plainseccntformat#1{%
-  \solutionname
+  %\solutionname
+  \usesheettemplate{solution title (without reference)}%
 }
 
 \def\sheet@start@solution[#1]{
   % parse keys
-  \setkeys{sheet@solution}{exerciselabel={},#1}
+  % \setkeys{sheet@solution}{exerciselabel={},#1}
+  \pgfqkeys{/exercisesheet/variables/solution}{%
+    of={},
+    #1%
+  }
   % typeset 
   \let\sheet@orig@seccntformat=\@seccntformat % hackery...
   \sheet@ifempty{\sheet@solution@exerciselabel}{%
@@ -1018,7 +871,7 @@
   \@startsection{solution}{2}{\z@}%
                 {-3ex \@plus -.2ex \@minus -.2ex}%
                 {1.5ex \@plus .2ex}%
-                {\normalfont\sheetexercisetopicfont}%
+                {\normalfont\usesheetfont{exercise topic}}%
                 []{}%{\@seccntformat{}}
   \let\@seccntformat=\sheet@orig@seccntformat
 }
