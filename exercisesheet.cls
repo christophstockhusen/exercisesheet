@@ -16,12 +16,12 @@
 % This work consists of the file exercisesheet.cls.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2011/11/27]
+\ProvidesClass{exercisesheet}[2011/12/09]
 
-\RequirePackage{xkeyval}
 \RequirePackage{pgfkeys}
+\RequirePackage{pgfopts}
 \RequirePackage{environ}
-% \RequirePackage{graphicx}
+
 
 % --------------------------------------------------------------------
 %
@@ -82,14 +82,15 @@
   student/.initial=true,
   student/.default=true,
   %
-  narrow/.initial=.7,
-  narrow/.value required,
+  narrowfactor/.initial=.7,
+  narrowfactor/.value required,
+  %
   nonarrow/.is if=@sheet@nonarrow,
   nonarrow/.initial=false,
   nonarrow/.default=true,
   %
   solution/.is if=@sheet@solution,
-  solution/.initial=false,
+  solution/.initial=true,
   solution/.default=true,
   %
   author/.value required,
@@ -204,7 +205,9 @@
   %
   sheet front matter (generic)/.value required,
   sheet front matter (generic)/.initial={%
-    \sheet@ifusetemplateempty{\usesheettopic}{}{%
+    \sheet@ifusetemplateempty{\usesheettopic}{%
+      \vskip 1ex \par
+    }{%
       \begingroup
         \usesheetfont{sheet topic}{%
           \usesheettopic
@@ -344,6 +347,11 @@
   \addtocounter{subexercise}{-1}%
 }
 
+% Loading Global Keys
+
+\ProcessPgfOptions{/exercisesheet}
+
+
 % Generic Getter and Setter Methods
 
 \def\sheet@generickeysetter#1#2{%
@@ -361,6 +369,10 @@
   \sheet@ifempty@@@@@{#1}{#2}{#3}%
 }
 
+
+% Getter and Setter for Switching the Page Layout
+
+\def\sheet@narrowfactor{\sheet@generickeygetter{narrowfactor}}
 
 % Getter and Setter for Fonts
 
@@ -476,75 +488,6 @@
 %
 % --------------------------------------------------------------------
 
-%
-% Keys for the class.
-%
-
-% Keys for the narrow layout.
-
-\def\sheet@defaultnarrowfactor{.7}
-\let\sheet@narrowfactor=\sheet@defaultnarrowfactor
-
-\DeclareOptionX{narrowfactor}{\def\sheet@narrowfactor{#1}}
-
-\DeclareOptionX{nonarrow}[true]{%
-  \csname if#1\endcsname
-    \def\sheet@narrowfactor{1}
-  \else
-    \let\sheet@narrowfactor=\sheet@defaultnarrowfactor
-  \fi}
-
-\DeclareOptionX{narrow}[true]{
-  \csname if#1\endcsname
-    \let\sheet@narrowfactor=\sheet@defaultnarrowfactor
-  \else
-    \def\sheet@narrowfactor{1}
-  \fi}
-
-% Keys for the student version.
-
-\newif\ifstudent 
-
-\DeclareOptionX{student}[true]{%
-  \csname if#1\endcsname
-    \studenttrue
-  \else
-    \strudentfalse
-  \fi}
-
-\DeclareOptionX{teacher}[true]{%
-  \csname if#1\endcsname
-    \studentfalse
-  \else
-    \studenttrue
-  \fi}
-
-% Keys for solutions.
-
-\newif\ifsolution
-
-\DeclareOptionX{solution}[true]{%
-  \csname if#1\endcsname
-    \solutiontrue
-  \else
-    \solutionfalse
-  \fi}
-
-\DeclareOptionX{nosolution}[true]{
-  \csname if#1\endcsname
-    \solutionfalse
-  \else
-    \solutiontrue
-  \fi}
-
-% Pass undeclared options to the underlying class file.
-
-\DeclareOptionX*{\PassOptionsToClass{\CurrentOption}{report}}
-
-% Set default values for the class options.
-
-\ExecuteOptionsX{narrow,student}
-\ProcessOptionsX
 \LoadClass{report}
 
 % 
@@ -617,16 +560,6 @@
 
 % --------------------------------------------------------------------
 %
-% Defining the keys for the solutions.
-%
-% --------------------------------------------------------------------
-
-\define@key{sheet@solution}{exerciselabel}{\def\sheet@solution@exerciselabel{#1}}
-
-\def\sheet@solution@exerciselabel{}
-
-% --------------------------------------------------------------------
-%
 % Defining the names that are used within the titles of the sheets,
 % exercises and subexercises (especially by @seccntformat).
 %
@@ -671,7 +604,7 @@
       \endgroup
       % document type (exercises, exercises with solutions, solutions)
       \begingroup
-        \ifstudent
+        \if@sheet@student
           \sheettopicfont{\insertsolutionsname}\par\medskip
         \else
           %\ifsolution
@@ -684,7 +617,7 @@
       \endgroup
       \vskip .1\textheight
       \begingroup
-        \ifstudent
+        \if@sheet@student
           \sheetdeadlinefont{\insertstudent}\par
         \else
           \sheetdeadlinefont{\insertlecturer}\par
@@ -712,11 +645,15 @@
   % conclude the last sheet
   \clearpage
   % parse keys
-  % \setkeys{sheet@sheet}{label={},credits=-1,#1}%
   \pgfqkeys{/exercisesheet/variables/sheet}{%
-    label={},%
+    label={},
+    topic={},
+    deadline={},
     #1%
   }%
+  %
+  % advance internal counter for sheets
+  \advance\sheet@sheetcnt by 1
   % begin new page
   \global\@topnum\z@
   \setcounter{page}{1}%
@@ -749,7 +686,7 @@
       %
       \normalfont
       %
-      \ifstudent
+      \if@sheet@student
         % student mode
         \usesheettemplate{sheet front matter (student)}
       \else
@@ -856,18 +793,16 @@
 
 \def\sheet@start@solution[#1]{
   % parse keys
-  % \setkeys{sheet@solution}{exerciselabel={},#1}
   \pgfqkeys{/exercisesheet/variables/solution}{%
     of={},
     #1%
   }
   % typeset 
   \let\sheet@orig@seccntformat=\@seccntformat % hackery...
-  \sheet@ifempty{\sheet@solution@exerciselabel}{%
-    \let\@seccntformat=\sheet@solution@plainseccntformat
-  }{%
-    \let\@seccntformat=\sheet@solution@refseccntformat
-  }%
+  \sheet@ifusetemplateempty{\useexerciselabelofsolution}{}%
+    {%
+      \let\@seccntformat=\sheet@solution@plainseccntformat
+    }
   \@startsection{solution}{2}{\z@}%
                 {-3ex \@plus -.2ex \@minus -.2ex}%
                 {1.5ex \@plus .2ex}%
@@ -888,7 +823,7 @@
 }
 
 \NewEnviron{solution}{%
-  \ifsolution
+  \if@sheet@solution
     \expandafter\sheet@startsolution\BODY%
   \fi}{}
 
@@ -1035,6 +970,11 @@
 
 \let\sheet@orig@thepage=\thepage
 \def\thepage{\thesheet~--~\sheet@orig@thepage}
+
+% Interal Counter for Sheets
+
+\newcount\sheet@sheetcnt
+\sheet@sheetcnt=0
 
 % --------------------------------------------------------------------
 % 
