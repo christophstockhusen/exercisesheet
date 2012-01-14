@@ -1,23 +1,23 @@
-\documentclass[
-  a4paper,
-  teacher,
-  narrowfactor=.85,
-  nosolution % "solution" if sample solutions shall appear
-    ]{exercisesheet}
+\documentclass[a4paper]{exercisesheet}
 
-\lecture{Specimen of a Title of a Lecture}
-\lecturer{Prof.~Foo~Bar}
-\semester{Winter~Semester~2011/2012}
+\sheetconf{
+    narrowfactor = .85,
+    lecture      = Specimen of a Title of a Lecture,
+    semester     = Winter~Semester~2011/2012,
+    author       = Prof.~Walter~Foo,
+    teacher      = true,
+    solutions    = false,
+  }
 
 \usepackage{xcolor}
-\colorlet{maincolor}{blue!50!black}
+\colorlet{maincolor}{orange!50!black}
 
 \usepackage[T1]{fontenc}
 \usepackage[bitstream-charter]{mathdesign}
 \let\sffamily=\rmfamily
 
-\renewcommand{\sheettitlefont}{\sffamily\bfseries\Huge}
-\renewcommand{\sheettopicfont}{\sffamily\bfseries\Huge\color{maincolor}}
+\setsheetfont{sheet title}{\sffamily\bfseries\Huge}
+\setsheetfont{sheet topic}{\sffamily\bfseries\Huge\color{maincolor}}
 
 \begin{document}
 
@@ -51,7 +51,7 @@ This might be an easy exercise\ldots
 \ldots but this one will be really complicated!
 
 \begin{solution}[
-    exerciselabel={very_hard_exercise}
+    of={very_hard_exercise}
   ]
   And here I will explain how easily everything can be solved.
 \end{solution}

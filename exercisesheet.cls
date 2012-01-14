@@ -19,7 +19,6 @@
 \ProvidesClass{exercisesheet}[2011/12/09]
 
 \RequirePackage{pgfkeys}
-\RequirePackage{pgfopts}
 \RequirePackage{environ}
 
 
@@ -70,7 +69,7 @@
 % --------------------------------------------------------------------
 
 \newif\if@sheet@student
-\newif\if@sheet@solution
+\newif\if@sheet@solutions
 
 \pgfkeys{%
   %
@@ -78,20 +77,23 @@
   %
   /exercisesheet/.cd,
   %
-  student/.is if=@sheet@student,
-  student/.initial=true,
-  student/.default=true,
+  % student/.is if=@sheet@student,
+  % student/.initial=true,
+  % student/.default=true,
+  teacher/.is if=@sheet@student,
+  teacher/.initial=false,
+  teacher/.default=true,
   %
   narrowfactor/.initial=.7,
   narrowfactor/.value required,
   %
-  nonarrow/.is if=@sheet@nonarrow,
-  nonarrow/.initial=false,
-  nonarrow/.default=true,
+  % nonarrow/.is if=@sheet@nonarrow,
+  % nonarrow/.initial=false,
+  % nonarrow/.default=true,
   %
-  solution/.is if=@sheet@solution,
-  solution/.initial=true,
-  solution/.default=true,
+  solutions/.is if=@sheet@solutions,
+  solutions/.initial=true,
+  solutions/.default=true,
   %
   author/.value required,
   author/.initial={NO AUTHOR DEFINED!},
@@ -105,6 +107,36 @@
   semester/.value required,
   semester/.initial={NO SEMESTER DEFINED!},
   %
+  % options of the underlying class
+  %
+  % a4paper/.code={%
+  %   \setlength\paperheight{297mm}%
+  %   \setlength\paperwidth{210mm}%
+  % },
+  % %
+  % letterpaper/.code={%
+  %   \setlength\paperheight{11in}%
+  %   \setlength\paperwidth{8.5in}%
+  % },
+  % %
+  % 10pt/.code={\message{====>lol}\def\@ptsize{0}},
+  % 11pt/.code={\def\@ptsize{1}},
+  % 12pt/.code={\def\@ptsize{2}},
+  % %
+  % oneside/.code={\@twosidefalse\@mparswitchfalse},
+  % twoside/.code={\@twosidetrue\@mparswitchtrue},
+  % %
+  % draft/.code={\setlength\overfullrule{5pt}},
+  % final/.code={\setlength\overfullrule{0pt}},
+  % %
+  % titlepage/.code={\@titlepagetrue},
+  % notitlepage/.code={\@titlepagefalse},
+  % %
+  % openright/.code={\@openrighttrue},
+  % openany/.code={\@openrightfalse},
+  % %
+  % leqno/.code={\input{leqno.clo}},
+  % fleqn/.code={\input{fleqn.clo}},
   %
   % fonts
   %
@@ -315,6 +347,18 @@
     \fi
   },
   %
+  sheet name/.value required,
+  sheet name/.initial={Sheet},
+  %
+  exercise name/.value required,
+  exercise name/.initial={Exercise},
+  %
+  subexercise name/.value required,
+  subexercise name/.initial={Subexercise},
+  %
+  deadline name/.value required,
+  deadline name/.initial={Deadline},
+  %
   credit name/.value required,
   credit name/.initial={Credit},
   %
@@ -347,9 +391,10 @@
   \addtocounter{subexercise}{-1}%
 }
 
-% Loading Global Keys
 
-\ProcessPgfOptions{/exercisesheet}
+% Set Global Options
+
+\def\sheetconf#1{\pgfqkeys{/exercisesheet}{#1}}
 
 
 % Generic Getter and Setter Methods
@@ -488,6 +533,9 @@
 %
 % --------------------------------------------------------------------
 
+% \DeclareOption*{\expandafter\sheetconf\expandafter{\CurrentOption}}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}}
+\ProcessOptions\relax
 \LoadClass{report}
 
 % 
@@ -565,11 +613,17 @@
 %
 % --------------------------------------------------------------------
 
-\newcommand\sheetname{Exercise Sheet}
-\newcommand\sheetdeadline{Deadline}
-\newcommand\exercisename{Exercise}
-\newcommand\subexercisename{Subexercise}
-\newcommand\solutionname{Solution}
+% \newcommand\sheetname{Exercise Sheet}
+% \newcommand\sheetdeadline{Deadline}
+% \newcommand\exercisename{Exercise}
+% \newcommand\subexercisename{Subexercise}
+% \newcommand\solutionname{Solution}
+
+\newcommand\sheetname{\usesheettemplate{sheet name}}
+\newcommand\sheetdeadline{\usesheettemplate{deadline name}}
+\newcommand\exercisename{\usesheettemplate{exercise name}}
+\newcommand\subexercisename{\usesheettemplate{subexercise name}}
+\newcommand\solutionname{\usesheettemplate{solution title (without reference)}}
 
 
 % --------------------------------------------------------------------
@@ -588,44 +642,44 @@
 % --------------------------------------------------------------------
 
 \def\maketitle{%
-  \begin{titlepage}
-    \ifx\insertsheetlogo\relax
-    \else
-      \leavevmode
-      \insertsheetlogo
-      \par \bigskip
-    \fi
-    \null \vskip .15\textheight
-    \begingroup 
-      \normalfont
-      % lecture title
-      \begingroup
-        \sheettitlefont{\insertlecture}\par 
-      \endgroup
-      % document type (exercises, exercises with solutions, solutions)
-      \begingroup
-        \if@sheet@student
-          \sheettopicfont{\insertsolutionsname}\par\medskip
-        \else
-          %\ifsolution
-          \if@sheet@solution
-            \sheettopicfont{\insertexerciseswithsamplesolutionsname}\par\medskip
-          \else
-            \sheettopicfont{\insertexercisesname}\par\medskip
-          \fi
-        \fi
-      \endgroup
-      \vskip .1\textheight
-      \begingroup
-        \if@sheet@student
-          \sheetdeadlinefont{\insertstudent}\par
-        \else
-          \sheetdeadlinefont{\insertlecturer}\par
-        \fi
-        \sheetdeadlinefont{\insertsemester}\par
-      \endgroup
-    \endgroup
-  \end{titlepage}%
+%   \begin{titlepage}
+%     \ifx\insertsheetlogo\relax
+%     \else
+%       \leavevmode
+%       \insertsheetlogo
+%       \par \bigskip
+%     \fi
+%     \null \vskip .15\textheight
+%     \begingroup 
+%       \normalfont
+%       % lecture title
+%       \begingroup
+%         \sheettitlefont{\insertlecture}\par 
+%       \endgroup
+%       % document type (exercises, exercises with solutions, solutions)
+%       \begingroup
+%         \if@sheet@student
+%           \sheettopicfont{\insertsolutionsname}\par\medskip
+%         \else
+%           %\ifsolution
+%           \if@sheet@solution
+%             \sheettopicfont{\insertexerciseswithsamplesolutionsname}\par\medskip
+%           \else
+%             \sheettopicfont{\insertexercisesname}\par\medskip
+%           \fi
+%         \fi
+%       \endgroup
+%       \vskip .1\textheight
+%       \begingroup
+%         \if@sheet@student
+%           \sheetdeadlinefont{\insertstudent}\par
+%         \else
+%           \sheetdeadlinefont{\insertlecturer}\par
+%         \fi
+%         \sheetdeadlinefont{\insertsemester}\par
+%       \endgroup
+%     \endgroup
+%   \end{titlepage}%
 }
 
 % --------------------------------------------------------------------
@@ -648,7 +702,7 @@
   \pgfqkeys{/exercisesheet/variables/sheet}{%
     label={},
     topic={},
-    deadline={},
+    deadline={},%
     #1%
   }%
   %
@@ -692,7 +746,7 @@
       \else
         % teacher mode
         % \ifsolution
-        \if@sheet@solution
+        \if@sheet@solutions
           \usesheettemplate{sheet front matter (teacher with solutions)}
         \else
           \usesheettemplate{sheet front matter (teacher without solutions)}
@@ -725,7 +779,7 @@
 \def\sheet@start@exercise[#1]{
   \pgfqkeys{/exercisesheet/variables/exercise}{%
     label={},
-    credits=-1,
+    credits=-1,%
     #1%
   }%
   \sheet@setwide
@@ -756,7 +810,7 @@
 \def\sheet@start@subexercise[#1]{
   \pgfqkeys{/exercisesheet/variables/subexercise}{%
     label={},
-    credits=-1,
+    credits=-1,%
     #1%
   }
   \sheet@setwide
@@ -794,7 +848,7 @@
 \def\sheet@start@solution[#1]{
   % parse keys
   \pgfqkeys{/exercisesheet/variables/solution}{%
-    of={},
+    of={},%
     #1%
   }
   % typeset 
@@ -814,7 +868,7 @@
 % --------------------------------------------------------------------
 % 
 % Solution environment for typesetting solutions that are only typeset
-% when the "solution" option is set.
+% when the "solutions" option is set.
 %
 % --------------------------------------------------------------------
 
@@ -823,7 +877,7 @@
 }
 
 \NewEnviron{solution}{%
-  \if@sheet@solution
+  \if@sheet@solutions
     \expandafter\sheet@startsolution\BODY%
   \fi}{}
 
@@ -848,7 +902,7 @@
     \parindent\z@
     \raggedright
     \normalfont
-    \sheettitlefont
+    \usesheetfont{sheet title}
     \interlinepenalty\@M
     #1 \par \nobreak
     \vskip 40\p@

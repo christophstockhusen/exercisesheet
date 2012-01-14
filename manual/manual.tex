@@ -1,9 +1,13 @@
-\documentclass[a4paper,fleqn,9pt]{report}
+\documentclass[a4paper,fleqn]{report}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
-\usepackage{lmodern}
+% \usepackage{lmodern}
+% \usepackage{tgtermes}
+% \usepackage{mathpazo}
+\usepackage[charter]{mathdesign}
+\def\ttdefault{txtt}
 
 \let\sffamily=\rmfamily
 
@@ -34,12 +38,13 @@
     frame=lines,
     framerule=1pt,
     rulesep=2pt,
-    backgroundcolor=\color{maincolor!15},
+    backgroundcolor=\color{maincolor!12},
     rulecolor=\color{maincolor!70},
     morekeywords={
       sheet,
       exercise,
       subexercise,
+      sheetconf,
       title,
       deadline,
       number,
@@ -51,7 +56,8 @@
       student,
       teacher,
       solution,
-      nosolution,
+      solutions,
+      of,
       narrow,
       nonarrow,
       narrowfactor,
@@ -63,6 +69,15 @@
       colorlet,
       sffamily,
       rmfamily,
+      basic,
+      title,
+      topic,
+      deadline,
+      author,
+      lecture,
+      semester,
+      topic,
+      subexercise topic,
       setsheettitlestudent,
       setsheettitleteachersolution,
       setsheettitleteachernosolution,
@@ -79,11 +94,19 @@
       setcreditname,
       setcreditsname,
       setlecturename,
+      setsheetfont,
+      usesheetfont,
+      setsheettemplate,
+      usesheettemplate,
+      thesheet,
     },
     otherkeywords={a4paper}
   }
 
-\lstMakeShortInline[basicstyle=\normalsize\ttfamily]|
+%\lstMakeShortInline[basicstyle=\normalsize\ttfamily\small]|
+\lstMakeShortInline|
+
+\def\sheettemplatekey#1{\lstinline[language={}]{#1}}
 
 \def\exercisesheet{{exercisesheet}}
 
@@ -104,8 +127,8 @@
 }
 \def\endsyntax{\end{list}}
 
-\def\syntaxdefaultarg#1{\hfill\texttt{#1}\par\smallskip\noindent\ignorespaces}
-\def\metaargument#1{\textit{#1}}
+\def\syntaxdefaultarg#1{\hfill\texttt{\small #1}\par\smallskip\noindent\ignorespaces}
+\def\metaargument#1{\textit{\small #1}}
 
 \def\myempty{}
 \def\ifempty#1#2#3{%
@@ -119,6 +142,9 @@
 
 \def\firstoftwo#1#2{#1}
 \def\secondoftwo#1#2{#2}
+
+\usepackage{booktabs}
+\usepackage{tabularx}
 
 \usepackage[
   pdfborder={0 0 0},
@@ -179,141 +205,126 @@ about the features of this class.
 This semester, Lia, student of Computer Science, plans to typeset the
 solutions of all the exercise sheets with \LaTeX{}. In the last
 semesters she wrote her solutions per hand which had several
-drawbacks:
-\begin{itemize}
-  \item Often her first solutions to exercises contained little errors
-    that she had to correct. Very small errors were easy to correct,
-    but many times she had to insert some sentences or formulas into
-    her solution with the result that Lia had to write several pages
-    of solutions again.
-  \item One week 
-  \item \ldots
-\end{itemize}
-Lia thinks that she can overcome these drawbacks by writing her
-solutions at her computer with \LaTeX. As this will be Lia's first
-experience with \LaTeX{} she asks her tutor Bo for help. He feels
-happy about Lia's plans because he thinks that this will be a good
-preparation for her bachelor's thesis. Bo recommends the
-\exercisesheet{} class that he often used for typesetting his
-solutions for exercise sheets.
+drawbacks: Often her first solutions to exercises contained little
+errors that she had to correct. Very small errors were easy to
+correct, but many times she had to insert some sentences or formulas
+into her solution with the result that Lia had to write several pages
+of solutions repeatedly. Furthermore, Lia simply prefers the beautiful
+appearance of typeset solutions.
+
+As this will be Lia's first experience with \LaTeX{} she asks her
+tutor Bo for help. He feels happy about Lia's plans because he thinks
+that this will be a good preparation for her bachelor's thesis. Bo
+recommends the \exercisesheet{} class that he often used for
+typesetting his own solutions for exercise sheets.
 
 At home from university, Lia downloads and installs a common \LaTeX{}
 distribution and starts to create a simple template file that she
-plans to use for her next exercise sheets. She creates a file 
-|template_student.tex| and opens it in her
-favorite text editor \emph{GVim}. She sets up her file with the
-following lines.
-\lstinputlisting[linerange={1-9}]{template_student.tex}
-Lia passes the |a4paper| to the
-\lstinline|\documentclass{exercisesheet}| command because she wants
-the paper layout to be \textsc{din}~A~4. Moreover, she uses the
-|student| option which makes the class print its titles in
-an appropriate manner for submitting the solutions to her teacher.
-Then Lia specifies the name of the lecture, the name of the lecturer,
-the semester, and her name. Within these commands the makes use of the
-tilde~|~| in order to suppress undesirable line breaks, like
-Donald Knuth recommended in the \TeX{}book.
-
-With this setup Lia is now ready to typeset her first exercise sheet.
-Hence, she types in the following.
-\lstinputlisting[linerange={21-22,27-29,50-51}]{template_student.tex}
+plans to use for her next exercise sheets. She creates a file
+|template_student.tex| and opens it in her favorite text editor
+\emph{GVim}. She sets up her file with the following lines.
+\lstinputlisting[linerange={1-9}]{template_student.tex} Lia passes the
+|a4paper| to the \lstinline|\documentclass{exercisesheet}| command
+because she wants the paper layout to be DIN~A~4. Then Lia specifies
+the name of the lecture, the name of the lecturer, the semester, and
+her name by using the |\sheetconf| command. Within these commands the
+makes use of the tilde~|~| in order to suppress undesirable line
+breaks, like Don Knuth recommended in the \TeX{}book. With this setup
+Lia is now ready to typeset her first exercise sheet. Hence, she types
+in the following.
+\lstinputlisting[linerange={10-11,16-18,39-40}]{template_student.tex}
 Lia uses the \lstinline|\sheet| command to start a new exercise sheet.
 The command requires no argument but accepts an optional list of
 key-value pairs that affect the appearance of the sheet. She decides
 to use the keys |topic| to set a temporary topic.
 
 That was easy! At this point nothing can stop her typesetting her
-first solution. Lia continues typing. She uses the following lines to
-typeset a solution for an exercise that is split into two
-subexercises.
+first solution. She uses the following lines to typeset a solution for
+an exercise that is split into two subexercises.
 
-\lstinputlisting[linerange={31-46}]{template_student.tex}
+\lstinputlisting[linerange={20-35}]{template_student.tex}
 
-Lia is really happy about the simplicity of the \exercisesheet{}
-class. She notices that the can typeset multiple exercise sheets
-within a single \LaTeX{} document by simply using the
-|\sheet| macro repeatedly. Therefore, she asks herself
-whether the \exercisesheet{} class is capable of typesetting a
-title page and a table of contents. She tries whether the following
-standard \LaTeX{} macros will work.
+\noindent Lia is really happy about the simplicity of the
+\exercisesheet{} class. She notices that the can typeset multiple
+exercise sheets within a single \LaTeX{} document by simply using the
+|\sheet| macro repeatedly. Therefore, she asks herself whether the
+\exercisesheet{} class is capable of typesetting a title page and a
+table of contents. She tries whether the following standard \LaTeX{}
+macros will work.
 
-\lstinputlisting[linerange={23-23,25-25}]{template_student.tex}
+\lstinputlisting[linerange={12-12,14-14}]{template_student.tex}
 
-After two runs a table of contents appears in her document that lists
-the exercise sheets and the exercises to her complete satisfaction.
-But now, as she has compiled her document taken a look at the produced
-\textsc{pdf} file, she is not very happy with the default fonts of
-\LaTeX{}. She decides to use some other fonts and bring more color
-into her sheets. Therefore, she loads the |xcolor| package,
-defines a nice orange as her base color, sets the serif font to
-Palatino and the sans-serif font to Biolinum. Furthermore, she
-redefines the fonts of the sheet title and the topic. This also
-affects the title page and now Lia is really happy with her result.
-\lstinputlisting[linerange={11-19}]{template_student.tex}
+\noindent After two runs a table of contents appears in her document
+that lists the exercise sheets and the exercises to her complete
+satisfaction. 
 
-Altogether, Lia has written the following template code.
+\noindent Altogether, Lia has written the following template code.
 
 \lstinputlisting{template_student.tex}
 
 
 \section{A Tutorial for the Teacher Walter}
 
-When Walter sees Lia's solutions he is highly impressed. Not only are
+When Walter sees Lia's solutions he is really impressed. Not only are
 Lia's solutions almost perfectly correct, also it's appearance is very
-beautiful in comparison with his exercise sheets.  Hence, he asks Lia
-whether he may use her template to type his exercise sheets. Lia,
-really happy for this to happen, tells Walter about the
+beautiful in comparison with his exercise sheets. Hence, he asks Lia
+whether he may use her template to type his exercise sheets. Lia --
+really happy for this to happen -- tells Walter about the
 \exercisesheet{} class and emails her template to him. Walter
 immediately opens the template file and starts customizing the
 template for his requirements.
 
-First, he changes the call of the document class as he is not a
-student anymore and mainly doesn't want his exercise sheets look like
-a sheet of solutions. Moreover, he adds the |nosolution|
-option. This option makes the sample solutions that Walter types
-disappear. This way he can type down the solutions to his exercises
-and easily make them disappear if he wants to create the \textsc{pdf}
-version of the sheet for the website. Later on, he can use the
-|solution| option if he wants the previously invisible
-solutions to reappear.
+First, Walter tells the \exercisesheet{} class that he is a teacher by
+adding |teacher=true| to the |\sheetconf| command. This will change
+the appearance of the title page and the sheet headings accordingly.
+Also he sets the |solutions| option to false by |solutions=false|.
+This allows Walter to use the solution environment: Within this
+enviorment Walter can typeset sample solutions to his exercises for
+his assistants. These solutions will only be typeset when
+|solutions=true| is set, otherwise, that is |solutions=false|, they
+will be removed. This way, Walter won‘t have to create several
+documents for versions with and without solutions.
 
-\lstinputlisting[linerange={1-3,5-6}]{template_teacher.tex}
+\lstinputlisting[linerange={1-3,5-10}]{template_teacher.tex}
 
-With this options, Walter is now able to include the sample solutions in
-a convenient way directly in his \LaTeX{} file without annoying
-commenting in and out. As Walter often places the sample solutions to the
-exercises at the very end of the sheet and not directly behind the
-exercises, he uses the build-in referencing mechanism to link the
-exercises with it's sample solutions. Moreover, he uses the
-|credits| option to assign credit points to his exercises.
-Therefore, he augments his template as follows.
+\noindent Walter often places the sample solutions to his exercises at
+the very end of the sheet and not directly behind them. Therefore he
+uses the build-in referencing mechanism to link the exercises with
+it's sample solutions. To do so, he has to label the corresponding
+exercises by the |label| option. Moreover, he uses the |credits|
+option to assign credit points to his exercises. To typeset a sample
+solution to an exercise, Walter uses the |solution| environment. This
+environment accepts the open |of| which he can use to pass the label
+of the corresponding exercise to the solution environment.
 
 \lstinputlisting[linerange={33-57}]{template_teacher.tex}
 
-When Walter typesets his document (which takes two runs to create the
-table of contents and get the references right) he notices that his
-exercise sheet has a very large margin at the right. He immediately
-understands that this must be intentional by the author of the
-\exercisesheet{} class to provide space for detailed corrections on
-the solutions of the students. He shortly thinks about adding the
-|nonarrow| option to the call of the document class which
-would remove the additional margin on the right, but then he thinks
-about just changing the width of the right margin as a little space
-for the students to take notes might be very useful. So the uses the
-|narrowfactor| option on the call of the document class
-which accepts values from $0$ to $1$ in order to set the amount of the
-text width taken by the class as additional margin. As the default
-value is |.7|, Walter changes the document-class call as
-follows.
+\noindent When Walter typesets his document (which takes two runs to
+create the table of contents and get the references right) he notices
+that his exercise sheet has a very large margin at the right. He
+immediately understands that this must be intentional by the author of
+the \exercisesheet{} class to provide space for detailed corrections
+on the solutions of the students. First, he uses the option
+|narrowfactor=1| within the |\sheetconf| call to remove the margin
+completely, but then he thinks that it would be more clever to allow a
+litte more space for his students to take some notes. Therefore, he
+changes this option to |narrowfactor=.85| which satisfies him.
 
-\lstinputlisting[linerange={1-6}]{template_teacher.tex}
+\lstinputlisting[linerange={1-10}]{template_teacher.tex}
 
-As last, Walter changes the appearance of his exercise sheets by also
-changing the fonts (he doesn't want his sheets to look like Lia's). He
-decides to switch everything to Bitstream's \emph{Charter} and
-furthermore substitutes Lia's orange by a dark blue. Altogether Walter is
-really satisfied by his work and starts thinking about easy and
-difficult exercises. His template file now looks as follows.
+\noindent Then Walter changes the appearance of his exercise sheets by
+also changing the fonts (he doesn't want his sheets to look like
+Lia's). He decides to switch everything to Bitstream's \emph{Charter}
+also add some color. Therefore, he loads the |xcolor| package and
+defines a |maincolor| to be a nice orange. Then he uses the
+|setsheetfont| command to re-set the font of the main sheet title and
+the sheet topic.
+
+\lstinputlisting[linerange={12-20}]{template_teacher.tex}
+
+\noindent Altogether Walter is really satisfied by his work and starts
+thinking about easy and difficult exercises. His template file now
+looks as follows.
 
 \lstinputlisting{template_teacher.tex}
 
@@ -365,47 +376,263 @@ new files to \TeX. That's it.
 
 \chapter{Using the \exercisesheet{} Class}
 
-This chapter contains a brief introduction into the underlying
-concepts and design principles of the \exercisesheet{} class.
+This chapter contains a (more or less) comprehensive explanation of
+the underlying concepts and design principles of the \exercisesheet{}
+class. Moreover, a complete list of the available user commands is
+given.
 
 
-\section{A Note on Using the Document Class Options}
+% \section{A Note on Using the Document Class Options}
+% 
+% Most of the parameters of the document class can be changed within the
+% call of the document class. Every option works with a key-value
+% mechanism, that is, every parameter may be set like in the following
+% example.
+% \begin{lstlisting}
+% \documentclass[
+%   narrowfactor=.7,
+%   solution=true
+%     ]{exercisesheet}
+% \end{lstlisting}
+% Options that take Boolean values may be used without a value which
+% results in setting the option to true. Therefore, the above example
+% is equivalent to the following example.
+% \begin{lstlisting}
+% \documentclass[
+%   narrowfactor=.7,
+%   solution
+%     ]{exercisesheet}
+% \end{lstlisting}
 
-Most of the parameters of the document class can be changed within the
-call of the document class. Every option works with a key-value
-mechanism, that is, every parameter may be set like in the following
-example.
-\begin{lstlisting}
-\documentclass[
-  narrowfactor=.7,
-  solution=true
-    ]{exercisesheet}
-\end{lstlisting}
-Options that take Boolean values may be used without a value which
-results in setting the option to true. Therefore, the above example
-is equivalent to the following example.
-\begin{lstlisting}
-\documentclass[
-  narrowfactor=.7,
-  solution
-    ]{exercisesheet}
-\end{lstlisting}
+\section{The Central Command for Setting up Things}
+
+The \exercisesheet{} class provides a single command that can be used
+to set up most of the information needed by the class: the
+|\sheetconf| command.
+
+\begin{syntax}
+  |\sheetconf{|\metaargument{key-value list}|}|
+  \syntaxdefaultarg{}
+  This is the central command for setting the basic information. As
+  arguments it accepts a comma-separated key-value list. (For
+  examples, see the tutorials above.) The following sections mostly
+  contain descriptions of all available key-value pairs for this
+  command.
+
+\end{syntax}
+
+\noindent Unfortunately not everything can be set up by he
+|\sheetconf| command. Due to historical reasons many arguments have to
+be specified within the call of the document class. As this class is
+build upon the report class, all optional arguments that are available
+for the report class are also available for the \exercisesheet{}
+class.
 
 
-\section{Creating Sheets and Configuring their Appearance}
+\section{Setting up the Basic Information}
 
-To typeset a new exercise sheet the |\sheet| command must be used.
+Students (as well as teachers) have to place a lot of information on
+their exercise sheets. For instance, Students typically have to place
+their name, their matriculation number, the name of the corresponding
+lecture, and a lot more on their sheets. The following key's can be
+used within the |\sheetconf| command to set these information.
+
+\begin{syntax}
+  |lecture={|\metaargument{string}|}| \syntaxdefaultarg{}
+  This sets the name of the lecture. For example, use
+  |lecture={Computational Complexity}| if the lecture is named
+  \emph{Computational Complexity}.
+\end{syntax}
+
+\begin{syntax}
+  |lecturer={|\metaargument{string}|}| \syntaxdefaultarg{}
+  This sets the name of the lecturer. Walter would use
+  |lecturer={Prof.~Walter}| for his exercise sheets. Note the~|~|
+  to prevent unintended line breaking.
+\end{syntax}
+
+\begin{syntax}
+  |semester={|\metaargument{string}|}| \syntaxdefaultarg{}
+  Sets the current semester. For example, use 
+  |semester={Summer~Semester~2011}|. Note the~|~| to prevent
+  unintended line breaking.
+\end{syntax}
+
+\begin{syntax}
+  |author={|\metaargument{string}|}| \syntaxdefaultarg{}
+  This sets the name of the author that has worked out this sheet or
+  the solutions on this sheet. A list of names can be passed as an
+  argument to this macro if a group of people has been working on the
+  sheets. For example, use 
+  |author={Justus~Jonas, Peter~Shaw, and Bob~Andrews}|. 
+  Analogous you can add matriculation numbers behind
+  the names. Note the |~| that prevents line breaking.
+\end{syntax}
+
+
+\section{Wide and Narrow Page Layout}
+
+A common problem of exercise sheets typeset by students is the small
+margin that makes it nearly impossible for the correctors to place
+helpful notes on the sheet. The \exercisesheet{} class supports a
+simple but effective method for producing enough white space for
+corrections without completely destroing the good look of the page:
+The textwidth is changed accordingly to the type of text currently
+typeset. While the sheet headings, the exercise headings, and many
+more things may use the full text width, the base text may use only a
+fraction of the text width and leaves the rest as additional white
+margin on the right. The amount of space used for typesetting the base
+text can be set by the |narrowfactor| option. The additional margin
+then equals
+\begin{equation*}
+  (1 - \text{narrow factor}) \cdot \text{text width}.
+\end{equation*}
+
+\begin{syntax}
+  |narrowfactor={|\metaargument{a decimal value between 0 and 1}|}| 
+  \syntaxdefaultarg{.7}
+  The |narrowfactor| parameter is relative proportion of the
+  textwidth that is used by \TeX{}/\LaTeX{} for typesetting exercises
+  and solutions. Hence, it takes values from $0$ to $1$.
+\end{syntax}
+
+
+\section{Setting up the Fonts}
+
+The \exercisesheet{} provides an easy way to adjust the fonts used.
+The central command is the |\setsheetfont| command.
+
+\begin{syntax}
+  |\setsheetfont{|%
+    \metaargument{name of element}%
+      |}{|%
+        \metaargument{font definition}|}|
+  \syntaxdefaultarg{}
+  For instance, in order to set the font of the sheet title to a large
+  italic sans-serif the code, you have to insert
+  |\setsheetfont{sheet title}{\large\sffamily\itshape}|
+  into the preamble of the document.
+  Table~\ref{table:font elements} on page~\pageref{table:font
+  elements} contains a complete list of font elements that can be
+  changes. Moreover, you can define and set your own font elements
+  this way. To use the fonts, you have to use the |\usesheetfont|
+  command.
+\end{syntax}
+
+\begin{table}[htbp]
+  \caption{Default Font Elements}
+  \label{table:font elements}
+  \bigskip
+  \centering
+  \begin{tabular}{ll}
+    Font Element        & Default Value \\ \midrule
+    \sheettemplatekey{basic}             & |\normalfont\rmfamily| \\
+    \sheettemplatekey{sheet title}       & |\sffamily\fontsize{36}{40}\selectfont| \\
+    \sheettemplatekey{sheet topic}       & |\sffamily\Huge| \\
+    \sheettemplatekey{sheet deadline}    & |\sffamily\LARGE| \\
+    \sheettemplatekey{sheet author}      & |\sffamily\small| \\
+    \sheettemplatekey{sheet lecture}     & |\sffamily\scriptsize| \\
+    \sheettemplatekey{sheet semester}    & |\sffamily\scriptsize| \\
+    \sheettemplatekey{exercise topic}    & |\sffamily\small| \\
+    \sheettemplatekey{subexercise topic} & |\sffamily\footnotesize|
+  \end{tabular}
+\end{table}
+
+\begin{syntax}
+  |\usesheetfont{|\metaargument{name of element}|}|
+  \syntaxdefaultarg{}
+  This command inserts the font definition of the specified element.
+  It works with the default font elements as well as with your own
+  font elements defined by the use of |\setsheetfont|.
+\end{syntax}
+
+
+\section{Setting up Titles and Names}
+
+To customize titles and names used by the \exercisesheet{} class --
+for instance because you want to use the class in a non-english
+environment -- two basic commands are proviced: |\setsheettemplate|
+for defining a template and |\usesheettemplate| for using defined
+templates. The \exercisesheet{} class makes heavy use of this template
+mechanism.
+
+\begin{syntax}
+  |\setsheettemplate{|%
+    \metaargument{template name}|}{|%
+    \metaargument{template definition}|}|
+  \syntaxdefaultarg{}
+  This is one of the few central commands for customizing the
+  appearance of an exercise sheet. The first argument is a string, the
+  name of the template to be set. The second argument may be arbitrary
+  \TeX{} code. For instance, in order to typeset the title of an
+  exercise sheet (in the teachers version without sample solutions) in 
+  german, you can do the following:
+  \begin{lstlisting}
+\setsheettemplate{sheet title (teacher without solutions)}{%
+  Aufgabenblatt~\thesheet
+}
+  \end{lstlisting}
+  Table~\ref{table:template elements} on page~\pageref{table:template
+  elements} lists some of the predefined template elements and their
+  default values. In fact there are lots more, but many of them are
+  not of interest for most users. If you are interested in these
+  templates, feel free to look into the source code. Moreover, feel
+  free to the above command to define your own templates that can be
+  used by |\usesheettemplate|.
+\end{syntax}
+
+\begin{table}[htbp]
+  \caption{Some Predefined Template Elements}
+  \label{table:template elements}
+  \centering
+  \bigskip
+  \begin{tabular}{lp{.45\textwidth}}
+    Template Element & Default Value \\ \midrule
+    \sheettemplatekey{sheet title (student)} & 
+      |Solutions of Exercise~Sheet~\thesheet{}| \\
+    \sheettemplatekey{sheet title (teacher without solutions)} & 
+      |Exercise~Sheet~\thesheet{}| \\
+    \sheettemplatekey{sheet title (teacher with solutions)} & 
+      |Exercise~Sheet~\thesheet{} with Solutions| \\
+    \sheettemplatekey{credit name} & 
+      |Credit| \\
+    \sheettemplatekey{credits name} & 
+      |Credits| \\
+    \sheettemplatekey{sheet name} & 
+      |Sheet| \\
+    \sheettemplatekey{exercise name} & 
+      |Exercise| \\
+    \sheettemplatekey{subexercise name} & 
+      |Subexercise| \\
+    \sheettemplatekey{deadline name} & 
+      |Deadline| \\
+    \sheettemplatekey{solution title (with reference)} &
+      |Solution~of~\ref{\useexerciselabelofsolution}| \\
+    \sheettemplatekey{solution title (without reference)} & 
+      |Solution| \\
+  \end{tabular}
+\end{table}
+
+\begin{syntax}
+  |\usesheettemplate{|\metaargument{template name}|}|
+  \syntaxdefaultarg{}
+  This command inserts the template with the specified name.
+\end{syntax}
+
+\section{Creating Sheets}
+
+To typeset a new exercise sheet the |\sheet| command has to be used.
 This section provides all information related to the this central
 command.
 
 \begin{syntax}
-  |\sheet[|\metaargument{key-value-list}|]| \syntaxdefaultarg{}
-  The |\sheet| command starts a new exercise sheet. For this, is ships
-  out all remaining floats, starts a new page and prints the heading
-  of the exercise sheet. Depending on the current mode, the appearance
-  of the title is adjusted. For more details on configuring the
-  appearance see below in this section.
 
+  |\sheet[|\metaargument{key-value-list}|]| \syntaxdefaultarg{} The
+  |\sheet| command starts a new exercise sheet. For this, is ships out
+  all remaining floats of the previous exercise sheets, starts a new
+  page, and prints the heading of the exercise sheet. Depending on the
+  current mode, the appearance of the title is adjusted. For more
+  details on configuring the appearance see below in this section.
   The |\sheet| command requires no argument. However, you can pass
   optional arguments as a key-value-list to it. The following keys are
   provided:
@@ -422,10 +649,11 @@ command.
   \end{syntax}
   \begin{syntax}
     |number={|\metaargument{a natural number}|}| \syntaxdefaultarg{}
-    Sets the number of the exercise sheet. This is useful, if an
-    exercise sheet has been missed by a student, for example. If this
-    option is omitted, the number of the current exercise sheet is the
-    number of the last sheet plus one or one if it is the first sheet.
+    Sets the number of the exercise sheet. This is useful, if, for
+    instance, an exercise sheet has been missed by a student, for
+    example. If this option is omitted, the number of the current
+    exercise sheet is the number of the last sheet plus one or one if
+    it is the first sheet.
   \end{syntax}
   \begin{syntax}
     |topic={|\metaargument{string}|}| \syntaxdefaultarg{}
@@ -435,46 +663,6 @@ command.
   \end{syntax}
 \end{syntax}
 
-Students (as well as trachers) have to place a lot of information
-on their exercise sheets, for example, Students typically have to
-place their name, their matriculation number, the name of the
-corresponding lecture, the number of the current exercise sheet, and a
-lot more. The \exercisesheet{} class is provided with a bunch of
-macros to typeset all these information on the sheets.
-
-\begin{syntax}
-  |\lecture{|\metaargument{string}|}| \syntaxdefaultarg{}
-  This sets the name of the lecture. For example, use
-  |\lecture{Computational Complexity}| if the lecture is named
-  \emph{Computational Complexity}.
-\end{syntax}
-
-\begin{syntax}
-  |\lecturer{|\metaargument{string}|}| \syntaxdefaultarg{}
-  This sets the name of the lecturer. Walter would use
-  |\lecturer{Walter}| for his exercise sheets. Note the |~|
-  to prevent unintended line breaking.
-\end{syntax}
-
-\begin{syntax}
-  |\semester{|\metaargument{string}|}| \syntaxdefaultarg{}
-  Sets the current semester. For example, use 
-  |\semester{Summer~Semester~2011}|. Note the |~| to prevent
-  unintended line breaking.
-\end{syntax}
-
-\begin{syntax}
-  |\student{|\metaargument{string}|}| \syntaxdefaultarg{}
-  This sets the name of the student that has worked out the solutions
-  on the sheet. A list of names can be passed as an argument to this
-  macro if a group of students has been working on the sheets. For
-  example, use
-  |\student{Justus~Jonas, Peter~Shaw, and Bob~Andrews}|. Analogous you
-  can add matriculation numbers behind the names. Note the |~| that
-  prevents line breaking.
-\end{syntax}
-
-\noindent\emph{Explain how the titles can be changed\ldots}
 
 \section{Exercises and Subexercises}
 
@@ -510,12 +698,15 @@ command.
   same arguments as the |\exercise| command.
 \end{syntax}
 
+
 \section{Solutions}
 
-Solutions can be typeset with the \exercisesheet{} class in two ways:
-First, in the |student| mode directly after an |\exercise| command,
-and second, in the |teacher| mode within the |solution|
-environment. Of course, the |solution| environment may also be used in
+Depending on the setting, solutions can be typeset in two ways: First,
+by simply writing them directly ater an |\exercise| command. This is
+recommend if the sheet shall contain the solutions of a student. The
+second way is to use the |solution| environment. This environment
+should be used if the |teacher| option is passed to the document class
+call. Of course, the |solution| environment may also be used in
 the |student| mode if the text of the exercise shall also be presented
 on the sheet. However, in this section the |solution| environment is
 explained.
@@ -526,235 +717,34 @@ explained.
   \hskip-\leftmargin|\end{solution}|
   \syntaxdefaultarg{}
   The contents of the solution, above denoted by
-  \metaargument{solution text}, only appears if the |solution| mode 
-  is turned on (which is the default). If the |solution| mode is
-  turned of (by adding the |nosolution| option to the call of the
-  document class), the solution is removed from the exercise sheet.
-  
+  \metaargument{solution text}, only appears if |solutions=true| is
+  passed to the document class (this is the default). If the solutions
+  mode is turned of (by using |solutions=falce| option), the solution
+  is removed from the exercise sheet.
 
   \begin{syntax}
-    |exerciselabel={|\metaargument{label of the corresponding
-    exercise}|}| \syntaxdefaultarg{}
+    |of={|\metaargument{label of the corresponding exercise}|}| 
+    \syntaxdefaultarg{}
     The solution can be linked to the exercise by adding a label to
-    the exercise and referencing this label by the |exerciselabel|
-    option. For example, consider the following example.
+    the exercise and referencing this label by the |of| option. For
+    example, consider the following example.
     \begin{lstlisting}
 \exercise[
     label={foolabel}
   ]
 
-% Some content.
+  % Some content.
 
 \begin{solution}[
-    exerciselabel={foolabel}
+    of={foolabel}
   ]
   % The solution.
 \end{solution}
 
     \end{lstlisting}
-    By using this kind of linking, the title of solution contains the
-    number of the corresponding exercise.
+    \noindent By using this kind of linking, the title of solution
+    contains the number of the corresponding exercise.
   \end{syntax}
-\end{syntax}
-
-
-\begin{syntax}
-  |nosolution={|\metaargument{boolean}|}| \syntaxdefaultarg{false}
-  The |nosolution| option turns off the typesetting of
-  solutions that are typed within the |solution|
-  environment.
-\end{syntax}
-
-\begin{syntax}
-  |solution={|\metaargument{boolean}|}| \syntaxdefaultarg{true}
-  The |solution| option turns on the typesetting of
-  solutions that are typed within the |solution|
-  environment.
-\end{syntax}
-
-
-\section{Wide and Narrow Page Layout}
-
-Up to now, the \exercisesheet{} class supports two modes: The
-\emph{student mode} and the \emph{teacher mode}. While the
-teacher mode hasn't any notable impact on the page layout, the
-student mode has: It switches the width of the page dynamically
-according to the content currently typeset. While all the titles (that
-is sheet titles, exercise titles, subexercise titles, and so on) are
-typeset using the full text width, the remaining content uses only a
-fraction of the text width. This allows the correcting tutors to write
-down detailed comments on the students solution. The amount of space
-used for typesetting the solutions can be set by the
-|narrowfactor| option when loading the document class. The
-additional margin then equals 
-\begin{equation*}
-  (1 - \text{narrow factor}) \cdot \text{text width}.
-\end{equation*}
-Hence, |narrowfactor| takes arguments from $0$ to $1$, the default
-value is~$.7$. The option |nonarrow| removes any additional margin.
-The following list contains all document class options that are
-related to the dynamic-page-layout mechanism of the \exercisesheet{}
-class.
-
-\begin{syntax}
-  |narrow={|\metaargument{boolean}|}| \syntaxdefaultarg{true}
-  The |narrow| option activates the additional margin on the
-  right hand side of the page that is intended for correction
-  proofreaders marks. 
-\end{syntax}
-
-\begin{syntax}
-  |narrowfactor={|\metaargument{a decimal value between 0 and 1}|}| 
-  \syntaxdefaultarg{.7}
-  The |narrowfactor| parameter is relative proportion of the
-  textwidth that is used by \TeX{}/\LaTeX{} for typesetting exercises
-  and solutions. Hence, it takes values from $0$ to $1$.
-\end{syntax}
-
-\begin{syntax}
-  |nonarrow={|\metaargument{boolean}|}| \syntaxdefaultarg{false}
-  The |nonarrow| option removes the additional margin on the
-  right hand side of the page that is intended for annotations of the
-  proofreader.
-\end{syntax}
-
-\begin{syntax}
-  |student={|\metaargument{boolean}|}| \syntaxdefaultarg{true}
-  This option activates the dynamic page layout and adjusts the
-  |titles|. 
-\end{syntax}
-
-\begin{syntax}
-  |teacher={|\metaargument{boolean}|}| \syntaxdefaultarg{false}
-  This option deactivates the dynamic page layout and adjusts the
-  titles.
-\end{syntax}
-
-
-\section{Setting the Titles and the Names}
-
-This chapter contains a list of macros that can be used to set the
-different titles and names that occur within the use of the
-\exercisesheet{} class. Here \emph{nearly arbitrary code} denotes code
-that does not contain a |\par|.
-
-\begin{syntax}
-  |\setsheettitlestudent{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Solutions for Exercise\~{}Sheet\~{}\textbackslash thesheet\{\}}
-  This sets the code that is inserted at that place of the sheet,
-  where the title should appear when the student mode is activated by
-  passing the |student| option to call of the document class. Inside
-  the code you can use |\thesheet| to make use of the sheet's current
-  number. 
-\end{syntax}
-
-\begin{syntax}
-  |\setsheettitleteachersolution{|\metaargument{nearly arbitrary
-    code}|}|
-  \nobreak\par
-  \syntaxdefaultarg{Exercise\~{}Sheet\~{}\textbackslash thesheet\{\}
-    with Sample~Solutions}
-  See |\setsheettitlestudent| where the code is inserted when the
-  following conditions are satisfied:
-  \begin{enumerate}
-    \item The |teacher| mode is turned on.
-    \item The |solution| mode is turned on.
-  \end{enumerate}
-\end{syntax}
-
-\begin{syntax}
-  |\setsheettitleteachernosolution{|\metaargument{nearly arbitrary
-    code}|}|
-  \syntaxdefaultarg{Exercise\~{}Sheet\~{}\textbackslash thesheet\{\}}
-  See |\setsheettitlestudent| where the code is inserted when the
-  following conditions are satisfied:
-  \begin{enumerate}
-    \item The |teacher| mode is turned on.
-    \item The |solution| mode is turned off.
-  \end{enumerate}
-\end{syntax}
-
-\begin{syntax}
-  |\setexercisesname{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Exercises}
-  Sets the code that is inserted on the title page when in teacher 
-  mode that shows, that this document contains the exercises of a
-  teacher. Simply use this command to define the translation of
-  \emph{Exercises} into your language.
-\end{syntax}
-
-\begin{syntax}
-  |\setexerciseswithsamplesolutionsname{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Exercises with Sample\~{}Solutions}
-  See |\setexercisesname| where this is typeset when the in teacher
-  mode and the |solution| option is passed to the document class.
-\end{syntax}
-
-\begin{syntax}
-  |\setsolutionsname{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Solutions}
-  See |\setexercisesname| where this is typeset when the in student  
-  mode.
-\end{syntax}
-
-\noindent 
-The following list of macros can be used to adapt the default names
-that are used by the \exercisesheet{} class, for instance if the class
-is intended to be used for a different language than English. The
-following names are used at many places within the typesetting
-process, mostly in the titles of exercises, subexercises, solutions
-and in the table of contents. As function of the individual commands
-should be clear from their names, many macros are given without
-further comments.
-
-\begin{syntax}
-  |\setcreditname{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{credit}
-\end{syntax}
-
-\begin{syntax}
-  |\setcreditsname{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{credits}
-\end{syntax}
-
-\begin{syntax}
-  |\setdeadlinename{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Deadline}
-\end{syntax}
-
-\begin{syntax}
-  |\setexercisename{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Exercise}
-\end{syntax}
-
-\begin{syntax}
-  |\setsheetname{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Exercise Sheet}
-\end{syntax}
-
-\begin{syntax}
-  |\setlecturename{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Lecture}
-\end{syntax}
-
-\begin{syntax}
-  |\setsolutionname{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Solution}
-\end{syntax}
-
-\begin{syntax}
-  |\setsolutionforname{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Solution for Exercise}
-\end{syntax}
-
-\begin{syntax}
-  |\setsolutionsbyname{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Solutions by}
-\end{syntax}
-
-\begin{syntax}
-  |\setsubexercisename{|\metaargument{nearly arbitrary code}|}|
-  \syntaxdefaultarg{Subexercise}
 \end{syntax}
 
 \end{document}
