@@ -68,7 +68,8 @@
 %
 % --------------------------------------------------------------------
 
-\newif\if@sheet@student
+% \newif\if@sheet@student
+\newif\if@sheet@teacher
 \newif\if@sheet@solutions
 
 \pgfkeys{%
@@ -80,7 +81,7 @@
   % student/.is if=@sheet@student,
   % student/.initial=true,
   % student/.default=true,
-  teacher/.is if=@sheet@student,
+  teacher/.is if=@sheet@teacher,
   teacher/.initial=false,
   teacher/.default=true,
   %
@@ -146,7 +147,7 @@
   basic/.initial=\normalfont\rmfamily,
   %
   sheet title/.value required,
-  sheet title/.initial=\sffamily\fontsize{36}{40}\selectfont,
+  sheet title/.initial=\sffamily\fontsize{32}{40}\selectfont,
   %
   sheet topic/.value required,
   sheet topic/.initial=\sffamily\Huge,
@@ -158,16 +159,28 @@
   sheet author/.initial=\sffamily\small,
   %
   sheet lecture/.value required,
-  sheet lecture/.initial=\sffamily\scriptsize,
+  sheet lecture/.initial=\sffamily\small,
   %
   sheet semester/.value required,
-  sheet semester/.initial=\sffamily\scriptsize,
+  sheet semester/.initial=\sffamily\small,
   %
   exercise topic/.value required,
   exercise topic/.initial=\small\sffamily,
   %
   subexercise topic/.value required,
   subexercise topic/.initial=\footnotesize\sffamily,
+  %
+  lecture on titlepage/.value required,
+  lecture on titlepage/.initial=\sffamily\huge,
+  %
+  author on titlepage/.value required,
+  author on titlepage/.initial=\sffamily\large,
+  %
+  semester on titlepage/.value required,
+  semester on titlepage/.initial=\sffamily\large,
+  %
+  type on titlepage/.value required,
+  type on titlepage/.initial=\sffamily\Large,
   %
   % variables
   %
@@ -347,6 +360,61 @@
     \fi
   },
   %
+  title page/.value required,
+  title page/.initial={%
+    \begin{titlepage}
+      % insert logo if defined
+      \ifx\insertsheetlogo\relax
+      \else
+        \leavevmode
+        \insertsheetlogo
+        \par \bigskip
+      \fi
+      \null \vskip.15\textheight
+      \begingroup 
+        \normalfont
+        % lecture title
+        \begingroup
+          \usesheetfont{lecture on titlepage}{\insertlecture}%
+          \par\bigskip%
+        \endgroup
+        % document type (exercises, exercises with solutions, solutions)
+        \begingroup
+          \if@sheet@teacher
+            \if@sheet@solutions
+              \usesheetfont{type on titlepage}{%
+                \usesheettemplate{exercises with sample solutions name}%
+              }%
+              \par\medskip
+            \else
+              \usesheetfont{type on titlepage}{%
+                \usesheettemplate{exercises name}%
+              }%
+              \par\medskip
+            \fi
+          \else
+            \usesheetfont{type on titlepage}{%
+              \usesheettemplate{solutions name}%
+            }%
+            \par\medskip
+          \fi
+        \endgroup
+        \vskip .1\textheight
+        \begingroup
+          \if@sheet@teacher
+            \usesheetfont{author on titlepage}{\insertlecturer}%
+            \par
+          \else
+            \usesheetfont{author on titlepage}{\insertauthor}%
+            \par
+          \fi
+          \usesheetfont{semester on titlepage}{\insertsemester}%
+          \par
+        \endgroup
+      \endgroup
+    \end{titlepage}%
+  },
+  %
   sheet name/.value required,
   sheet name/.initial={Sheet},
   %
@@ -364,6 +432,26 @@
   %
   credits name/.value required,
   credits name/.initial={Credits},
+  %
+  exercises with sample solutions name/.value required,
+  exercises with sample solutions name/.initial={%
+    Exercises with Sample Solutions%
+  },
+  %
+  exercises with solutions name/.value required,
+  exercises with solutions name/.initial={%
+    Exercises with Solutions%
+  },
+  %
+  exercises name/.value required,
+  exercises name/.initial={%
+    Exercises%
+  },
+  %
+  solutions name/.value required,
+  solutions name/.initial={%
+    Solutions%
+  },
   %
   solution title (with reference)/.value required,
   solution title (with reference)/.initial={%
@@ -641,46 +729,7 @@
 %
 % --------------------------------------------------------------------
 
-\def\maketitle{%
-%   \begin{titlepage}
-%     \ifx\insertsheetlogo\relax
-%     \else
-%       \leavevmode
-%       \insertsheetlogo
-%       \par \bigskip
-%     \fi
-%     \null \vskip .15\textheight
-%     \begingroup 
-%       \normalfont
-%       % lecture title
-%       \begingroup
-%         \sheettitlefont{\insertlecture}\par 
-%       \endgroup
-%       % document type (exercises, exercises with solutions, solutions)
-%       \begingroup
-%         \if@sheet@student
-%           \sheettopicfont{\insertsolutionsname}\par\medskip
-%         \else
-%           %\ifsolution
-%           \if@sheet@solution
-%             \sheettopicfont{\insertexerciseswithsamplesolutionsname}\par\medskip
-%           \else
-%             \sheettopicfont{\insertexercisesname}\par\medskip
-%           \fi
-%         \fi
-%       \endgroup
-%       \vskip .1\textheight
-%       \begingroup
-%         \if@sheet@student
-%           \sheetdeadlinefont{\insertstudent}\par
-%         \else
-%           \sheetdeadlinefont{\insertlecturer}\par
-%         \fi
-%         \sheetdeadlinefont{\insertsemester}\par
-%       \endgroup
-%     \endgroup
-%   \end{titlepage}%
-}
+\def\maketitle{\usesheettemplate{title page}}
 
 % --------------------------------------------------------------------
 %
@@ -740,10 +789,7 @@
       %
       \normalfont
       %
-      \if@sheet@student
-        % student mode
-        \usesheettemplate{sheet front matter (student)}
-      \else
+      \if@sheet@teacher
         % teacher mode
         % \ifsolution
         \if@sheet@solutions
@@ -751,6 +797,9 @@
         \else
           \usesheettemplate{sheet front matter (teacher without solutions)}
         \fi
+      \else
+        % student mode
+        \usesheettemplate{sheet front matter (student)}
       \fi
       \par
     }%
