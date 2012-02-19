@@ -297,28 +297,34 @@
   %
   sheet front matter (student)/.value required,
   sheet front matter (student)/.initial={%
-    \usesheetfont{sheet title}{%
-      \usesheettemplate{sheet title (student)}%
-      \vskip .5ex \par
-    }%
+    \begingroup
+      \usesheetfont{sheet title}{%
+        \usesheettemplate{sheet title (student)}%
+        \vskip .5ex \par
+      }%
+    \endgroup
     \usesheettemplate{sheet front matter (generic)}%
   },
   %
   sheet front matter (teacher without solutions)/.value required,
   sheet front matter (teacher without solutions)/.initial={%
-    \usesheetfont{sheet title}{%
-      \usesheettemplate{sheet title (teacher without solutions)}%
-      \vskip .5ex \par
-    }%
+    \begingroup
+      \usesheetfont{sheet title}{%
+        \usesheettemplate{sheet title (teacher without solutions)}%
+        \vskip .5ex \par
+      }%
+    \endgroup
     \usesheettemplate{sheet front matter (generic)}%
   },
   %
   sheet front matter (teacher with solutions)/.value required,
   sheet front matter (teacher with solutions)/.initial={%
-    \usesheetfont{sheet title}{%
-      \usesheettemplate{sheet title (teacher with solutions)}%
-      \vskip .5ex \par
-    }%
+    \begingroup
+      \usesheetfont{sheet title}{%
+        \usesheettemplate{sheet title (teacher with solutions)}%
+        \vskip .5ex \par
+      }%
+    \endgroup
     \usesheettemplate{sheet front matter (generic)}%
   },
   %
@@ -651,7 +657,7 @@
 \advance\textheight by -\headheight
 \advance\textheight by -\headsep
 \advance\textheight by -\footskip
-% \advance\textheight by -1cm
+\advance\textheight by -1cm
 \voffset=-1in
 
 \parindent=0pt
@@ -675,7 +681,6 @@
   \global\hsize=#1
   \global\linewidth=#1
 }
-
 
 
 % --------------------------------------------------------------------
