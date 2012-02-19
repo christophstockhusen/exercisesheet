@@ -30,6 +30,8 @@
 \setlist{nolistsep,leftmargin=*}
 \setitemize{label={--}}
 
+\usepackage{graphicx}
+
 \usepackage{listings}
 \lstset{
     basicstyle=\ttfamily\small,
@@ -543,6 +545,7 @@ The central command is the |\setsheetfont| command.
 
 
 \section{Setting up Titles and Names}
+\label{section:setsheettemplate}
 
 To customize titles and names used by the \exercisesheet{} class --
 for instance because you want to use the class in a non-english
@@ -605,6 +608,12 @@ mechanism.
       |Solution~of~\ref{\useexerciselabelofsolution}| \\
     \sheettemplatekey{solution title (without reference)} & 
       |Solution| \\
+    \sheettemplatekey{sheet type (exercises)} &
+      |Exercises| \\
+    \sheettemplatekey{sheet type (solutions)} &
+      |Solutions| \\
+    \sheettemplatekey{sheet type (exercises with sample solutions)} &
+      |Exercises with Sample Solutions| \\
   \end{tabular}
 \end{table}
 
@@ -741,5 +750,48 @@ explained.
     contains the number of the corresponding exercise.
   \end{syntax}
 \end{syntax}
+
+
+\section{Title Pages}
+
+To typeset a title page you can make use of the |\maketitle| command.
+This creates a title page that contains the following information
+\begin{enumerate}
+  \item The title of the lecture.
+  \item The type of sheets that you typeset (i.e.\ 
+    \emph{Exercises},
+    \emph{Exercises with Sample Solutions}, or 
+    \emph{Solutions}.) This is adjusted automatically according to the
+      options set with the call of the |\sheetconf| command.
+  \item The name of the author of the sheets.
+  \item The current semester.
+\end{enumerate}
+
+\noindent You can look at the title pages of the templates that Lia
+and Walter have created for her exercise sheets (see the tutorials
+above) in figure~\ref{fig:template_title_pages}.
+
+\begin{figure}[htbp]
+  \centering
+  \fbox{\includegraphics[width=.45\textwidth,page=1]{template_student.pdf}}
+  \quad
+  \fbox{\includegraphics[width=.45\textwidth,page=1]{template_teacher.pdf}}
+  \caption{The title pages of Lias and Walters templates.}
+  \label{fig:template_title_pages}
+\end{figure}
+
+Depending on the options set with the |\sheetconf| command the string
+that describes the type of sheets that are type set is changed. To
+adjust these to your personal needs you can use the
+|\setsheettemplate| command to redefine the following three templates:
+\begin{enumerate}
+  \item \lstinline[language={}]|sheet type (exercises)|,
+  \item \lstinline[language={}]|sheet type (solutions)|,
+  \item \lstinline[language={}]|sheet type (exercises with sample solutions)|.
+\end{enumerate}
+For a more detailed description of the |\setsheettemplate| command see
+section~\ref{section:setsheettemplate}.
+
+
 
 \end{document}

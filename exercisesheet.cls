@@ -376,7 +376,7 @@
         \insertsheetlogo
         \par \bigskip
       \fi
-      \null \vskip.15\textheight
+      \null \vskip.2\textheight
       \begingroup 
         \normalfont
         % lecture title
@@ -389,31 +389,25 @@
           \if@sheet@teacher
             \if@sheet@solutions
               \usesheetfont{type on titlepage}{%
-                \usesheettemplate{exercises with sample solutions name}%
+                \usesheettemplate{sheet type (exercises with sample solutions)}%
               }%
-              \par\medskip
+              \par\bigskip
             \else
               \usesheetfont{type on titlepage}{%
-                \usesheettemplate{exercises name}%
+                \usesheettemplate{sheet type (exercises)}%
               }%
-              \par\medskip
+              \par\bigskip
             \fi
           \else
             \usesheetfont{type on titlepage}{%
-              \usesheettemplate{solutions name}%
+              \usesheettemplate{sheet type (solutions)}%
             }%
-            \par\medskip
+            \par\bigskip
           \fi
         \endgroup
-        \vskip .1\textheight
         \begingroup
-          \if@sheet@teacher
-            \usesheetfont{author on titlepage}{\insertlecturer}%
-            \par
-          \else
-            \usesheetfont{author on titlepage}{\insertauthor}%
-            \par
-          \fi
+          \usesheetfont{author on titlepage}{\insertauthor}%
+          \par
           \usesheetfont{semester on titlepage}{\insertsemester}%
           \par
         \endgroup
@@ -439,14 +433,19 @@
   credits name/.value required,
   credits name/.initial={Credits},
   %
-  exercises with sample solutions name/.value required,
-  exercises with sample solutions name/.initial={%
+  sheet type (exercises with sample solutions)/.value required,
+  sheet type (exercises with sample solutions)/.initial={%
     Exercises with Sample Solutions%
   },
   %
-  exercises with solutions name/.value required,
-  exercises with solutions name/.initial={%
-    Exercises with Solutions%
+  sheet type (exercises)/.value required,
+  sheet type (exercises)/.initial={%
+    Exercises%
+  },
+  %
+  sheet type (solutions)/.value required,
+  sheet type (solutions)/.initial={%
+    Solutions%
   },
   %
   exercises name/.value required,
