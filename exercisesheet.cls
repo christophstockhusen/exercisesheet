@@ -235,7 +235,7 @@
   %
   sheet title (student)/.value required,
   sheet title (student)/.initial={%
-    Solutions of Exercise~Sheet~\thesheet{}%
+    Solutions for Exercise~Sheet~\thesheet{}%
   },
   %
   sheet title (teacher without solutions)/.value required,

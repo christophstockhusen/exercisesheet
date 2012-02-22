@@ -1,0 +1,116 @@
+\documentclass[a4paper]{exercisesheet}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{luainputenc}
+\usepackage[charter]{mathdesign}
+\let\sfdefault=\rmdefault
+\def\ttdefault{txtt}
+
+\usepackage[dvipsnames]{xcolor}
+\colorlet{maincolor}{blue!50!black}
+
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  frame=lines,
+  backgroundcolor=\color{maincolor!15},
+  rulecolor=\color{maincolor},
+  language=[LaTeX]TeX,
+  keywordstyle=\bfseries\color{maincolor},
+  numbers=left,
+  numberstyle=\scriptsize\color{maincolor!70},
+}
+
+\linespread{1.04}
+
+\usepackage[english]{babel}
+
+\usepackage{blindtext}
+
+\sheetconf{
+  lecture   = {Typesetting Exercise Sheets with \LaTeX},
+  lecturer  = {Christoph},
+  semester  = {Summer Semester 2012},
+  author    = {Mathilda},
+  % teacher,
+  solutions=true,
+}
+
+\setsheetfont{lecture on titlepage}{\sffamily\Huge}
+\setsheetfont{type on titlepage}{\sffamily\LARGE\color{maincolor}}
+\setsheetfont{sheet topic}{\sffamily\Huge\color{maincolor}}
+
+\begin{document}
+
+  \null \vfill
+
+  This document contains a sample set of exercise sheets typeset with
+  \LaTeX\ and the \exercisesheet\ class. The present use case is as
+  follows:
+  \begin{quote}
+    Mathilda uses the \exercisesheet\ class to typeset her solutions
+    for the class \emph{Typesetting Exercise Sheets with \LaTeX}. The
+    lecturer is Christoph and the current semester is
+    Summer~Semester~2012. Mathilda missed the first two sheets, so her
+    first sheet typeset is number~3. Currently, she is working on
+    sheet number~4. Moreover, Mathilda's document contains a title
+    page and a table of contents. Mathilda has to leave some space on
+    the right hand side of the page for corrections.
+  \end{quote}
+
+  \vfill \vfill
+
+  \thispagestyle{empty}
+  \setcounter{page}{0}
+  \newpage
+  
+  \maketitle
+
+  \tableofcontents
+
+  \sheet[%
+      number=3,
+      topic={Using the \exercisesheet\ Class},
+      deadline=Deadline: \today,
+    ]
+
+  \exercise[%
+      topic=Setting up a Basic Template,
+      credits=2
+    ]
+
+  \blindtext
+  
+  \begin{lstlisting}
+\documentclass[a4paper]{exercisesheet}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{luainputenc}
+\usepackage[charter]{mathdesign}
+\let\sfdefault=\rmdefault
+\def\ttdefault{txtt}
+  \end{lstlisting}
+
+  \blindtext
+
+  \subexercise[%
+      topic=The \lstinline|sheetconf| Command,
+      credits=1
+    ]
+  
+  \blindtext
+
+  \exercise[%
+      topic=More Stuff,
+      credits=8
+    ]
+
+  \Blindtext
+
+  \sheet[
+      topic={Advanced Topics}
+    ]
+
+  There has still a lot of work to be done. \ldots
+
+\end{document}
