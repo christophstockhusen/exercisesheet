@@ -16,7 +16,7 @@
 % This work consists of the file exercisesheet.cls.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2011/12/09]
+\ProvidesClass{exercisesheet}[2012/02/22]
 
 \RequirePackage{pgfkeys}
 \RequirePackage{environ}
