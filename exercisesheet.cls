@@ -161,6 +161,9 @@
   sheet lecture/.value required,
   sheet lecture/.initial=\sffamily\small,
   %
+  sheet lecturer/.value required,
+  sheet lecturer/.initial=\sffamily\small,
+  %
   sheet semester/.value required,
   sheet semester/.initial=\sffamily\small,
   %
@@ -172,6 +175,9 @@
   %
   lecture on titlepage/.value required,
   lecture on titlepage/.initial=\sffamily\huge,
+  %
+  lecturer on titlepage/.value required,
+  lecturer on titlepage/.initial=\sffamily\large,
   %
   author on titlepage/.value required,
   author on titlepage/.initial=\sffamily\large,
@@ -273,6 +279,15 @@
         \usesheetfont{sheet lecture}{%
           \vskip .5ex
           \insertlecture%
+          \vskip .5ex
+        }%
+      \endgroup
+    }%
+    \sheet@ifusetemplateempty{\insertlecturer}{}{%
+      \begingroup
+        \usesheetfont{sheet lecturer}{%
+          \vskip .5ex
+          \insertlecturer%
           \vskip .5ex
         }%
       \endgroup
@@ -382,7 +397,11 @@
         % lecture title
         \begingroup
           \usesheetfont{lecture on titlepage}{\insertlecture}%
-          \par\bigskip%
+          \par\medskip%
+        \endgroup
+        \begingroup
+          \usesheetfont{lecturer on titlepage}{\insertlecturer}%
+          \par\bigskip
         \endgroup
         % document type (exercises, exercises with solutions, solutions)
         \begingroup

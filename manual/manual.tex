@@ -15,6 +15,7 @@
 
 \usepackage[dvipsnames]{xcolor}
 \colorlet{maincolor}{BurntOrange!70!black}
+\colorlet{darkmaincolor}{maincolor!60!black}
 
 \usepackage[english]{babel}
 
@@ -35,7 +36,7 @@
 \usepackage{listings}
 \lstset{
     basicstyle=\ttfamily\small,
-    keywordstyle=\color{maincolor},
+    keywordstyle=\color{darkmaincolor},
     language=[LaTeX]TeX,
     frame=lines,
     framerule=1pt,
@@ -168,45 +169,48 @@
 
 \chapter*{Introduction}
 
-The \exercisesheet{} class provides a convenient way to produce
-hiqh-quality exercise sheets for both students and teachers.  This is
-the official manual. It contains tutorials how to use this class and,
-moreover, a comprehensive list of the commands available is given in
-this manual. Files with the complete code of the templates are
-available with this package; You can download them from 
+The aim of this class is to provide a set of useful macros for
+typesetting high-quality exercise sheets for both students and
+teachers This is the official manual. It contains tutorials on how to
+use this class and, moreover, a comprehensive list of the available
+commands. Files with the complete code of the templates are available
+with this package; You can download them from 
 \begin{quote}
   \url{http://exercisesheet.googlecode.com} 
 \end{quote}
-Currently, this class is a victim to heavy development action and bad
-software engineering which may result in several conceptual changes in
-the future. Please be patient and help me creating a useful \LaTeX{}
-class by submitting bugs, issues, and comments on the website above.
-Thank you! I hope you enjoy using this class.
+Currently, this class is a victim to heavy development action which
+may result in several conceptual changes in the future. Please be
+patient and help me creating an even more useful \LaTeX{} class by
+submitting bugs, issues, and comments on the website above. Thank you!
+I hope you enjoy using this class.
 
 \medskip\hfill{\itshape Christoph Stockhusen}
 
+
 \tableofcontents
+
 
 \chapter{Tutorials}
 
-This chapter containts two tutorials: The first tutorial aims at
-students because they will be in the majority. It contains the most
-important things of the usage of this class and I recommend to
-everybody who uses this class to read this tutorial at least once. The
-second tutorial aims at teachers and gives more detailed information
-about the features of this class.
+This chapter contains two tutorials: The first tutorial aims at
+students because is suppose that the majority of the users of this
+class will be students. It contains the most important things needed
+for using this class and I strongly recommend to everyone who uses
+this class to read this tutorial at least once. The second tutorial
+aims at teachers and gives more detailed information about the more
+sophisticated features of this class.
 
 
 \section{A Tutorial for the Student Lia}
 
-This semester, Lia, student of Computer Science, plans to typeset the
-solutions of all the exercise sheets with \LaTeX{}. In the last
-semesters she wrote her solutions per hand which had several
-drawbacks: Often her first solutions to exercises contained little
-errors that she had to correct. Very small errors were easy to
+This semester, Lia, student of Computer Science, plans to typeset her
+solutions of all the exercise sheets she has to work on with \LaTeX.
+In the last semesters she wrote her solutions via hand which had
+several drawbacks: Often her first solutions to exercises contained
+little errors that she had to correct. Very small errors were easy to
 correct, but many times she had to insert some sentences or formulas
-into her solution with the result that Lia had to write several pages
-of solutions repeatedly. Furthermore, Lia simply prefers the beautiful
+into her solution which results in rewriting several pages of
+solutions repeatedly. Furthermore, Lia simply prefers the beautiful
 appearance of typeset solutions.
 
 As this will be Lia's first experience with \LaTeX{} she asks her
@@ -218,8 +222,9 @@ typesetting his own solutions for exercise sheets.
 At home from university, Lia downloads and installs a common \LaTeX{}
 distribution and starts to create a simple template file that she
 plans to use for her next exercise sheets. She creates a file
-|template_student.tex| and opens it in her favorite text editor
-\emph{GVim}. She sets up her file with the following lines.
+\lstinput[language={}]|template_student.tex| and opens it in her
+favorite text editor \emph{GVim}. She sets up her file with the
+following lines.
 \lstinputlisting[linerange={1-9}]{template_student.tex} Lia passes the
 |a4paper| to the \lstinline|\documentclass{exercisesheet}| command
 because she wants the paper layout to be DIN~A~4. Then Lia specifies
@@ -228,7 +233,7 @@ her name by using the |\sheetconf| command. Within these commands the
 makes use of the tilde~|~| in order to suppress undesirable line
 breaks, like Don Knuth recommended in the \TeX{}book. With this setup
 Lia is now ready to typeset her first exercise sheet. Hence, she types
-in the following.
+in the following lines.
 \lstinputlisting[linerange={10-11,16-18,39-40}]{template_student.tex}
 Lia uses the \lstinline|\sheet| command to start a new exercise sheet.
 The command requires no argument but accepts an optional list of
@@ -253,9 +258,7 @@ macros will work.
 
 \noindent After two runs a table of contents appears in her document
 that lists the exercise sheets and the exercises to her complete
-satisfaction. 
-
-\noindent Altogether, Lia has written the following template code.
+satisfaction. Altogether, Lia has written the following template code.
 
 \lstinputlisting{template_student.tex}
 
@@ -263,7 +266,7 @@ satisfaction.
 \section{A Tutorial for the Teacher Walter}
 
 When Walter sees Lia's solutions he is really impressed. Not only are
-Lia's solutions almost perfectly correct, also it's appearance is very
+her solutions almost perfectly correct, also the appearance is very
 beautiful in comparison with his exercise sheets. Hence, he asks Lia
 whether he may use her template to type his exercise sheets. Lia --
 really happy for this to happen -- tells Walter about the
@@ -279,19 +282,19 @@ This allows Walter to use the solution environment: Within this
 enviorment Walter can typeset sample solutions to his exercises for
 his assistants. These solutions will only be typeset when
 |solutions=true| is set, otherwise, that is |solutions=false|, they
-will be removed. This way, Walter won‘t have to create several
+will be removed. This way, Walter won't have to create several
 documents for versions with and without solutions.
 
 \lstinputlisting[linerange={1-3,5-10}]{template_teacher.tex}
 
 \noindent Walter often places the sample solutions to his exercises at
-the very end of the sheet and not directly behind them. Therefore he
-uses the build-in referencing mechanism to link the exercises with
+the very end of the sheet and not immediately behind them. Therefore
+he uses the build-in referencing mechanism to link the exercises with
 it's sample solutions. To do so, he has to label the corresponding
-exercises by the |label| option. Moreover, he uses the |credits|
+exercises by using the |label| option. Moreover, he uses the |credits|
 option to assign credit points to his exercises. To typeset a sample
 solution to an exercise, Walter uses the |solution| environment. This
-environment accepts the open |of| which he can use to pass the label
+environment accepts the option |of| which he can use to pass the label
 of the corresponding exercise to the solution environment.
 
 \lstinputlisting[linerange={33-57}]{template_teacher.tex}
@@ -312,8 +315,8 @@ changes this option to |narrowfactor=.85| which satisfies him.
 \noindent Then Walter changes the appearance of his exercise sheets by
 also changing the fonts (he doesn't want his sheets to look like
 Lia's). He decides to switch everything to Bitstream's \emph{Charter}
-also add some color. Therefore, he loads the |xcolor| package and
-defines a |maincolor| to be a nice orange. Then he uses the
+and also add some color. Therefore, he loads the |xcolor| package and
+defines a |maincolor| to be a nice dark blue. Then he uses the
 |setsheetfont| command to re-set the font of the main sheet title and
 the sheet topic.
 
@@ -340,16 +343,17 @@ The easiest way to use the \exercisesheet{} class is to put the class
 file \lstinline[language=bash]|exercisesheet.cls| into the same folder
 as your source file. For example, to create a new exercise sheet, you
 create a new folder, for instance called |mysheets/|, and put the
-class file into this folder.  Afterwards, you create a new file
-|mysheets.tex| in the same folder or copy one of the templates that
-ship with this class. This will suffice to use the class.
+class file into this folder. Afterwards, you can create a new file,
+for instance |mysheets.tex|, in the same folder or copy one of the
+templates that ship with this class. This will suffice to use the
+class.
 
 
 \section{System-Wide Installation}
 
 For a longer-lasting installation you have to put the class file into
-your |texmf| trees. Depending on your operating system, \TeX{} looks
-for the class file at several places:
+one of your |texmf| trees. Depending on your operating system, \TeX{}
+looks for the class file at several places:
 \begin{itemize}
   \item The root tree at |/usr/share/texmf/| or |c:\texmf\|. This
     folders contain classes and style files that ship with your \TeX{}
@@ -363,12 +367,12 @@ for the class file at several places:
 \end{itemize}
 If you want to install the \exercisesheet{} class into one of the
 folders named above, you should make use of the archive file
-\lstinline[language=bash]{exercisesheet-tds.zip} whose contained
-files are already in the \TeX{} Directory Structure (TDS). Just unzip
-this file into one of the above folders. The archive is created in
-such a way, that the files are automatically placed into the correct
-subfolders. After this, run |texhash| or |mktexlsr| to introduce the
-new files to \TeX. That's it.
+\lstinline[language=bash]{exercisesheet-tds.zip} whose contained files
+are already in the \TeX{} Directory Structure (TDS). Just unzip this
+file into one of the above folders. The archive is created in such a
+way that the files are automatically placed into the correct
+subfolders. After this you might have to run |texhash| or |mktexlsr|
+to introduce the new files to \TeX. That's it.
 
 
 \chapter{Using the \exercisesheet{} Class}
@@ -423,7 +427,8 @@ to set up most of the information needed by the class: the
 be specified within the call of the document class. As this class is
 build upon the report class, all optional arguments that are available
 for the report class are also available for the \exercisesheet{}
-class.
+class, but some of them may have no affect. You should simply try to
+use them if you want to.
 
 
 \section{Setting up the Basic Information}
@@ -431,7 +436,7 @@ class.
 Students (as well as teachers) have to place a lot of information on
 their exercise sheets. For instance, Students typically have to place
 their name, their matriculation number, the name of the corresponding
-lecture, and a lot more on their sheets. The following key's can be
+lecture, and a lot more on their sheets. The following keys can be
 used within the |\sheetconf| command to set these information.
 
 \begin{syntax}
@@ -460,10 +465,12 @@ used within the |\sheetconf| command to set these information.
   This sets the name of the author that has worked out this sheet or
   the solutions on this sheet. A list of names can be passed as an
   argument to this macro if a group of people has been working on the
-  sheets. For example, use 
-  |author={Justus~Jonas, Peter~Shaw, and Bob~Andrews}|. 
-  Analogous you can add matriculation numbers behind
-  the names. Note the |~| that prevents line breaking.
+  sheets. For example, use |author={Justus~Jonas, Peter~Shaw, and
+  Bob~Andrews}|. Note the |~| that prevents line breaking. If you want
+  to add matriculation numbers, this is the right place. For example,
+  you may use |author={Justus~Jonas~(31337)}|. If the lecturer and the
+  author are the same person, you should set the lecturer to the empty
+  string by using |lecturer={}|.
 \end{syntax}
 
 
@@ -472,15 +479,14 @@ used within the |\sheetconf| command to set these information.
 A common problem of exercise sheets typeset by students is the small
 margin that makes it nearly impossible for the correctors to place
 helpful notes on the sheet. The \exercisesheet{} class supports a
-simple but effective method for producing enough white space for
-corrections without completely destroing the good look of the page:
-The textwidth is changed accordingly to the type of text currently
-typeset. While the sheet headings, the exercise headings, and many
-more things may use the full text width, the base text may use only a
-fraction of the text width and leaves the rest as additional white
-margin on the right. The amount of space used for typesetting the base
-text can be set by the |narrowfactor| option. The additional margin
-then equals
+simple method for producing enough white space for corrections without
+completely destroying the good look of the page: The textwidth is
+changed accordingly to the type of text currently typeset. While the
+sheet headings, the exercise headings, and many more things may use
+the full text width, the base text may use only a fraction of the text
+width and leaves the rest as additional white margin on the right. The
+amount of space used for typesetting the base text can be set by the
+|narrowfactor| option. The additional margin then equals
 \begin{equation*}
   (1 - \text{narrow factor}) \cdot \text{text width}.
 \end{equation*}
@@ -496,8 +502,9 @@ then equals
 
 \section{Setting up the Fonts}
 
-The \exercisesheet{} provides an easy way to adjust the fonts used.
-The central command is the |\setsheetfont| command.
+The \exercisesheet{} provides an easy way to adjust the fonts used for
+the elements of the sheet. The central command is the |\setsheetfont|
+command.
 
 \begin{syntax}
   |\setsheetfont{|%
@@ -506,14 +513,13 @@ The central command is the |\setsheetfont| command.
         \metaargument{font definition}|}|
   \syntaxdefaultarg{}
   For instance, in order to set the font of the sheet title to a large
-  italic sans-serif the code, you have to insert
+  italic sans-serif, you have to insert
   |\setsheetfont{sheet title}{\large\sffamily\itshape}|
-  into the preamble of the document.
-  Table~\ref{table:font elements} on page~\pageref{table:font
-  elements} contains a complete list of font elements that can be
-  changes. Moreover, you can define and set your own font elements
-  this way. To use the fonts, you have to use the |\usesheetfont|
-  command.
+  into the preamble of the document. Table~\ref{table:font elements}
+  on page~\pageref{table:font elements} contains a complete list of
+  font elements that can be changes. Moreover, you can define and set
+  your own font elements this way. To use the fonts, you have to use
+  the |\usesheetfont| command.
 \end{syntax}
 
 \begin{table}[htbp]
@@ -529,9 +535,15 @@ The central command is the |\setsheetfont| command.
     \sheettemplatekey{sheet deadline}    & |\sffamily\LARGE| \\
     \sheettemplatekey{sheet author}      & |\sffamily\small| \\
     \sheettemplatekey{sheet lecture}     & |\sffamily\scriptsize| \\
+    \sheettemplatekey{sheet lecturer}    & |\sffamily\scriptsize| \\
     \sheettemplatekey{sheet semester}    & |\sffamily\scriptsize| \\
     \sheettemplatekey{exercise topic}    & |\sffamily\small| \\
     \sheettemplatekey{subexercise topic} & |\sffamily\footnotesize|
+    \sheettemplatekey{lecture on titlepage} & |\sffamily\huge| \\
+    \sheettemplatekey{lecturer on titlepage} & |\sffamily\large| \\
+    \sheettemplatekey{author on titlepage}  & |\sffamily\large| \\
+    \sheettemplatekey{semester on titlepage} & |\sffamily\large| \\
+    \sheettemplatekey{type on titlepage} & |\sffamily\Large|
   \end{tabular}
 \end{table}
 
@@ -575,8 +587,8 @@ mechanism.
   default values. In fact there are lots more, but many of them are
   not of interest for most users. If you are interested in these
   templates, feel free to look into the source code. Moreover, feel
-  free to the above command to define your own templates that can be
-  used by |\usesheettemplate|.
+  free to use the above command to define your own templates that can
+  be used by |\usesheettemplate|.
 \end{syntax}
 
 \begin{table}[htbp]
@@ -626,44 +638,40 @@ mechanism.
 \section{Creating Sheets}
 
 To typeset a new exercise sheet the |\sheet| command has to be used.
-This section provides all information related to the this central
-command.
+This section provides all information related to this command.
 
 \begin{syntax}
-
   |\sheet[|\metaargument{key-value-list}|]| \syntaxdefaultarg{} The
   |\sheet| command starts a new exercise sheet. For this, is ships out
   all remaining floats of the previous exercise sheets, starts a new
   page, and prints the heading of the exercise sheet. Depending on the
-  current mode, the appearance of the title is adjusted. For more
-  details on configuring the appearance see below in this section.
-  The |\sheet| command requires no argument. However, you can pass
-  optional arguments as a key-value-list to it. The following keys are
+  current mode, the appearance of the title is adjusted. The |\sheet|
+  command requires no argument. However, you can pass optional
+  arguments as a key-value-list to it. The following keys are
   provided:
   \begin{syntax}
     |deadline={|\metaargument{string}|}| \syntaxdefaultarg{}
     Sets the deadline of the sheet. For example, use 
-    |deadline={1.~November~2011}|. Note the |~| that prevents line
+    |deadline={January~13,~2012}|. Note the |~| that prevents line
     breaking.
   \end{syntax}
   \begin{syntax}
     |label={|\metaargument{string}|}| \syntaxdefaultarg{}
-    By using the label option the exercise can be referenced later on
+    By using the label option, the exercise can be referenced later on
     with the |\ref| command or by the |solution| environment.
   \end{syntax}
   \begin{syntax}
     |number={|\metaargument{a natural number}|}| \syntaxdefaultarg{}
-    Sets the number of the exercise sheet. This is useful, if, for
-    instance, an exercise sheet has been missed by a student, for
-    example. If this option is omitted, the number of the current
-    exercise sheet is the number of the last sheet plus one or one if
-    it is the first sheet.
+    Sets the number of the exercise sheet. This is useful if you
+    missed working on a sheet, for example. If this option is omitted,
+    the number of the current exercise sheet is the number of the last
+    sheet plus one or one if it is the first sheet.
   \end{syntax}
   \begin{syntax}
     |topic={|\metaargument{string}|}| \syntaxdefaultarg{}
     Sets the topic of the sheet. For example, use 
-    |topic={Basics on Turing Machines}| if that's what the exercises
-    on the sheet are about.
+    |topic={Turing Machines}| if that's what the exercises on the
+    sheet are about.
   \end{syntax}
 \end{syntax}
 
@@ -683,7 +691,7 @@ command.
   \begin{syntax}
     |credits={|\metaargument{a natural number}|}| \syntaxdefaultarg{}
     This sets the credits points that can be achieved by successfully
-    solving this exercise.
+    working on this exercise.
   \end{syntax}
   \begin{syntax}
     |label={|\metaargument{string}|}| \syntaxdefaultarg{}
@@ -723,7 +731,7 @@ explained.
   The contents of the solution, above denoted by
   \metaargument{solution text}, only appears if |solutions=true| is
   passed to the document class (this is the default). If the solutions
-  mode is turned of (by using |solutions=falce| option), the solution
+  mode is turned of (by using |solutions=false| option), the solution
   is removed from the exercise sheet.
 
   \begin{syntax}
@@ -758,6 +766,7 @@ To typeset a title page you can make use of the |\maketitle| command.
 This creates a title page that contains the following information
 \begin{enumerate}
   \item The title of the lecture.
+  \item The name of the lecturer.
   \item The type of sheets that you typeset (i.e.\ 
     \emph{Exercises},
     \emph{Exercises with Sample Solutions}, or 
@@ -776,7 +785,7 @@ above) in figure~\ref{fig:template_title_pages}.
   \fbox{\includegraphics[width=.45\textwidth,page=1]{template_student.pdf}}
   \quad
   \fbox{\includegraphics[width=.45\textwidth,page=1]{template_teacher.pdf}}
-  \caption{The title pages of Lias and Walters templates.}
+  \caption{The title pages of Lia's and Walter's templates.}
   \label{fig:template_title_pages}
 \end{figure}
 
