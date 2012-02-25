@@ -171,7 +171,7 @@
 
 The aim of this class is to provide a set of useful macros for
 typesetting high-quality exercise sheets for both students and
-teachers This is the official manual. It contains tutorials on how to
+teachers. This is the official manual. It contains tutorials on how to
 use this class and, moreover, a comprehensive list of the available
 commands. Files with the complete code of the templates are available
 with this package; You can download them from 
@@ -222,7 +222,7 @@ typesetting his own solutions for exercise sheets.
 At home from university, Lia downloads and installs a common \LaTeX{}
 distribution and starts to create a simple template file that she
 plans to use for her next exercise sheets. She creates a file
-\lstinput[language={}]|template_student.tex| and opens it in her
+\lstinline[language={}]|template_student.tex| and opens it in her
 favorite text editor \emph{GVim}. She sets up her file with the
 following lines.
 \lstinputlisting[linerange={1-9}]{template_student.tex} Lia passes the
@@ -465,8 +465,9 @@ used within the |\sheetconf| command to set these information.
   This sets the name of the author that has worked out this sheet or
   the solutions on this sheet. A list of names can be passed as an
   argument to this macro if a group of people has been working on the
-  sheets. For example, use |author={Justus~Jonas, Peter~Shaw, and
-  Bob~Andrews}|. Note the |~| that prevents line breaking. If you want
+  sheets. For example, use 
+  |author={Justus~Jonas, Peter~Shaw, and Bob~Andrews}|. 
+  Note the |~| that prevents line breaking. If you want
   to add matriculation numbers, this is the right place. For example,
   you may use |author={Justus~Jonas~(31337)}|. If the lecturer and the
   author are the same person, you should set the lecturer to the empty
@@ -538,7 +539,7 @@ command.
     \sheettemplatekey{sheet lecturer}    & |\sffamily\scriptsize| \\
     \sheettemplatekey{sheet semester}    & |\sffamily\scriptsize| \\
     \sheettemplatekey{exercise topic}    & |\sffamily\small| \\
-    \sheettemplatekey{subexercise topic} & |\sffamily\footnotesize|
+    \sheettemplatekey{subexercise topic} & |\sffamily\footnotesize| \\
     \sheettemplatekey{lecture on titlepage} & |\sffamily\huge| \\
     \sheettemplatekey{lecturer on titlepage} & |\sffamily\large| \\
     \sheettemplatekey{author on titlepage}  & |\sffamily\large| \\

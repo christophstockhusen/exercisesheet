@@ -1,5 +1,5 @@
 %% exercisesheet.cls
-%% Copyright 2011 Christoph Stockhusen
+%% Copyright 2012 Christoph Stockhusen
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -16,7 +16,7 @@
 % This work consists of the file exercisesheet.cls.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2012/02/22]
+\ProvidesClass{exercisesheet}[2012/02/25]
 
 \RequirePackage{pgfkeys}
 \RequirePackage{environ}
