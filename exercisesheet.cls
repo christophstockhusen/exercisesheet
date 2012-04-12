@@ -16,7 +16,7 @@
 % This work consists of the file exercisesheet.cls.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2012/02/22]
+\ProvidesClass{exercisesheet}[2012/04/12]
 
 \RequirePackage{pgfkeys}
 \RequirePackage{environ}
@@ -170,8 +170,14 @@
   exercise topic/.value required,
   exercise topic/.initial=\small\sffamily,
   %
+  exercise label/.value required,
+  exercise label/.initial=\small\sffamily,
+  %
   subexercise topic/.value required,
   subexercise topic/.initial=\footnotesize\sffamily,
+  %
+  subexercise label/.value required,
+  subexercise label/.initial=\footnotesize\sffamily,
   %
   lecture on titlepage/.value required,
   lecture on titlepage/.initial=\sffamily\huge,
@@ -693,8 +699,10 @@
 \newdimen\sheet@narrowtextwidth
 \sheet@narrowtextwidth=\sheet@narrowfactor\sheet@textwidth
 
-\def\sheet@setwide{\sheet@setsheetwidth{\the\sheet@textwidth}}
-\def\sheet@setnarrow{\sheet@setsheetwidth{\the\sheet@narrowtextwidth}}
+\def\sheet@setwide{\sheet@setsheetwidth{\sheet@textwidth}}
+\def\sheet@setnarrow{%
+  \sheet@setsheetwidth{\sheet@narrowfactor\sheet@textwidth}%
+}
 \def\sheet@setsheetwidth#1{
   \global\hsize=#1
   \global\linewidth=#1
@@ -743,7 +751,10 @@
 %
 % --------------------------------------------------------------------
 
-\def\@seccntformat#1{\csname #1name\endcsname~\csname the#1\endcsname\quad}
+\def\@seccntformat#1{%
+  \usesheetfont{#1 label}%
+  \csname #1name\endcsname~\csname the#1\endcsname\quad
+}%
 
 
 % --------------------------------------------------------------------
@@ -851,6 +862,7 @@
 \def\sheet@start@exercise[#1]{
   \pgfqkeys{/exercisesheet/variables/exercise}{%
     label={},
+    topic={},
     credits=-1,%
     #1%
   }%
@@ -882,6 +894,7 @@
 \def\sheet@start@subexercise[#1]{
   \pgfqkeys{/exercisesheet/variables/subexercise}{%
     label={},
+    topic={},
     credits=-1,%
     #1%
   }
