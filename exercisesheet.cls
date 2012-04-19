@@ -16,7 +16,7 @@
 % This work consists of the file exercisesheet.cls.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2012/04/12]
+\ProvidesClass{exercisesheet}[2012/04/19]
 
 \RequirePackage{pgfkeys}
 \RequirePackage{environ}
@@ -699,11 +699,17 @@
 \newdimen\sheet@narrowtextwidth
 \sheet@narrowtextwidth=\sheet@narrowfactor\sheet@textwidth
 
-\def\sheet@setwide{\sheet@setsheetwidth{\sheet@textwidth}}
-\def\sheet@setnarrow{%
-  \sheet@setsheetwidth{\sheet@narrowfactor\sheet@textwidth}%
+\def\sheet@setwide{%
+  \sheet@textwidth=\textwidth
+  \sheet@setsheetwidth{\sheet@textwidth}%
 }
-\def\sheet@setsheetwidth#1{
+
+\def\sheet@setnarrow{%
+  \sheet@narrowtextwidth=\sheet@narrowfactor\sheet@textwidth
+  \sheet@setsheetwidth{\sheet@narrowtextwidth}%
+}
+
+\def\sheet@setsheetwidth#1{%
   \global\hsize=#1
   \global\linewidth=#1
 }
@@ -866,7 +872,7 @@
     credits=-1,%
     #1%
   }%
-  \sheet@setwide
+  \par\sheet@setwide
   \@startsection{exercise}{2}{\z@}%
                 {-3ex \@plus -.2ex \@minus -.2ex}%
                 {1.5ex \@plus .2ex}%
@@ -876,7 +882,7 @@
   \sheet@ifusetemplateempty{\useexerciselabel}{}{%
     \label{\useexerciselabel}%
   }%
-  \sheet@setnarrow
+  \nobreak\par\sheet@setnarrow
 }
 
 % --------------------------------------------------------------------
@@ -898,7 +904,7 @@
     credits=-1,%
     #1%
   }
-  \sheet@setwide
+  \par\sheet@setwide
   \@startsection{subexercise}{3}{\z@}%
                 {-1.5ex \@plus -.1ex \@minus -.1ex}%
                 {.75ex \@plus .1ex \@minus .1ex}%
@@ -908,7 +914,7 @@
   \sheet@ifusetemplateempty{\usesubexerciselabel}{}{%
     \label{\usesubexerciselabel}%
   }%
-  \sheet@setnarrow
+  \nobreak\par\sheet@setnarrow
 }
 
 
