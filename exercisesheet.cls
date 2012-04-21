@@ -673,16 +673,18 @@
 \textwidth=\paperwidth
 \advance\textwidth by -4cm
 \oddsidemargin=2cm
-\hoffset=-1in
+\advance\oddsidemargin by -1in
+\hoffset=0pt
 
 \textheight=\paperheight
-\topmargin=1cm
-\advance\textheight by -\topmargin
-\advance\textheight by -\headheight
-\advance\textheight by -\headsep
-\advance\textheight by -\footskip
-\advance\textheight by -1cm
-\voffset=-1in
+\advance\textheight by -4cm
+\topmargin=\paperheight
+\advance\topmargin by -\textheight
+\topmargin=.5\topmargin
+\advance\topmargin by -\headheight
+\advance\topmargin by -\headsep
+\advance\topmargin by -1in
+\voffset=0pt
 
 \parindent=0pt
 \parskip=\smallskipamount
@@ -693,23 +695,61 @@
 %
 % --------------------------------------------------------------------
 
+\newif\if@sheet@isnarrow
+\@sheet@isnarrowfalse
+
 \newdimen\sheet@textwidth 
 \sheet@textwidth=\textwidth
 
 \newdimen\sheet@narrowtextwidth
 \sheet@narrowtextwidth=\sheet@narrowfactor\sheet@textwidth
 
+% \sheet@checkTWchanges checks whether the dimension stored in
+% \textwidth has changed, i.e. doesn't correspond to the dimensions
+% stored in \sheet@textwidth and \sheet@narrowtextwidth. If the
+% dimensions don't fit, the internal dimensions named above get
+% recomputed.
+%
+% This does not capture changes on the narrowfactor! (TODO)
+
+\def\sheet@checkandrecomputetextwidth{%
+  \if@sheet@isnarrow
+    \@tempdima=\sheet@narrowfactor\sheet@textwidth
+  \else
+    \@tempdima=\sheet@textwidth
+  \fi
+  \ifdim\textwidth=\@tempdima\else
+    % textwidth has changes: recompute narrow width
+    \sheet@textwidth=\textwidth
+    \sheet@narrowtextwidth=\sheet@narrowfactor\sheet@textwidth
+  \fi
+}
+
 \def\sheet@setwide{%
-  \sheet@textwidth=\textwidth
+  % Set wide.
+  \sheet@setsheetwidth{\sheet@textwidth}%
+  \@sheet@isnarrowfalse
+  % Check whether the current value in \textwidth is correct or has to
+  % be recomputed. (Recompute if necessary.)
+  \sheet@checkandrecomputetextwidth
+  % Finally set wide.
   \sheet@setsheetwidth{\sheet@textwidth}%
 }
 
 \def\sheet@setnarrow{%
-  \sheet@narrowtextwidth=\sheet@narrowfactor\sheet@textwidth
+  % Set narrow.
+  \sheet@setsheetwidth{\sheet@narrowtextwidth}%
+  \@sheet@isnarrowtrue
+  % Check whether the current value in \textwidth is correct or has to
+  % be recomputed. (Recompute if necessary.)
+  \sheet@checkandrecomputetextwidth
+  % Finally set narrow.
   \sheet@setsheetwidth{\sheet@narrowtextwidth}%
 }
 
 \def\sheet@setsheetwidth#1{%
+  \global\textwidth=#1
+  \global\columnwidth=#1
   \global\hsize=#1
   \global\linewidth=#1
 }
@@ -723,7 +763,7 @@
 
 \def\ps@headings{%
   \let\@oddhead\@empty
-  \def\@oddfoot{{\footnotesize \hfil \thepage}}%
+  \def\@oddfoot{\hbox to \sheet@textwidth{\footnotesize\hfil\thepage}\hss}%
   \let\@mkboth\markboth}
 
 \let\ps@plain\ps@empty
