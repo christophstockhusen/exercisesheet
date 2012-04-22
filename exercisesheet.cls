@@ -16,7 +16,7 @@
 % This work consists of the file exercisesheet.cls.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2012/04/19]
+\ProvidesClass{exercisesheet}[2012/04/22]
 
 \RequirePackage{pgfkeys}
 \RequirePackage{environ}
@@ -69,8 +69,9 @@
 % --------------------------------------------------------------------
 
 % \newif\if@sheet@student
-\newif\if@sheet@teacher
-\newif\if@sheet@solutions
+\newif\if@sheet@teacher \@sheet@teacherfalse
+\newif\if@sheet@solutions \@sheet@solutionstrue
+\newif\if@sheet@annotations \@sheet@annotationstrue
 
 \pgfkeys{%
   %
@@ -95,6 +96,10 @@
   solutions/.is if=@sheet@solutions,
   solutions/.initial=true,
   solutions/.default=true,
+  %
+  annotations/.is if=@sheet@annotations,
+  annotations/.initial=true,
+  annotations/.default=true,
   %
   author/.value required,
   author/.initial={NO AUTHOR DEFINED!},
@@ -232,11 +237,17 @@
   label/.value required,
   label/.initial={},
   %
-  % subexercises
+  % solutions
   /exercisesheet/variables/solution/.cd,
   %
   of/.value required,
   of/.initial={},
+  %
+  % annotations
+  /exercisesheet/variables/annotations/.cd,
+  %
+  body/.value required,
+  body/.initial={},
   %
   %
   % templates
@@ -491,7 +502,10 @@
   solution title (without reference)/.value required,
   solution title (without reference)/.initial={%
     Solution%
-  }
+  },
+  %
+  annotation/.value required,
+  annotation/.initial={\getannotationbody},
 }
 
 \pgfkeysdef{/exercisesheet/variables/sheet/number}{%
@@ -644,6 +658,16 @@
   \sheet@generickeygetter{lecturer}%
 }
 
+% Getter for Annotations
+
+\newcommand*\getannotationbody{%
+  \sheet@generickeygetter{variables/annotations/body}%
+}
+
+\newcommand*\setannotationbody[1]{%
+  \sheet@generickeysetter{variables/annotations/body}{#1}%
+}
+
   
 % --------------------------------------------------------------------
 %
@@ -685,6 +709,8 @@
 \advance\topmargin by -\headsep
 \advance\topmargin by -1in
 \voffset=0pt
+
+\marginparsep=1.5em
 
 \parindent=0pt
 \parskip=\smallskipamount
@@ -734,6 +760,8 @@
   \sheet@checkandrecomputetextwidth
   % Finally set wide.
   \sheet@setsheetwidth{\sheet@textwidth}%
+  % Recompute marginparwidth.
+  \sheet@computemarginparwidth
 }
 
 \def\sheet@setnarrow{%
@@ -745,6 +773,8 @@
   \sheet@checkandrecomputetextwidth
   % Finally set narrow.
   \sheet@setsheetwidth{\sheet@narrowtextwidth}%
+  % Recompute marginparwidth.
+  \sheet@computemarginparwidth
 }
 
 \def\sheet@setsheetwidth#1{%
@@ -752,6 +782,16 @@
   \global\columnwidth=#1
   \global\hsize=#1
   \global\linewidth=#1
+}
+
+\def\sheet@computemarginparwidth{%
+  \ifnum\textwidth=\sheet@textwidth
+    \marginparwidth=0pt
+  \else
+    \marginparwidth=\sheet@textwidth
+    \advance\marginparwidth by -\textwidth
+    \advance\marginparwidth by -\marginparsep
+  \fi
 }
 
 
@@ -964,15 +1004,11 @@
 %
 % --------------------------------------------------------------------
 
-% \newcommand\solution{\@ifnextchar[\sheet@start@solution{\sheet@start@solution[]}}
-
 \def\sheet@solution@refseccntformat#1{%
-  %\solutionforname~\expandafter\ref\expandafter{\sheet@solution@exerciselabel}%
   \usesheettemplate{solution title (with reference)}%
 }
 
 \def\sheet@solution@plainseccntformat#1{%
-  %\solutionname
   \usesheettemplate{solution title (without reference)}%
 }
 
@@ -984,15 +1020,17 @@
   }
   % typeset 
   \let\sheet@orig@seccntformat=\@seccntformat % hackery...
-  \sheet@ifusetemplateempty{\useexerciselabelofsolution}{}%
+  \sheet@ifusetemplateempty{\useexerciselabelofsolution}%
     {%
       \let\@seccntformat=\sheet@solution@plainseccntformat
-    }
+    }{%
+      \let\@seccntformat=\sheet@solution@refseccntformat
+    }%
   \@startsection{solution}{2}{\z@}%
                 {-3ex \@plus -.2ex \@minus -.2ex}%
                 {1.5ex \@plus .2ex}%
                 {\normalfont\usesheetfont{exercise topic}}%
-                []{}%{\@seccntformat{}}
+                []{}%
   \let\@seccntformat=\sheet@orig@seccntformat
 }
 
@@ -1010,7 +1048,32 @@
 \NewEnviron{solution}{%
   \if@sheet@solutions
     \expandafter\sheet@startsolution\BODY%
+  \fi\par}{}
+
+% --------------------------------------------------------------------
+% 
+% Annotation environment for typesetting annotations that are only
+% typeset if the "annotation" option is set.
+%
+% --------------------------------------------------------------------
+
+\NewEnviron{annotation}{%
+  \if@sheet@annotations
+    \expandafter\sheet@startannotation\BODY\sheet@stop%
   \fi}{}
+
+\def\sheet@startannotation{%
+  \@ifnextchar[\sheet@start@annotation{\sheet@start@annotation[]}%
+}
+
+\def\sheet@start@annotation[#1]#2\sheet@stop{%
+  % Set keys.
+  \pgfqkeys{/exercisesheet/variables/annotations}{#1}%
+  % Store annotation.
+  \setannotationbody{#2}%
+  % Typeset annotation
+  \usesheettemplate{annotation}%
+}
 
 % --------------------------------------------------------------------
 %

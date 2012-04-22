@@ -102,6 +102,9 @@
       setsheettemplate,
       usesheettemplate,
       thesheet,
+      annotation,
+      annotations,
+      getannotationbody,
     },
     otherkeywords={a4paper}
   }
@@ -629,6 +632,8 @@ mechanism.
       |Solutions| \\
     \sheettemplatekey{sheet type (exercises with sample solutions)} &
       |Exercises with Sample Solutions| \\
+    \sheettemplatekey{annotation} &
+      |\getannotationbody| \\
   \end{tabular}
 \end{table}
 
@@ -717,14 +722,14 @@ command.
 \section{Solutions}
 
 Depending on the setting, solutions can be typeset in two ways: First,
-by simply writing them directly ater an |\exercise| command. This is
-recommend if the sheet shall contain the solutions of a student. The
+by simply writing them directly after an |\exercise| command. This is
+recommend if the sheet should contain the solutions of a student. The
 second way is to use the |solution| environment. This environment
-should be used if the |teacher| option is passed to the document class
-call. Of course, the |solution| environment may also be used in
-the |student| mode if the text of the exercise shall also be presented
-on the sheet. However, in this section the |solution| environment is
-explained.
+should be used if the |teacher=true| parameter is passed to the
+|sheetconf| call. Of course, the |solution| environment may also be
+used in the |student| mode if the text of the exercise should also be
+presented on the sheet. However, in this section the |solution|
+environment is explained.
 
 \begin{syntax}
   |\begin{solution}[|\metaargument{key-value-list}|]|\par
@@ -761,6 +766,37 @@ explained.
     contains the number of the corresponding exercise.
   \end{syntax}
 \end{syntax}
+
+
+\section{Annotations}
+
+Often the possibility of adding annotations to exercises or solutions
+whose appearance can be turned on and off globally is required.
+Suppose you use the \exercisesheet\ class as a teacher and you want to
+typeset exercises and solutions. Besides these tasks you want to give
+little advices to all your helping hands that correct the students
+solutions, for example how many points some answers deserve or on what
+things special attention should be payed when correcting. For this,
+you can use the \lstinline{annotation} environment.
+
+\begin{syntax}
+  |\begin{annotation}|\par
+  \hskip-\leftmargin\metaargument{annotation text}\par\noindent
+  \hskip-\leftmargin|\end{annotation}|
+\end{syntax}
+
+\noindent The annotation text is only typeset when |annotations=true|
+is set within the |sheetconf| command. If you set |annotations=false|
+the annotations are not typeset. By default, the annotations appear
+in-line, i.e.\ exactly where you use the |annotation| environment, but
+you can change the appearance by using the template system. For
+example, if you want to make the annotation appear within the margin
+of the document, use the following command:
+
+\begin{lstlisting}
+\setsheettemplate{annotation}{\marginpar{\raggedright\getannotationbody}}
+\end{lstlisting}
+Here, |\getannotationbody| inserts the annotation text.
 
 
 \section{Title Pages}
