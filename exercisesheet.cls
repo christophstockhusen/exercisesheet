@@ -16,7 +16,7 @@
 % This work consists of the file exercisesheet.cls.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2012/04/22]
+\ProvidesClass{exercisesheet}[2012/04/25]
 
 \RequirePackage{pgfkeys}
 \RequirePackage{environ}
@@ -68,6 +68,9 @@
 %
 % --------------------------------------------------------------------
 
+\newdimen\sheet@tempdima
+\newdimen\sheet@tempdimb
+
 % \newif\if@sheet@student
 \newif\if@sheet@teacher \@sheet@teacherfalse
 \newif\if@sheet@solutions \@sheet@solutionstrue
@@ -86,8 +89,15 @@
   teacher/.initial=false,
   teacher/.default=true,
   %
-  narrowfactor/.initial=.7,
-  narrowfactor/.value required,
+  textwidthval/.value required,
+  textwidthval/.initial=0pt,
+  %
+  textwidth/.value required,
+  %
+  narrowtextwidthval/.value required,
+  narrowtextwidthval/.initial=0pt,
+  %
+  narrowtextwidth/.value required,
   %
   % nonarrow/.is if=@sheet@nonarrow,
   % nonarrow/.initial=false,
@@ -523,6 +533,19 @@
   \addtocounter{subexercise}{-1}%
 }
 
+\pgfkeysdef{/exercisesheet/textwidth}{%
+  % Ugly fully expanding.
+  \sheet@tempdima=#1
+  \sheet@tempdima=\the\sheet@tempdima
+  \pgfqkeys{/exercisesheet}{textwidthval/.expanded=\the\sheet@tempdima}%
+}
+
+\pgfkeysdef{/exercisesheet/narrowtextwidth}{%
+  % Ugly fully expanding.
+  \sheet@tempdima=#1
+  \sheet@tempdima=\the\sheet@tempdima
+  \pgfqkeys{/exercisesheet}{narrowtextwidthval/.expanded=\the\sheet@tempdima}%
+}
 
 % Set Global Options
 
@@ -546,10 +569,6 @@
   \sheet@ifempty@@@@@{#1}{#2}{#3}%
 }
 
-
-% Getter and Setter for Switching the Page Layout
-
-\def\sheet@narrowfactor{\sheet@generickeygetter{narrowfactor}}
 
 % Getter and Setter for Fonts
 
@@ -712,6 +731,11 @@
 
 \marginparsep=1.5em
 
+\pgfqkeys{/exercisesheet}{
+  textwidth=\textwidth,
+  narrowtextwidth=.7\textwidth,
+}
+
 \parindent=0pt
 \parskip=\smallskipamount
 
@@ -724,11 +748,8 @@
 \newif\if@sheet@isnarrow
 \@sheet@isnarrowfalse
 
-\newdimen\sheet@textwidth 
-\sheet@textwidth=\textwidth
-
-\newdimen\sheet@narrowtextwidth
-\sheet@narrowtextwidth=\sheet@narrowfactor\sheet@textwidth
+\def\sheet@textwidth{\sheet@generickeygetter{textwidthval}}
+\def\sheet@narrowtextwidth{\sheet@generickeygetter{narrowtextwidthval}}
 
 % \sheet@checkTWchanges checks whether the dimension stored in
 % \textwidth has changed, i.e. doesn't correspond to the dimensions
@@ -752,36 +773,25 @@
 }
 
 \def\sheet@setwide{%
-  % Set wide.
   \sheet@setsheetwidth{\sheet@textwidth}%
   \@sheet@isnarrowfalse
-  % Check whether the current value in \textwidth is correct or has to
-  % be recomputed. (Recompute if necessary.)
-  \sheet@checkandrecomputetextwidth
-  % Finally set wide.
-  \sheet@setsheetwidth{\sheet@textwidth}%
   % Recompute marginparwidth.
   \sheet@computemarginparwidth
 }
 
 \def\sheet@setnarrow{%
-  % Set narrow.
   \sheet@setsheetwidth{\sheet@narrowtextwidth}%
   \@sheet@isnarrowtrue
-  % Check whether the current value in \textwidth is correct or has to
-  % be recomputed. (Recompute if necessary.)
-  \sheet@checkandrecomputetextwidth
-  % Finally set narrow.
-  \sheet@setsheetwidth{\sheet@narrowtextwidth}%
   % Recompute marginparwidth.
   \sheet@computemarginparwidth
 }
 
 \def\sheet@setsheetwidth#1{%
-  \global\textwidth=#1
-  \global\columnwidth=#1
-  \global\hsize=#1
-  \global\linewidth=#1
+  \sheet@tempdima     = #1
+  \global\textwidth   = \the\sheet@tempdima
+  \global\columnwidth = \the\sheet@tempdima
+  \global\hsize       = \the\sheet@tempdima
+  \global\linewidth   = \the\sheet@tempdima
 }
 
 \def\sheet@computemarginparwidth{%
@@ -793,7 +803,6 @@
     \advance\marginparwidth by -\marginparsep
   \fi
 }
-
 
 % --------------------------------------------------------------------
 %
