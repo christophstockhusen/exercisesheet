@@ -64,6 +64,8 @@
       narrow,
       nonarrow,
       narrowfactor,
+      textwidth,
+      narrowtextwidth,
       maketitle,
       tableofcontents,
       lecture,
@@ -489,19 +491,30 @@ changed accordingly to the type of text currently typeset. While the
 sheet headings, the exercise headings, and many more things may use
 the full text width, the base text may use only a fraction of the text
 width and leaves the rest as additional white margin on the right. The
-amount of space used for typesetting the base text can be set by the
-|narrowfactor| option. The additional margin then equals
-\begin{equation*}
-  (1 - \text{narrow factor}) \cdot \text{text width}.
-\end{equation*}
+text width of these two modes can be set by using the following
+options within the call of |\sheetconf|:
 
 \begin{syntax}
-  |narrowfactor={|\metaargument{a decimal value between 0 and 1}|}| 
-  \syntaxdefaultarg{.7}
-  The |narrowfactor| parameter is relative proportion of the
-  textwidth that is used by \TeX{}/\LaTeX{} for typesetting exercises
-  and solutions. Hence, it takes values from $0$ to $1$.
+  |textwidth={|\metaargument{a dimension}|}|
+  \syntaxdefaultarg{\textbackslash textwidth}
+  The full width that is used when typesetting headings.
 \end{syntax}
+
+\begin{syntax}
+  |narrowtextwidth={|\metaargument{a dimension}|}|
+  \syntaxdefaultarg{.7\textbackslash textwidth}
+  The width that is used when typesetting the base text.
+\end{syntax}
+
+\noindent Note that due to the implementation of the \LaTeX\ kernel,
+the given dimensions for the above two commands are stored fully
+expanded, i.e.\ if you change |\textwidth| after invoking |\sheetconf|
+with the options above, this has no effect on the text widths produced
+by the page layout mechanism, but on the width of other elements like
+headlines or footers. That is, if you want to change the page layout,
+for instance by making use of the well-known \emph{geometry}-Package
+you should invoke the |\sheetconf| command afterwards to make sure
+that the page layout parameters are set up correctly.
 
 
 \section{Setting up the Fonts}
@@ -633,7 +646,7 @@ mechanism.
     \sheettemplatekey{sheet type (exercises with sample solutions)} &
       |Exercises with Sample Solutions| \\
     \sheettemplatekey{annotation} &
-      |\getannotationbody| \\
+      |\insertannotationbody| \\
   \end{tabular}
 \end{table}
 
@@ -794,9 +807,9 @@ example, if you want to make the annotation appear within the margin
 of the document, use the following command:
 
 \begin{lstlisting}
-\setsheettemplate{annotation}{\marginpar{\raggedright\getannotationbody}}
+\setsheettemplate{annotation}{\marginpar{\raggedright\insertannotationbody}}
 \end{lstlisting}
-Here, |\getannotationbody| inserts the annotation text.
+Here, |\insertannotationbody| inserts the annotation text.
 
 
 \section{Title Pages}

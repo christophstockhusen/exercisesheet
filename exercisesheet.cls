@@ -517,7 +517,7 @@
   },
   %
   annotation/.value required,
-  annotation/.initial={\getannotationbody},
+  annotation/.initial={\insertannotationbody},
 }
 
 \pgfkeysdef{/exercisesheet/variables/sheet/number}{%
@@ -691,6 +691,10 @@
 % Getter for Annotations
 
 \newcommand*\getannotationbody{%
+  \sheet@generickeygetter{variables/annotations/body}%
+}
+
+\newcommand*\insertannotationbody{%
   \sheet@generickeygetter{variables/annotations/body}%
 }
 
