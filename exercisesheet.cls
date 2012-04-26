@@ -16,7 +16,7 @@
 % This work consists of the file exercisesheet.cls.
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{exercisesheet}[2012/04/25]
+\ProvidesClass{exercisesheet}[2012/04/26]
 
 \RequirePackage{pgfkeys}
 \RequirePackage{environ}
@@ -98,6 +98,8 @@
   narrowtextwidthval/.initial=0pt,
   %
   narrowtextwidth/.value required,
+  %
+  narrowfactor/.value required,
   %
   % nonarrow/.is if=@sheet@nonarrow,
   % nonarrow/.initial=false,
@@ -545,6 +547,15 @@
   \sheet@tempdima=#1
   \sheet@tempdima=\the\sheet@tempdima
   \pgfqkeys{/exercisesheet}{narrowtextwidthval/.expanded=\the\sheet@tempdima}%
+}
+
+\pgfkeysdef{/exercisesheet/narrowfactor}{%
+  % Ugly fully expanding.
+  \sheet@tempdima=\sheet@textwidth
+  \sheet@tempdima=#1\sheet@tempdima
+  \pgfqkeys{/exercisesheet}{%
+    narrowtextwidth/.expanded=\the\sheet@tempdima
+  }%
 }
 
 % Set Global Options
