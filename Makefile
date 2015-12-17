@@ -29,3 +29,7 @@ manual/template_teacher.pdf: manual/template_teacher.tex
 
 manual/template_student.pdf: manual/template_student.tex
 	cd manual; make
+
+samples/sample.pdf: samples/sample.tex
+	cd samples; make
+
