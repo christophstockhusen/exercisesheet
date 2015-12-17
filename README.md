@@ -5,8 +5,10 @@ typesetting high-quality exercise sheets for both students and
 teachers. This is the official manual. It contains tutorials on how to
 use this class and, moreover, a comprehensive list of the available
 commands. Files with the complete code of the templates are available
-with this package; You can download them from 
+with this package; You can download them from
+
 > https://github.com/christophstockhusen/exercisesheet
+
 Currently, this class is a victim to heavy development action which
 may result in several conceptual changes in the future. Please be
 patient and help me creating an even more useful \LaTeX{} class by
